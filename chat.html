@@ -6,7 +6,7 @@
     <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
     <meta
       name="description"
-      content="一个支持自定义聊天背景的 Telegram 风格对话页原型"
+      content="岛屿信箱的 Volo、群聊与终端入口"
     />
     <link
       rel="icon"
@@ -14,6 +14,7 @@
     />
     <title>岛屿信箱 · 对话</title>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
+    <link rel="stylesheet" href="chat-views.css?v=20260711-chat-views-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="chat-page">
@@ -72,6 +73,44 @@
       <symbol id="icon-back" viewBox="0 0 24 24">
         <path d="m14.5 5-7 7 7 7" />
       </symbol>
+      <symbol id="icon-history" viewBox="0 0 24 24">
+        <path d="M4 8V4m0 0h4M4 4l3.2 3.2A8 8 0 1 1 4.5 13" />
+        <path d="M12 8v4l2.7 1.8" />
+      </symbol>
+      <symbol id="icon-book" viewBox="0 0 24 24">
+        <path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22V5.5ZM20 5.5A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22V5.5Z" />
+      </symbol>
+      <symbol id="icon-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3.5 9h17M3.5 15h17M12 3c2.2 2.4 3.3 5.4 3.3 9S14.2 18.6 12 21c-2.2-2.4-3.3-5.4-3.3-9S9.8 5.4 12 3Z" />
+      </symbol>
+      <symbol id="icon-focus" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M8 4H5a1 1 0 0 0-1 1v3M16 4h3a1 1 0 0 1 1 1v3M8 20H5a1 1 0 0 1-1-1v-3M16 20h3a1 1 0 0 0 1-1v-3" />
+      </symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24">
+        <rect x="3.5" y="5.5" width="17" height="15" rx="3" />
+        <path d="M8 3.5v4M16 3.5v4M3.5 10h17M8 14h.1M12 14h.1M16 14h.1" />
+      </symbol>
+      <symbol id="icon-music" viewBox="0 0 24 24">
+        <path d="M9 18V6l10-2v11M9 9l10-2" />
+        <circle cx="6.5" cy="18" r="2.5" />
+        <circle cx="16.5" cy="15" r="2.5" />
+      </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19 13.5v-3l-2.1-.7a7.7 7.7 0 0 0-.8-1.8l1-2-2.1-2.1-2 1a7.7 7.7 0 0 0-1.8-.8L10.5 2h-3l-.7 2.1A7.7 7.7 0 0 0 5 4.9l-2-1L.9 6l1 2a7.7 7.7 0 0 0-.8 1.8L-1 10.5v3l2.1.7a7.7 7.7 0 0 0 .8 1.8l-1 2L3 20.1l2-1a7.7 7.7 0 0 0 1.8.8l.7 2.1h3l.7-2.1a7.7 7.7 0 0 0 1.8-.8l2 1 2.1-2.1-1-2a7.7 7.7 0 0 0 .8-1.8l2.1-.7Z" transform="translate(2.5) scale(.8)" />
+      </symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="icon-sparkles" viewBox="0 0 24 24">
+        <path d="m12 3 1.3 4.1L17 9l-3.7 1.9L12 15l-1.3-4.1L7 9l3.7-1.9L12 3ZM19 14l.7 2.3L22 17l-2.3.7L19 20l-.7-2.3L16 17l2.3-.7L19 14ZM5 14l.7 2.3L8 17l-2.3.7L5 20l-.7-2.3L2 17l2.3-.7L5 14Z" />
+      </symbol>
+      <symbol id="icon-terminal" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="16" rx="3" />
+        <path d="m7 9 3 3-3 3M13 15h4" />
+      </symbol>
     </svg>
 
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -106,25 +145,24 @@
         </div>
 
         <nav class="conversation-list" id="conversationList">
-          <button class="conversation-item active" type="button" data-chat="linxia">
-            <span class="avatar avatar-linxia" aria-hidden="true">夏</span>
+          <button class="conversation-item active" type="button" data-workspace="volo" aria-current="page">
+            <span class="avatar avatar-volo" aria-hidden="true"></span>
             <span class="conversation-copy">
               <span class="conversation-row">
-                <strong>林夏</strong>
-                <time>10:42</time>
+                <strong>Volo</strong>
+                <time>现在</time>
               </span>
               <span class="conversation-row preview-row">
-                <span class="message-preview">我也觉得雾蓝色很舒服</span>
-                <span class="read-state" aria-label="已读">✓✓</span>
+                <span class="message-preview">想聊什么都可以</span>
               </span>
             </span>
           </button>
 
-          <button class="conversation-item" type="button" data-chat="design">
-            <span class="avatar avatar-design" aria-hidden="true">设</span>
+          <button class="conversation-item" type="button" data-workspace="group" data-chat="design">
+            <span class="avatar avatar-design" aria-hidden="true">群</span>
             <span class="conversation-copy">
               <span class="conversation-row">
-                <strong>设计讨论组</strong>
+                <strong>群聊</strong>
                 <time>09:16</time>
               </span>
               <span class="conversation-row preview-row">
@@ -134,28 +172,15 @@
             </span>
           </button>
 
-          <button class="conversation-item" type="button" data-chat="zhou">
-            <span class="avatar avatar-zhou" aria-hidden="true">屿</span>
+          <button class="conversation-item" type="button" data-workspace="terminal">
+            <span class="avatar avatar-terminal" aria-hidden="true">&gt;_</span>
             <span class="conversation-copy">
               <span class="conversation-row">
-                <strong>周屿</strong>
-                <time>昨天</time>
+                <strong>终端</strong>
+                <time>—</time>
               </span>
               <span class="conversation-row preview-row">
-                <span class="message-preview">下周见，别忘了带相机 📷</span>
-              </span>
-            </span>
-          </button>
-
-          <button class="conversation-item" type="button" data-chat="notes">
-            <span class="avatar avatar-notes" aria-hidden="true">记</span>
-            <span class="conversation-copy">
-              <span class="conversation-row">
-                <strong>收藏夹</strong>
-                <time>周二</time>
-              </span>
-              <span class="conversation-row preview-row">
-                <span class="message-preview">旅行清单 · 海边路线</span>
+                <span class="message-preview">预留页面</span>
               </span>
             </span>
           </button>
@@ -202,86 +227,171 @@
 
       <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="关闭会话列表"></button>
 
-      <section class="chat-panel" aria-label="当前对话">
-        <header class="chat-header">
-          <a class="icon-button chat-home-button" href="index.html" aria-label="返回开场页" title="返回开场页">
-            <svg><use href="#icon-back"></use></svg>
-          </a>
-          <button class="icon-button mobile-menu" id="mobileMenuButton" type="button" aria-label="打开会话列表">
-            <svg><use href="#icon-menu"></use></svg>
-          </button>
+      <section class="chat-panel" aria-label="Chat 工作区">
+        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="Volo">
+          <header class="volo-topbar">
+            <nav class="volo-topbar-group volo-topbar-left" aria-label="Volo 左侧工具">
+              <button class="volo-topbar-button volo-menu-button" type="button" data-open-sidebar aria-label="打开入口列表">
+                <svg><use href="#icon-menu"></use></svg>
+              </button>
+              <button class="volo-topbar-button" type="button" aria-label="历史记录" data-toast="历史记录稍后接入">
+                <svg><use href="#icon-history"></use></svg>
+              </button>
+              <button class="volo-topbar-button" type="button" aria-label="阅读" data-toast="阅读功能稍后接入">
+                <svg><use href="#icon-book"></use></svg>
+              </button>
+              <button class="volo-topbar-button volo-hide-small" type="button" aria-label="网页" data-toast="网页功能稍后接入">
+                <svg><use href="#icon-globe"></use></svg>
+              </button>
+            </nav>
 
-          <button class="chat-person" type="button" data-toast="联系人详情将在下一步接入">
-            <span class="avatar avatar-linxia" id="headerAvatar" aria-hidden="true">夏</span>
-            <span class="person-copy">
-              <strong id="headerName">林夏</strong>
-              <small id="headerStatus">刚刚在线</small>
-            </span>
-          </button>
-
-          <div class="header-actions">
-            <button class="icon-button header-search-button" type="button" aria-label="搜索当前对话" data-toast="对话搜索将在下一步接入">
-              <svg><use href="#icon-search"></use></svg>
+            <button class="volo-center-button" type="button" aria-label="Volo 状态" data-toast="Volo 在这里">
+              <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
             </button>
-            <button class="icon-button" type="button" aria-label="语音通话" data-toast="语音通话将在下一步接入">
-              <svg><use href="#icon-phone"></use></svg>
-            </button>
-            <button class="background-header-button" id="headerBackgroundButton" type="button">
-              <svg><use href="#icon-image"></use></svg>
-              <span>配色</span>
-            </button>
-            <button class="icon-button" type="button" aria-label="对话信息" data-toast="对话信息将在下一步接入">
-              <svg><use href="#icon-info"></use></svg>
-            </button>
-          </div>
-        </header>
 
-        <div class="chat-main" id="chatMain">
-          <div class="wallpaper" id="wallpaper" aria-hidden="true"></div>
-          <div class="wallpaper-overlay" aria-hidden="true"></div>
+            <nav class="volo-topbar-group volo-topbar-right" aria-label="Volo 右侧工具">
+              <button class="volo-topbar-button volo-hide-small" type="button" aria-label="专注" data-toast="专注功能稍后接入">
+                <svg><use href="#icon-focus"></use></svg>
+              </button>
+              <button class="volo-topbar-button" type="button" aria-label="日历" data-toast="日历功能稍后接入">
+                <svg><use href="#icon-calendar"></use></svg>
+              </button>
+              <button class="volo-topbar-button" type="button" aria-label="音乐" data-toast="音乐功能稍后接入">
+                <svg><use href="#icon-music"></use></svg>
+              </button>
+              <button class="volo-topbar-button" type="button" aria-label="设置" data-toast="设置功能稍后接入">
+                <svg><use href="#icon-settings"></use></svg>
+              </button>
+            </nav>
+          </header>
 
-          <div class="message-scroll" id="messageScroll">
-            <div class="message-list" id="messageList" role="log" aria-live="polite" aria-label="消息"></div>
-          </div>
-
-          <button class="scroll-bottom-button" id="scrollBottomButton" type="button" aria-label="回到最新消息">
-            <svg><use href="#icon-chevron-down"></use></svg>
-            <span class="scroll-unread" id="scrollUnread" hidden>1</span>
-          </button>
-
-          <div class="composer-zone">
-            <div class="emoji-panel" id="emojiPanel" hidden>
-              <button type="button">😊</button>
-              <button type="button">🥰</button>
-              <button type="button">😂</button>
-              <button type="button">👍</button>
-              <button type="button">✨</button>
-              <button type="button">🌊</button>
-              <button type="button">☕</button>
-              <button type="button">📷</button>
+          <main class="volo-main">
+            <div class="volo-message-scroll" id="voloMessageScroll">
+              <div class="volo-message-list" id="voloMessageList" role="log" aria-live="polite" aria-label="Volo 消息">
+                <section class="volo-empty" id="voloEmpty">
+                  <span class="volo-welcome-flower" aria-hidden="true"></span>
+                  <h1>今天想聊些什么？</h1>
+                </section>
+              </div>
             </div>
 
-            <form class="composer" id="composer">
-              <button class="composer-button" type="button" aria-label="添加附件" data-toast="附件功能将在下一步接入">
-                <svg><use href="#icon-paperclip"></use></svg>
+            <div class="volo-composer-zone">
+              <form class="volo-composer" id="voloComposer">
+                <label class="volo-input-label" for="voloInput">
+                  <span class="visually-hidden">发送给 Volo</span>
+                  <textarea id="voloInput" rows="1" maxlength="2000" placeholder="Reply to Volo..."></textarea>
+                </label>
+                <div class="volo-toolbar">
+                  <button class="volo-tool-button" type="button" aria-label="更多选项" data-toast="更多选项稍后接入">
+                    <svg><use href="#icon-plus"></use></svg>
+                  </button>
+                  <button class="volo-model-pill" type="button" data-toast="当前是 Volo">Volo</button>
+                  <div class="volo-toolbar-actions">
+                    <button class="volo-tool-button" type="button" aria-label="灵感" data-toast="灵感工具稍后接入">
+                      <svg><use href="#icon-sparkles"></use></svg>
+                    </button>
+                    <button class="volo-send-button" id="voloSendButton" type="submit" aria-label="发送给 Volo" disabled>
+                      <svg><use href="#icon-send"></use></svg>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </main>
+        </section>
+
+        <section class="workspace-view group-view" id="groupView" data-workspace-view="group" aria-label="群聊" hidden>
+          <header class="chat-header">
+            <a class="icon-button chat-home-button" href="index.html" aria-label="返回开场页" title="返回开场页">
+              <svg><use href="#icon-back"></use></svg>
+            </a>
+            <button class="icon-button mobile-menu" type="button" data-open-sidebar aria-label="打开入口列表">
+              <svg><use href="#icon-menu"></use></svg>
+            </button>
+
+            <button class="chat-person" type="button" data-toast="群聊详情将在下一步接入">
+              <span class="avatar avatar-design" id="headerAvatar" aria-hidden="true">群</span>
+              <span class="person-copy">
+                <strong id="headerName">群聊</strong>
+                <small id="headerStatus">8 位成员，3 人在线</small>
+              </span>
+            </button>
+
+            <div class="header-actions">
+              <button class="icon-button header-search-button" type="button" aria-label="搜索当前群聊" data-toast="群聊搜索将在下一步接入">
+                <svg><use href="#icon-search"></use></svg>
               </button>
-              <textarea
-                id="messageInput"
-                rows="1"
-                maxlength="2000"
-                placeholder="输入消息…"
-                aria-label="消息内容"
-              ></textarea>
-              <button class="composer-button" id="emojiButton" type="button" aria-label="选择表情" aria-expanded="false">
-                <svg><use href="#icon-smile"></use></svg>
+              <button class="icon-button" type="button" aria-label="语音通话" data-toast="语音通话将在下一步接入">
+                <svg><use href="#icon-phone"></use></svg>
               </button>
-              <button class="send-button" id="sendButton" type="submit" aria-label="发送消息" disabled>
-                <svg><use href="#icon-send"></use></svg>
+              <button class="background-header-button" id="headerBackgroundButton" type="button">
+                <svg><use href="#icon-image"></use></svg>
+                <span>配色</span>
               </button>
-            </form>
-            <p class="composer-hint">Enter 发送 · Shift + Enter 换行</p>
+              <button class="icon-button" type="button" aria-label="群聊信息" data-toast="群聊信息将在下一步接入">
+                <svg><use href="#icon-info"></use></svg>
+              </button>
+            </div>
+          </header>
+
+          <div class="chat-main" id="chatMain">
+            <div class="wallpaper" id="wallpaper" aria-hidden="true"></div>
+            <div class="wallpaper-overlay" aria-hidden="true"></div>
+
+            <div class="message-scroll" id="messageScroll">
+              <div class="message-list" id="messageList" role="log" aria-live="polite" aria-label="群聊消息"></div>
+            </div>
+
+            <button class="scroll-bottom-button" id="scrollBottomButton" type="button" aria-label="回到最新消息">
+              <svg><use href="#icon-chevron-down"></use></svg>
+              <span class="scroll-unread" id="scrollUnread" hidden>1</span>
+            </button>
+
+            <div class="composer-zone">
+              <div class="emoji-panel" id="emojiPanel" hidden>
+                <button type="button">😊</button>
+                <button type="button">🥰</button>
+                <button type="button">😂</button>
+                <button type="button">👍</button>
+                <button type="button">✨</button>
+                <button type="button">🌊</button>
+                <button type="button">☕</button>
+                <button type="button">📷</button>
+              </div>
+
+              <form class="composer" id="composer">
+                <button class="composer-button" type="button" aria-label="添加附件" data-toast="附件功能将在下一步接入">
+                  <svg><use href="#icon-paperclip"></use></svg>
+                </button>
+                <textarea id="messageInput" rows="1" maxlength="2000" placeholder="输入消息…" aria-label="消息内容"></textarea>
+                <button class="composer-button" id="emojiButton" type="button" aria-label="选择表情" aria-expanded="false">
+                  <svg><use href="#icon-smile"></use></svg>
+                </button>
+                <button class="send-button" id="sendButton" type="submit" aria-label="发送消息" disabled>
+                  <svg><use href="#icon-send"></use></svg>
+                </button>
+              </form>
+              <p class="composer-hint">Enter 发送 · Shift + Enter 换行</p>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section class="workspace-view terminal-view" id="terminalView" data-workspace-view="terminal" aria-label="终端" hidden>
+          <header class="terminal-header">
+            <a class="terminal-header-button" href="index.html" aria-label="返回开场页">
+              <svg><use href="#icon-back"></use></svg>
+            </a>
+            <button class="terminal-header-button terminal-menu-button" type="button" data-open-sidebar aria-label="打开入口列表">
+              <svg><use href="#icon-menu"></use></svg>
+            </button>
+            <span class="terminal-header-icon" aria-hidden="true"><svg><use href="#icon-terminal"></use></svg></span>
+            <div>
+              <h2>终端</h2>
+              <p>Terminal</p>
+            </div>
+          </header>
+          <main class="terminal-canvas" aria-label="终端预留内容区域"></main>
+        </section>
       </section>
     </div>
 
@@ -401,7 +511,8 @@
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
-    <script src="app.js?v=20260710-theme-switch-v3"></script>
+    <script src="app.js?v=20260711-chat-views-v1"></script>
+    <script src="volo.js?v=20260711-volo-v1"></script>
   </body>
 </html>
 
