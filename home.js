@@ -51,17 +51,7 @@
   var weatherTemperature = document.getElementById("weatherTemperature");
   var weatherCondition = document.getElementById("weatherCondition");
   var dailyNote = document.getElementById("dailyNote");
-  var editDailyButton = document.getElementById("editDailyButton");
-  var dailyDialog = document.getElementById("dailyDialog");
-  var dailyForm = document.getElementById("dailyForm");
-  var dailyDialogDate = document.getElementById("dailyDialogDate");
-  var dailyDialogClose = document.getElementById("dailyDialogClose");
-  var dailyCancelButton = document.getElementById("dailyCancelButton");
-  var dailyResetButton = document.getElementById("dailyResetButton");
-  var dailyWeather = document.getElementById("dailyWeather");
-  var dailyTemperature = document.getElementById("dailyTemperature");
-  var dailyNoteInput = document.getElementById("dailyNoteInput");
-  var dailyError = document.getElementById("dailyError");
+  var weatherCard = document.querySelector(".weather-card");
 
   var startDate = readStartDate();
   var activeDay = todayString();
@@ -177,18 +167,6 @@
     }).format(date);
   }
 
-  function formatDailyDialogDate(dateString) {
-    var date = localDateFromString(dateString);
-    return (
-      new Intl.DateTimeFormat("zh-CN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        weekday: "long"
-      }).format(date) + " · 每天单独保存"
-    );
-  }
-
   function emptyDailyRecord() {
     return {
       weather: "",
@@ -239,27 +217,6 @@
     return normalizeDailyRecord(store.days[dateString]);
   }
 
-  function writeDailyRecord(dateString, record) {
-    var store = readDailyStore();
-    store.days[dateString] = {
-      weather: record.weather,
-      temperature: record.temperature,
-      message: record.message,
-      updatedAt: new Date().toISOString()
-    };
-    var dates = Object.keys(store.days).sort();
-    while (dates.length > 400) {
-      delete store.days[dates.shift()];
-    }
-    localStorage.setItem(DAILY_KEY, JSON.stringify(store));
-  }
-
-  function removeDailyRecord(dateString) {
-    var store = readDailyStore();
-    delete store.days[dateString];
-    localStorage.setItem(DAILY_KEY, JSON.stringify(store));
-  }
-
   function formatTemperature(value) {
     if (value === null) {
       return "--°";
@@ -269,12 +226,18 @@
 
   function renderDaily() {
     var weather = WEATHER_TYPES[dailyRecord.weather];
+    var weatherLabel = weather ? weather.label : "天气待记录";
     todayDateLabel.textContent = formatTodayLabel(activeDay);
     weatherEmoji.textContent = weather ? weather.emoji : "○";
     weatherTemperature.textContent = formatTemperature(dailyRecord.temperature);
-    weatherCondition.textContent = weather ? weather.label : "天气待记录";
+    weatherCondition.textContent = weatherLabel;
     dailyNote.textContent =
       dailyRecord.message || "今天想说的话，写在这里。";
+    weatherCard.setAttribute(
+      "aria-label",
+      "打开今天的 Diary 日记，" + weatherLabel + "，" +
+        (dailyRecord.message ? "已有记录" : "等待记录")
+    );
   }
 
   function renderDays() {
@@ -334,75 +297,12 @@
     });
   }
 
-  function openDailyDialog() {
-    refreshDateSensitiveUI();
-    dailyError.hidden = true;
-    dailyError.textContent = "";
-    dailyDialogDate.textContent = formatDailyDialogDate(activeDay);
-    dailyWeather.value = dailyRecord.weather;
-    dailyTemperature.value =
-      dailyRecord.temperature === null ? "" : String(dailyRecord.temperature);
-    dailyNoteInput.value = dailyRecord.message;
-    if (typeof dailyDialog.showModal === "function") {
-      dailyDialog.showModal();
-    } else {
-      dailyDialog.setAttribute("open", "");
-    }
-    window.setTimeout(function () {
-      dailyWeather.focus();
-    }, 30);
-    emitClawd("thinking", "记录一下今天", {
-      duration: 1900,
-      priority: 2
-    });
-  }
-
-  function closeDailyDialog() {
-    if (dailyDialog.open) {
-      dailyDialog.close();
-    } else {
-      dailyDialog.removeAttribute("open");
-    }
-  }
-
-  function showDailyError(message) {
-    dailyError.textContent = message;
-    dailyError.hidden = false;
-    emitClawd("confused", "这里好像要改一下", {
-      duration: 2300,
-      priority: 4
-    });
-  }
-
-  function parseTemperature(value) {
-    var trimmed = value.trim();
-    if (!trimmed) {
-      return null;
-    }
-    if (!/^-?\d{1,2}(?:\.\d)?$/.test(trimmed)) {
-      throw new Error("温度请填写 -50 到 60 之间的数字，最多一位小数。");
-    }
-    var temperature = Number(trimmed);
-    if (
-      !Number.isFinite(temperature) ||
-      temperature < -50 ||
-      temperature > 60
-    ) {
-      throw new Error("温度需要在 -50℃ 到 60℃ 之间。");
-    }
-    return temperature;
-  }
-
   function refreshDateSensitiveUI() {
     var currentDay = todayString();
     if (currentDay !== activeDay) {
       activeDay = currentDay;
-      dailyRecord = readDailyRecord(activeDay);
-      if (dailyDialog.open) {
-        closeDailyDialog();
-        showToast("新的一天啦，请重新填写今天的记录");
-      }
     }
+    dailyRecord = readDailyRecord(activeDay);
     renderDays();
     renderDaily();
   }
@@ -493,110 +393,15 @@
     }
   });
 
-  editDailyButton.addEventListener("click", openDailyDialog);
-  dailyDialogClose.addEventListener("click", closeDailyDialog);
-  dailyCancelButton.addEventListener("click", closeDailyDialog);
-
-  dailyDialog.addEventListener("cancel", function (event) {
-    event.preventDefault();
-    closeDailyDialog();
-  });
-
-  dailyDialog.addEventListener("click", function (event) {
-    if (event.target === dailyDialog) {
-      closeDailyDialog();
-    }
-  });
-
-  [dailyWeather, dailyTemperature, dailyNoteInput].forEach(function (field) {
-    field.addEventListener("input", function () {
-      dailyError.hidden = true;
-      dailyError.textContent = "";
-    });
-  });
-
-  dailyNoteInput.addEventListener("input", function () {
-    emitClawd("typing", "", {
-      duration: 850,
-      priority: 1
-    });
-  });
-
-  dailyForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-    var currentDay = todayString();
-    if (currentDay !== activeDay) {
-      activeDay = currentDay;
-      dailyRecord = readDailyRecord(activeDay);
-      closeDailyDialog();
-      renderDaily();
-      showToast("新的一天啦，请重新填写今天的记录");
-      return;
-    }
-
-    var temperature;
-    try {
-      temperature = parseTemperature(dailyTemperature.value);
-    } catch (error) {
-      showDailyError(error.message);
-      return;
-    }
-
-    var weather = Object.prototype.hasOwnProperty.call(
-      WEATHER_TYPES,
-      dailyWeather.value
-    )
-      ? dailyWeather.value
-      : "";
-    var nextRecord = {
-      weather: weather,
-      temperature: temperature,
-      message: dailyNoteInput.value.trim().slice(0, 80)
-    };
-
-    try {
-      writeDailyRecord(activeDay, nextRecord);
-      dailyRecord = normalizeDailyRecord(nextRecord);
-      renderDaily();
-      closeDailyDialog();
-      showToast("今天的记录已保存");
-      emitClawd("eureka", "今天也记下来啦", {
-        duration: 2100,
-        priority: 3,
-        next: {
-          name: "happy",
-          duration: 1200,
-          priority: 3
-        }
-      });
-    } catch (error) {
-      showDailyError("浏览器没有允许保存，请稍后再试。");
-    }
-  });
-
-  dailyResetButton.addEventListener("click", function () {
-    try {
-      removeDailyRecord(activeDay);
-      dailyRecord = emptyDailyRecord();
-      renderDaily();
-      closeDailyDialog();
-      showToast("今天的记录已清空");
-      emitClawd("sweeping", "今天重新留白啦", {
-        duration: 2300,
-        priority: 3
-      });
-    } catch (error) {
-      showDailyError("浏览器没有允许清空，请稍后再试。");
-    }
-  });
-
   document
-    .querySelectorAll(".chat-entry-card, .memory-entry-card")
+    .querySelectorAll(".chat-entry-card, .memory-entry-card, .weather-card")
     .forEach(function (entry) {
       entry.addEventListener("pointerdown", function () {
         var destination = entry.classList.contains("memory-entry-card")
           ? "Memory"
-          : "聊天页";
+          : entry.classList.contains("weather-card")
+            ? "Diary"
+            : "Chat";
         emitClawd("goingAway", "去" + destination + "见", {
           duration: 900,
           priority: 3
