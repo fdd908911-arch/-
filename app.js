@@ -32,6 +32,13 @@
     blush: "#ebe3e5"
   };
 
+  var THEME_NAMES = {
+    mist: "雾蓝杏粉",
+    zen: "禅意米棕",
+    sage: "灰绿鹅黄",
+    blush: "烟粉雾蓝"
+  };
+
   var chats = {
     linxia: {
       name: "林夏",
@@ -159,6 +166,7 @@
   var toast = document.getElementById("toast");
   var toastText = document.getElementById("toastText");
   var themeColorMeta = document.getElementById("themeColorMeta");
+  var currentThemeName = document.getElementById("currentThemeName");
 
   var activeChatId = "linxia";
   var toastTimer = null;
@@ -465,6 +473,47 @@
     root.style.setProperty("--wallpaper-image", backgroundImage);
     root.style.setProperty("--wallpaper-dim", String(settings.dim / 100));
     root.style.setProperty("--wallpaper-blur", String(settings.blur) + "px");
+    updateQuickThemeSwitcher(settings.theme);
+  }
+
+  function updateQuickThemeSwitcher(themeId) {
+    currentThemeName.textContent = THEME_NAMES[themeId] || THEME_NAMES.mist;
+    document.querySelectorAll("[data-quick-theme]").forEach(function (button) {
+      var isActive = button.dataset.quickTheme === themeId;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  function commitThemeImmediately(themeId, preserveCustomWallpaper) {
+    if (!Object.prototype.hasOwnProperty.call(PRESETS, themeId)) {
+      return;
+    }
+
+    var sourceSettings = backgroundDialog.open ? draftSettings : appliedSettings;
+    var nextSettings = copySettings(sourceSettings);
+    nextSettings.theme = themeId;
+    if (!(preserveCustomWallpaper && appliedSettings.id === "custom")) {
+      nextSettings.id = themeId;
+    }
+
+    if (nextSettings.id !== "custom" && draftUrl && draftUrl !== customUrl) {
+      URL.revokeObjectURL(draftUrl);
+    }
+
+    appliedSettings = copySettings(nextSettings);
+    draftSettings = copySettings(nextSettings);
+    draftBlob = null;
+    draftUrl = null;
+    writeSettings(appliedSettings);
+    applyWallpaper(appliedSettings, customUrl);
+    updateRangeOutputs();
+    updateWallpaperOptions();
+
+    if (backgroundDialog.open) {
+      closeBackgroundDialog(true);
+    }
+    showToast("已切换为“" + THEME_NAMES[themeId] + "”");
   }
 
   function updateRangeOutputs() {
@@ -829,6 +878,15 @@
   mobileMenuButton.addEventListener("click", openSidebar);
   sidebarScrim.addEventListener("click", closeSidebar);
 
+  document.querySelector(".quick-theme-options").addEventListener("click", function (event) {
+    var button = event.target.closest("[data-quick-theme]");
+    if (!button) {
+      return;
+    }
+    commitThemeImmediately(button.dataset.quickTheme, true);
+    closeSidebar();
+  });
+
   document.querySelectorAll("[data-toast]").forEach(function (button) {
     button.addEventListener("click", function () {
       showToast(button.dataset.toast);
@@ -866,10 +924,11 @@
     if (wallpaperId === "custom" && !draftUrl) {
       return;
     }
-    draftSettings.id = wallpaperId;
     if (wallpaperId !== "custom") {
-      draftSettings.theme = wallpaperId;
+      commitThemeImmediately(wallpaperId, false);
+      return;
     }
+    draftSettings.id = wallpaperId;
     updateWallpaperOptions();
     applyWallpaper(draftSettings, draftUrl);
   });
