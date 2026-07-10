@@ -13,7 +13,7 @@
   transition: opacity 160ms ease, visibility 160ms ease;
 }
 
-body:not(.home-page) .clawd-pet-root {
+.chat-page .clawd-pet-root {
   bottom: calc(140px + env(safe-area-inset-bottom, 0px));
 }
 
@@ -144,7 +144,7 @@ body:not(.home-page) .clawd-pet-root {
     bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   }
 
-  body:not(.home-page) .clawd-pet-root {
+  .chat-page .clawd-pet-root {
     bottom: calc(132px + env(safe-area-inset-bottom, 0px));
   }
 
@@ -156,7 +156,7 @@ body:not(.home-page) .clawd-pet-root {
 
 @media (max-width: 380px), (max-height: 560px) {
   .clawd-pet-root { --clawd-pet-size: 76px; }
-  body:not(.home-page) .clawd-pet-root {
+  .chat-page .clawd-pet-root {
     bottom: calc(116px + env(safe-area-inset-bottom, 0px));
   }
 }
