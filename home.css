@@ -571,6 +571,8 @@
 
 .chat-entry-card {
   display: flex;
+  height: 298px;
+  align-self: start;
   flex-direction: column;
   justify-content: space-between;
   padding: 23px 23px 21px;
@@ -634,14 +636,14 @@
   position: relative;
   grid-column: 2;
   display: flex;
-  min-height: 176px;
+  min-height: 298px;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
   isolation: isolate;
   padding: 20px 23px 18px;
   border: 1px solid var(--glass-edge);
-  border-radius: 25px;
+  border-radius: 28px;
   background:
     radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.62), transparent 38%),
     radial-gradient(circle at 8% 112%, rgba(199, 125, 136, 0.16), transparent 48%),
@@ -1309,15 +1311,16 @@
   }
 
   .chat-entry-card {
+    height: auto;
     min-height: 212px;
     padding: 19px 18px 17px;
   }
 
   .memory-entry-card {
     grid-column: 1;
-    min-height: 172px;
-    padding: 18px;
-    border-radius: 22px;
+    min-height: 212px;
+    padding: 19px 18px 17px;
+    border-radius: 23px;
     -webkit-backdrop-filter: blur(16px) saturate(116%);
     backdrop-filter: blur(16px) saturate(116%);
   }
