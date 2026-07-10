@@ -69,7 +69,6 @@
   width: 42px;
   height: 42px;
   place-items: center;
-  color: #dc785a;
   filter: drop-shadow(0 7px 9px rgba(164, 91, 70, 0.18));
   transform: rotate(-4deg);
   transition:
@@ -77,16 +76,13 @@
     transform 260ms ease;
 }
 
-.home-brand-flower svg {
+.home-brand-flower img {
+  display: block;
   width: 42px;
   height: 42px;
-  fill: currentColor;
-  stroke: none;
-  overflow: visible;
-}
-
-.home-brand-flower .home-flower-petal:nth-child(3n) {
-  opacity: 0.84;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 .home-brand:hover .home-brand-flower {
@@ -1180,7 +1176,7 @@
     height: 38px;
   }
 
-  .home-brand-flower svg {
+  .home-brand-flower img {
     width: 38px;
     height: 38px;
   }
