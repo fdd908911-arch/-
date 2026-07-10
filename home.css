@@ -1,4 +1,8 @@
 .home-page {
+  --glass-fill: rgba(var(--panel-rgb), 0.42);
+  --glass-fill-strong: rgba(var(--panel-rgb), 0.6);
+  --glass-edge: rgba(255, 255, 255, 0.62);
+  --glass-edge-soft: rgba(255, 255, 255, 0.3);
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
@@ -102,12 +106,19 @@
   align-items: center;
   gap: 8px;
   padding: 0 12px 0 8px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-edge);
   border-radius: 999px;
-  background: rgba(var(--panel-rgb), 0.5);
-  color: var(--muted);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.38), transparent 70%),
+    rgba(var(--panel-rgb), 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    inset 0 -1px 0 rgba(var(--ink-rgb), 0.05),
+    0 8px 24px rgba(var(--ink-rgb), 0.07);
+  color: var(--text-soft);
   font-size: 10px;
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(18px) saturate(135%);
 }
 
 .home-theme-dot {
@@ -115,7 +126,9 @@
   height: 20px;
   border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
-  box-shadow: 0 2px 7px rgba(var(--ink-rgb), 0.12);
+  box-shadow:
+    0 0 0 1px rgba(var(--ink-rgb), 0.1),
+    0 2px 7px rgba(var(--ink-rgb), 0.12);
 }
 
 :root .home-theme-dot,
@@ -147,10 +160,16 @@
   position: relative;
   min-height: 298px;
   overflow: hidden;
-  border: 1px solid var(--line-strong);
+  isolation: isolate;
+  border: 1px solid var(--glass-edge);
   border-radius: 28px;
-  box-shadow: 0 22px 60px rgba(var(--ink-rgb), 0.11);
-  backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 1px 0 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(var(--ink-rgb), 0.06),
+    0 24px 64px rgba(var(--ink-rgb), 0.12);
+  -webkit-backdrop-filter: blur(24px) saturate(128%);
+  backdrop-filter: blur(24px) saturate(128%);
 }
 
 .days-card {
@@ -158,8 +177,9 @@
   flex-direction: column;
   padding: 23px 24px 21px;
   background:
-    linear-gradient(120deg, rgba(var(--panel-rgb), 0.9), rgba(var(--panel-rgb), 0.62)),
-    var(--panel);
+    radial-gradient(circle at 88% 7%, rgba(255, 255, 255, 0.65), transparent 32%),
+    radial-gradient(circle at 76% 106%, rgba(var(--accent-rgb), 0.17), transparent 43%),
+    linear-gradient(125deg, var(--glass-fill-strong), rgba(var(--panel-rgb), 0.22));
 }
 
 .days-card::before {
@@ -169,7 +189,8 @@
   width: 56%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.2), transparent 66%);
+  z-index: -1;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.24), transparent 66%);
   content: "";
   pointer-events: none;
 }
@@ -182,8 +203,32 @@
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle, var(--outgoing-start), transparent 66%);
+  z-index: -1;
+  opacity: 0.64;
+  pointer-events: none;
+}
+
+.days-card::after,
+.chat-entry-card::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      116deg,
+      rgba(255, 255, 255, 0.48) 0%,
+      rgba(255, 255, 255, 0.12) 18%,
+      transparent 36%,
+      transparent 68%,
+      rgba(255, 255, 255, 0.17) 100%
+    );
+  content: "";
   opacity: 0.72;
   pointer-events: none;
+  transition:
+    opacity 240ms ease,
+    transform 420ms ease;
 }
 
 .home-card-header {
@@ -200,7 +245,7 @@
   align-items: center;
   gap: 7px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -213,12 +258,17 @@
 
 .home-card-action {
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   place-items: center;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-edge);
   border-radius: 12px;
-  background: var(--surface-soft);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.36), transparent),
+    rgba(var(--panel-rgb), 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 6px 18px rgba(var(--ink-rgb), 0.06);
   color: var(--text-soft);
   transition:
     background-color 160ms ease,
@@ -278,8 +328,8 @@
 
 .days-caption {
   margin: 0;
-  color: var(--muted);
-  font-size: 10px;
+  color: var(--text-soft);
+  font-size: 11px;
 }
 
 .date-entry {
@@ -292,9 +342,14 @@
   align-items: center;
   gap: 10px;
   padding: 6px 14px 6px 7px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-edge);
   border-radius: 15px;
-  background: rgba(var(--panel-rgb), 0.5);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 68%),
+    rgba(var(--panel-rgb), 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.64),
+    0 7px 20px rgba(var(--ink-rgb), 0.055);
   text-align: left;
   transition:
     border-color 160ms ease,
@@ -304,7 +359,9 @@
 
 .date-entry:hover {
   border-color: rgba(var(--accent-rgb), 0.35);
-  background: rgba(var(--panel-rgb), 0.78);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.4), transparent 68%),
+    rgba(var(--panel-rgb), 0.38);
   transform: translateY(-1px);
 }
 
@@ -332,14 +389,14 @@
 }
 
 .date-entry small {
-  color: var(--muted);
-  font-size: 8px;
+  color: var(--text-soft);
+  font-size: 9.5px;
 }
 
 .date-entry strong {
   overflow: hidden;
   color: var(--text);
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -351,8 +408,9 @@
   justify-content: space-between;
   padding: 23px 23px 21px;
   background:
-    linear-gradient(145deg, rgba(var(--panel-rgb), 0.72), rgba(var(--panel-rgb), 0.38)),
-    var(--outgoing-start);
+    radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.62), transparent 37%),
+    radial-gradient(circle at 0% 110%, rgba(var(--accent-rgb), 0.2), transparent 48%),
+    linear-gradient(145deg, var(--glass-fill-strong), rgba(var(--panel-rgb), 0.2));
   color: var(--text);
   text-decoration: none;
   transition:
@@ -367,17 +425,23 @@
   transform: translateY(-3px);
 }
 
+.chat-entry-card:hover::after {
+  opacity: 0.95;
+  transform: translateX(2%);
+}
+
 .chat-entry-decoration {
   position: absolute;
   right: -36px;
   bottom: -55px;
   width: 210px;
   height: 210px;
-  border: 1px solid rgba(var(--accent-rgb), 0.13);
+  z-index: -1;
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 50%;
   box-shadow:
-    inset 0 0 0 28px rgba(var(--accent-rgb), 0.025),
-    inset 0 0 0 58px rgba(var(--accent-rgb), 0.025);
+    inset 0 0 0 28px rgba(255, 255, 255, 0.055),
+    inset 0 0 0 58px rgba(var(--accent-rgb), 0.035);
 }
 
 .chat-arrow {
@@ -386,7 +450,11 @@
   height: 36px;
   place-items: center;
   border-radius: 12px;
-  background: rgba(var(--panel-rgb), 0.52);
+  border: 1px solid var(--glass-edge);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.38), transparent),
+    rgba(var(--panel-rgb), 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.66);
   color: var(--blue-strong);
   transition: transform 180ms ease;
 }
@@ -478,11 +546,17 @@
   width: min(430px, calc(100vw - 28px));
   padding: 0;
   overflow: hidden;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--glass-edge);
   border-radius: 22px;
-  background: var(--dialog-bg);
-  box-shadow: 0 34px 100px rgba(var(--ink-rgb), 0.28);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 64%),
+    rgba(var(--panel-rgb), 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 34px 100px rgba(var(--ink-rgb), 0.25);
   color: var(--text);
+  -webkit-backdrop-filter: blur(30px) saturate(135%);
+  backdrop-filter: blur(30px) saturate(135%);
 }
 
 .date-dialog::backdrop {
@@ -566,7 +640,9 @@
   border: 1px solid var(--line-strong);
   border-radius: 13px;
   outline: 0;
-  background: rgba(var(--panel-rgb), 0.7);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 70%),
+    rgba(var(--panel-rgb), 0.4);
   padding: 0 14px;
   color: var(--text);
   font-size: 13px;
@@ -746,6 +822,8 @@
   .chat-entry-card {
     min-height: 245px;
     border-radius: 23px;
+    -webkit-backdrop-filter: blur(16px) saturate(116%);
+    backdrop-filter: blur(16px) saturate(116%);
   }
 
   .days-card {
@@ -790,6 +868,28 @@
   .date-dialog-footer {
     min-height: calc(68px + env(safe-area-inset-bottom));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .days-card,
+  .chat-entry-card,
+  .home-theme-indicator,
+  .date-entry,
+  .date-dialog {
+    background: var(--panel);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .days-card,
+  .chat-entry-card,
+  .home-theme-indicator,
+  .date-entry,
+  .date-dialog {
+    background: var(--panel);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
