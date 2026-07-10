@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#17212b" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
     <meta
       name="description"
       content="一个支持自定义聊天背景的 Telegram 风格对话页原型"
@@ -164,8 +164,8 @@
           <button class="background-entry" id="sidebarBackgroundButton" type="button">
             <span class="entry-icon"><svg><use href="#icon-image"></use></svg></span>
             <span>
-              <strong>更换聊天背景</strong>
-              <small>预设或上传自己的图片</small>
+              <strong>配色与聊天背景</strong>
+              <small>4 套主题或上传自己的图片</small>
             </span>
           </button>
           <div class="profile-row">
@@ -204,7 +204,7 @@
             </button>
             <button class="background-header-button" id="headerBackgroundButton" type="button">
               <svg><use href="#icon-image"></use></svg>
-              <span>背景</span>
+              <span>配色</span>
             </button>
             <button class="icon-button" type="button" aria-label="对话信息" data-toast="对话信息将在下一步接入">
               <svg><use href="#icon-info"></use></svg>
@@ -266,8 +266,8 @@
         <header class="dialog-header">
           <div>
             <span class="eyebrow">个性化</span>
-            <h2 id="backgroundDialogTitle">更换聊天背景</h2>
-            <p>挑一个预设，或使用你自己的照片。</p>
+            <h2 id="backgroundDialogTitle">配色与聊天背景</h2>
+            <p>整套切换界面颜色，或使用你自己的照片。</p>
           </div>
           <button class="icon-button dialog-close" id="backgroundCloseButton" type="button" aria-label="关闭">
             <svg><use href="#icon-close"></use></svg>
@@ -277,28 +277,28 @@
         <div class="dialog-content">
           <section aria-labelledby="presetTitle">
             <div class="section-title-row">
-              <h3 id="presetTitle">背景预设</h3>
-              <span>4 种</span>
+              <h3 id="presetTitle">莫兰迪配色主题</h3>
+              <span>4 套</span>
             </div>
             <div class="wallpaper-grid" id="wallpaperGrid">
               <button class="wallpaper-option selected" type="button" data-wallpaper="mist">
                 <span class="preset-swatch preset-mist"></span>
-                <span>晨雾</span>
+                <span>雾蓝杏粉</span>
                 <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
               </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="coast">
-                <span class="preset-swatch preset-coast"></span>
-                <span>海岸</span>
+              <button class="wallpaper-option" type="button" data-wallpaper="zen">
+                <span class="preset-swatch preset-zen"></span>
+                <span>禅意米棕</span>
                 <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
               </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="dusk">
-                <span class="preset-swatch preset-dusk"></span>
-                <span>暮色</span>
+              <button class="wallpaper-option" type="button" data-wallpaper="sage">
+                <span class="preset-swatch preset-sage"></span>
+                <span>灰绿鹅黄</span>
                 <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
               </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="paper">
-                <span class="preset-swatch preset-paper"></span>
-                <span>纸笺</span>
+              <button class="wallpaper-option" type="button" data-wallpaper="blush">
+                <span class="preset-swatch preset-blush"></span>
+                <span>烟粉雾蓝</span>
                 <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
               </button>
               <button class="wallpaper-option custom-wallpaper-option" id="customWallpaperOption" type="button" data-wallpaper="custom" hidden>
