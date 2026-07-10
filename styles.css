@@ -630,6 +630,106 @@ svg {
   background: rgba(10, 19, 26, 0.36);
 }
 
+.quick-theme-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 8px 8px 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.quick-theme-copy {
+  display: flex;
+  min-width: 68px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quick-theme-copy span {
+  color: var(--muted);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+}
+
+.quick-theme-copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-theme-options {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.quick-theme-chip {
+  position: relative;
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(var(--panel-rgb), 0.6);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.quick-theme-chip:hover {
+  transform: translateY(-1px);
+}
+
+.quick-theme-chip.active {
+  border-color: var(--blue-strong);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.16);
+}
+
+.quick-theme-chip.active::after {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--panel-strong);
+  border-radius: 50%;
+  background: var(--button-end);
+  content: "";
+}
+
+.quick-theme-swatch {
+  width: 21px;
+  height: 21px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  box-shadow: inset 0 0 7px rgba(var(--ink-rgb), 0.08);
+}
+
+.quick-mist {
+  background: conic-gradient(#adc4d4 0 25%, #dfd6d8 0 50%, #dbcab5 0 75%, #c1d2c1 0);
+}
+
+.quick-zen {
+  background: conic-gradient(#f2efe8 0 25%, #d5c9ba 0 50%, #9e9389 0 75%, #bfb3c1 0);
+}
+
+.quick-sage {
+  background: conic-gradient(#949f97 0 25%, #ebe2aa 0 50%, #c8d5c5 0 75%, #eee9d0 0);
+}
+
+.quick-blush {
+  background: conic-gradient(#d7b3be 0 25%, #a8b5c0 0 50%, #e5cfc7 0 75%, #6f8aa7 0);
+}
+
 .background-entry {
   display: flex;
   width: 100%;
