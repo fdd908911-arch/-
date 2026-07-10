@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
+    <meta name="description" content="岛屿信箱的 Memory 回忆页" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23b98294'/%3E%3Cpath d='M16 13h28a6 6 0 0 1 6 6v32H22a6 6 0 0 1-6-6V13Zm6 38a6 6 0 0 1 6-6h22M25 27c0-6 8-8 10-3 2-5 10-3 10 3 0 5-5 8-10 12-5-4-10-7-10-12Z' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <title>岛屿 · Memory</title>
+    <script>
+      try {
+        var savedAppearance = JSON.parse(
+          localStorage.getItem("island-chat.preferences.v1")
+        );
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var savedTheme =
+          (savedAppearance &&
+            (savedAppearance.theme ||
+              legacyThemes[savedAppearance.id] ||
+              savedAppearance.id)) ||
+          "mist";
+        var themeColors = {
+          mist: "#eef2f1",
+          zen: "#f4f1ea",
+          sage: "#e9eadf",
+          blush: "#ebe3e5"
+        };
+        if (!themeColors[savedTheme]) {
+          savedTheme = "mist";
+        }
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute(
+          "content",
+          themeColors[savedTheme]
+        );
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
+    <link rel="stylesheet" href="home.css?v=20260711-home-memory-v3" />
+    <link rel="stylesheet" href="memory.css?v=20260711-memory-v1" />
+    <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+  </head>
+  <body class="home-page memory-page">
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="memory-icon-back" viewBox="0 0 24 24">
+        <path d="m15 5-7 7 7 7M8 12h11" />
+      </symbol>
+      <symbol id="memory-icon-book" viewBox="0 0 24 24">
+        <path d="M5 4.5h11.5A2.5 2.5 0 0 1 19 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" />
+        <path d="M7.5 19.5A2.5 2.5 0 0 1 10 17h9" />
+      </symbol>
+    </svg>
+
+    <span class="home-ambient home-ambient-one" aria-hidden="true"></span>
+    <span class="home-ambient home-ambient-two" aria-hidden="true"></span>
+
+    <div class="memory-shell">
+      <header class="memory-header">
+        <a class="memory-back" href="index.html" aria-label="返回开场页">
+          <svg><use href="#memory-icon-back"></use></svg>
+        </a>
+        <div class="memory-heading">
+          <span class="memory-heading-icon" aria-hidden="true">
+            <svg><use href="#memory-icon-book"></use></svg>
+          </span>
+          <div>
+            <h1>Memory</h1>
+            <p>我们的回忆</p>
+          </div>
+        </div>
+        <span class="memory-header-spacer" aria-hidden="true"></span>
+      </header>
+
+      <main class="memory-canvas" aria-label="Memory 内容区域"></main>
+    </div>
+
+    <script src="clawd-pet.js?v=20260711-clawd-v4"></script>
+  </body>
+</html>
+
