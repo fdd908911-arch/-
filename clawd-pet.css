@@ -28,47 +28,20 @@ body:not(.home-page) .clawd-pet-root {
   pointer-events: auto;
   touch-action: none;
   border: 0;
-  border-radius: 44% 52% 48% 54%;
-  background:
-    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.72), transparent 30%),
-    radial-gradient(circle at 72% 76%, rgba(126, 164, 186, 0.2), transparent 48%),
-    rgba(255, 255, 255, 0.18);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    inset 0 -1px 0 rgba(83, 108, 119, 0.08),
-    0 14px 34px rgba(55, 76, 88, 0.13);
-  backdrop-filter: blur(12px) saturate(128%);
-  -webkit-backdrop-filter: blur(12px) saturate(128%);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: transform 180ms ease;
 }
 
 .clawd-pet-button::before,
 .clawd-pet-button::after {
-  position: absolute;
-  content: "";
-  pointer-events: none;
-  border-radius: 999px;
-}
-
-.clawd-pet-button::before {
-  inset: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-right-color: rgba(255, 255, 255, 0.14);
-  border-bottom-color: rgba(255, 255, 255, 0.2);
-}
-
-.clawd-pet-button::after {
-  top: 17px;
-  right: 19px;
-  width: 9px;
-  height: 9px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: -8px 9px 0 -3px rgba(255, 255, 255, 0.5);
+  display: none;
 }
 
 .clawd-pet-button:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84), 0 18px 38px rgba(55, 76, 88, 0.18);
+  box-shadow: none;
 }
 
 .clawd-pet-button:focus-visible {
@@ -79,7 +52,7 @@ body:not(.home-page) .clawd-pet-root {
 .clawd-pet-root.is-dragging .clawd-pet-button {
   cursor: grabbing;
   transform: scale(1.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 22px 46px rgba(55, 76, 88, 0.22);
+  box-shadow: none;
 }
 
 .clawd-pet-art {
@@ -93,7 +66,7 @@ body:not(.home-page) .clawd-pet-root {
   max-width: none;
   pointer-events: none;
   image-rendering: pixelated;
-  filter: drop-shadow(0 7px 7px rgba(63, 75, 79, 0.17));
+  filter: none;
   transform: translate(-50%, -50%);
 }
 
@@ -161,7 +134,6 @@ body:not(.home-page) .clawd-pet-root {
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .clawd-pet-button { background: rgba(244, 247, 246, 0.92); }
   .clawd-pet-bubble { background: rgba(250, 250, 247, 0.96); }
 }
 
