@@ -155,7 +155,16 @@
   margin-top: 24px;
 }
 
+.moment-pair {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-self: start;
+  gap: 18px;
+}
+
 .days-card,
+.weather-card,
 .chat-entry-card,
 .memory-entry-card {
   position: relative;
@@ -181,6 +190,13 @@
     radial-gradient(circle at 88% 7%, rgba(255, 255, 255, 0.65), transparent 32%),
     radial-gradient(circle at 76% 106%, rgba(var(--accent-rgb), 0.17), transparent 43%),
     linear-gradient(125deg, var(--glass-fill-strong), rgba(var(--panel-rgb), 0.22));
+}
+
+.moment-pair .days-card,
+.moment-pair .weather-card {
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
 }
 
 .days-card::before {
@@ -210,6 +226,7 @@
 }
 
 .days-card::after,
+.weather-card::after,
 .chat-entry-card::after,
 .memory-entry-card::after {
   position: absolute;
@@ -332,6 +349,7 @@
   margin: 0;
   color: var(--text-soft);
   font-size: 11px;
+  letter-spacing: 0.04em;
 }
 
 .date-entry {
@@ -402,6 +420,124 @@
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.date-entry time {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weather-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 23px 22px 20px;
+  background:
+    radial-gradient(circle at 91% 5%, rgba(255, 255, 255, 0.66), transparent 33%),
+    radial-gradient(circle at 4% 106%, rgba(235, 207, 151, 0.22), transparent 45%),
+    linear-gradient(132deg, var(--glass-fill-strong), rgba(var(--panel-rgb), 0.2));
+}
+
+.weather-card-glow {
+  position: absolute;
+  right: -14%;
+  bottom: -28%;
+  width: 72%;
+  aspect-ratio: 1;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(235, 207, 151, 0.18), transparent 68%);
+  pointer-events: none;
+}
+
+.weather-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 19px;
+  padding: 13px 0 8px;
+}
+
+.weather-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.weather-emoji {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  border-radius: 20px;
+  background: rgba(var(--panel-rgb), 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 10px 24px rgba(var(--ink-rgb), 0.07);
+  font-size: 31px;
+  line-height: 1;
+}
+
+.weather-reading {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.weather-reading strong {
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.weather-reading span {
+  overflow: hidden;
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weather-content blockquote {
+  display: -webkit-box;
+  min-height: 43px;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-soft);
+  font-family: Georgia, "Times New Roman", "Songti SC", serif;
+  font-size: 13px;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.weather-content blockquote::before {
+  color: rgba(var(--accent-rgb), 0.55);
+  content: "“";
+  font-size: 18px;
+  line-height: 0;
+}
+
+.weather-footer {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.04em;
 }
 
 .chat-entry-card {
@@ -771,6 +907,91 @@
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
 }
 
+.daily-dialog {
+  width: min(520px, calc(100vw - 28px));
+}
+
+.daily-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 24px 0;
+}
+
+.daily-field,
+.daily-note-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.daily-note-field {
+  margin: 16px 24px 8px;
+}
+
+.daily-field > span,
+.daily-note-field > span {
+  color: var(--text-soft);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.daily-field select,
+.daily-field input,
+.daily-note-field textarea {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: 13px;
+  outline: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 70%),
+    rgba(var(--panel-rgb), 0.4);
+  color: var(--text);
+  font-size: 12px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.daily-field select,
+.daily-field input {
+  height: 48px;
+  padding: 0 13px;
+}
+
+.daily-field select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 70%);
+  background-position:
+    calc(100% - 17px) 21px,
+    calc(100% - 12px) 21px,
+    0 0;
+  background-repeat: no-repeat;
+  background-size:
+    5px 5px,
+    5px 5px,
+    100% 100%;
+  padding-right: 34px;
+}
+
+.daily-note-field textarea {
+  min-height: 92px;
+  resize: vertical;
+  padding: 12px 13px;
+  line-height: 1.55;
+}
+
+.daily-field select:focus,
+.daily-field input:focus,
+.daily-note-field textarea:focus {
+  border-color: rgba(var(--accent-rgb), 0.55);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+}
+
 .date-error {
   margin: 0 24px 2px;
   color: var(--danger);
@@ -933,7 +1154,13 @@
     margin-top: 14px;
   }
 
+  .moment-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
   .days-card,
+  .weather-card,
   .chat-entry-card,
   .memory-entry-card {
     min-height: 245px;
@@ -946,8 +1173,33 @@
     padding: 19px 18px 17px;
   }
 
+  .moment-pair .days-card,
+  .moment-pair .weather-card {
+    min-height: 232px;
+    aspect-ratio: auto;
+    padding: 14px 13px;
+    border-radius: 20px;
+  }
+
+  .moment-pair .home-card-action {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+  }
+
+  .moment-pair .home-card-kicker {
+    gap: 4px;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+  }
+
   .days-content {
     min-height: 135px;
+  }
+
+  .moment-pair .days-content {
+    min-height: 112px;
+    padding-block: 4px;
   }
 
   .days-number {
@@ -956,6 +1208,74 @@
 
   .days-number strong {
     font-size: clamp(58px, 20vw, 78px);
+  }
+
+  .moment-pair .days-number {
+    min-height: 62px;
+    gap: 6px;
+  }
+
+  .moment-pair .days-number strong {
+    font-size: clamp(42px, 14vw, 56px);
+  }
+
+  .moment-pair .days-number span {
+    font-size: 12px;
+  }
+
+  .moment-pair .days-caption {
+    font-size: 9.5px;
+  }
+
+  .moment-pair .date-entry {
+    min-height: 40px;
+    gap: 6px;
+    padding: 4px 8px 4px 5px;
+    border-radius: 12px;
+  }
+
+  .moment-pair .date-entry-icon {
+    width: 29px;
+    height: 29px;
+    border-radius: 9px;
+  }
+
+  .moment-pair .date-entry time {
+    font-size: 10px;
+  }
+
+  .weather-content {
+    gap: 11px;
+    padding: 7px 0 4px;
+  }
+
+  .weather-summary {
+    gap: 8px;
+  }
+
+  .weather-emoji {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    font-size: 24px;
+  }
+
+  .weather-reading strong {
+    font-size: 25px;
+  }
+
+  .weather-reading span {
+    font-size: 9.5px;
+  }
+
+  .weather-content blockquote {
+    min-height: 37px;
+    font-size: 10.5px;
+    line-height: 1.55;
+  }
+
+  .weather-footer {
+    font-size: 8px;
   }
 
   .chat-entry-card {
@@ -996,10 +1316,21 @@
     min-height: calc(68px + env(safe-area-inset-bottom));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
+
+  .daily-form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 18px 19px 0;
+  }
+
+  .daily-note-field {
+    margin: 14px 19px 6px;
+  }
 }
 
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .days-card,
+  .weather-card,
   .chat-entry-card,
   .memory-entry-card,
   .home-theme-indicator,
@@ -1011,6 +1342,7 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .days-card,
+  .weather-card,
   .chat-entry-card,
   .memory-entry-card,
   .home-theme-indicator,
@@ -1042,6 +1374,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .chat-entry-card,
+  .weather-card,
   .memory-entry-card,
   .home-card-action,
   .date-entry,
