@@ -84,11 +84,13 @@
     "idle"
   ];
 
-  var pageKey = document.body.classList.contains("memory-page")
-    ? "memory"
-    : document.body.classList.contains("home-page")
-      ? "home"
-      : "chat";
+  var pageKey = document.body.classList.contains("diary-page")
+    ? "diary"
+    : document.body.classList.contains("memory-page")
+      ? "memory"
+      : document.body.classList.contains("home-page")
+        ? "home"
+        : "chat";
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var stateTimer = 0;
   var sleepTimer = 0;
