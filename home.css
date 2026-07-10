@@ -440,6 +440,35 @@
     radial-gradient(circle at 91% 5%, rgba(255, 255, 255, 0.66), transparent 33%),
     radial-gradient(circle at 4% 106%, rgba(235, 207, 151, 0.22), transparent 45%),
     linear-gradient(132deg, var(--glass-fill-strong), rgba(var(--panel-rgb), 0.2));
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.weather-card:hover {
+  border-color: rgba(var(--accent-rgb), 0.38);
+  box-shadow: 0 28px 70px rgba(var(--ink-rgb), 0.15);
+  transform: translateY(-3px);
+}
+
+.weather-card:hover::after {
+  opacity: 0.95;
+  transform: translateX(2%);
+}
+
+.weather-card:hover .chat-arrow {
+  transform: translateX(3px);
+}
+
+.weather-card:focus-visible,
+.chat-entry-card:focus-visible,
+.memory-entry-card:focus-visible {
+  border-color: rgba(var(--accent-rgb), 0.55);
+  outline: 3px solid rgba(var(--accent-rgb), 0.18);
+  outline-offset: 3px;
 }
 
 .weather-card-glow {
@@ -742,9 +771,10 @@
 
 .chat-entry-content h1 {
   margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 31px;
-  font-weight: 650;
-  letter-spacing: -0.035em;
+  font-weight: 500;
+  letter-spacing: -0.025em;
 }
 
 .chat-entry-content p {
