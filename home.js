@@ -271,11 +271,16 @@
   });
 
   document
-    .querySelector(".chat-entry-card")
-    .addEventListener("pointerdown", function () {
-      emitClawd("goingAway", "去聊天页见", {
-        duration: 900,
-        priority: 3
+    .querySelectorAll(".chat-entry-card, .memory-entry-card")
+    .forEach(function (entry) {
+      entry.addEventListener("pointerdown", function () {
+        var destination = entry.classList.contains("memory-entry-card")
+          ? "Memory"
+          : "聊天页";
+        emitClawd("goingAway", "去" + destination + "见", {
+          duration: 900,
+          priority: 3
+        });
       });
     });
 
