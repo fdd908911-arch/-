@@ -6,17 +6,30 @@
   var DATABASE_STORE = "wallpapers";
   var CUSTOM_WALLPAPER_KEY = "custom-wallpaper";
   var MAX_IMAGE_SIZE = 10 * 1024 * 1024;
-  var DEFAULT_SETTINGS = { id: "mist", dim: 16, blur: 0 };
+  var DEFAULT_SETTINGS = { id: "mist", theme: "mist", dim: 8, blur: 0 };
 
   var PRESETS = {
     mist:
-      "radial-gradient(circle at 18% 18%, rgba(144, 187, 206, 0.48) 0 7%, transparent 24%), radial-gradient(circle at 86% 30%, rgba(77, 132, 157, 0.5) 0 9%, transparent 28%), linear-gradient(145deg, #7898a6 0%, #476b7b 46%, #273f4c 100%)",
-    coast:
-      "radial-gradient(ellipse at 46% 95%, rgba(246, 219, 163, 0.66) 0 10%, transparent 35%), linear-gradient(165deg, #80b7c8 0 44%, #39798e 45% 62%, #203f52 63%)",
-    dusk:
-      "radial-gradient(circle at 74% 28%, rgba(255, 183, 153, 0.45), transparent 20%), linear-gradient(145deg, #815c76 0%, #414b72 47%, #202c42 100%)",
-    paper:
-      "radial-gradient(circle at 15% 30%, rgba(118, 143, 133, 0.22), transparent 24%), repeating-linear-gradient(135deg, rgba(84, 106, 100, 0.05) 0 1px, transparent 1px 12px), linear-gradient(145deg, #d3d0bf, #aeb6aa)"
+      "radial-gradient(ellipse at 14% 42%, rgba(173, 196, 212, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 78% 12%, rgba(219, 202, 181, 0.9) 0%, transparent 43%), radial-gradient(ellipse at 82% 72%, rgba(223, 214, 216, 0.95) 0%, transparent 46%), radial-gradient(ellipse at 24% 92%, rgba(193, 210, 193, 0.88) 0%, transparent 42%), linear-gradient(135deg, #edf1ed 0%, #e9e5e2 100%)",
+    zen:
+      "radial-gradient(ellipse at 22% 18%, rgba(226, 215, 200, 0.9) 0%, transparent 42%), radial-gradient(ellipse at 84% 30%, rgba(201, 184, 174, 0.58) 0%, transparent 45%), radial-gradient(ellipse at 32% 88%, rgba(184, 171, 163, 0.5) 0%, transparent 38%), radial-gradient(ellipse at 76% 82%, rgba(207, 195, 208, 0.48) 0%, transparent 42%), linear-gradient(145deg, #f4f1ea 0%, #e9e3d9 100%)",
+    sage:
+      "radial-gradient(ellipse at 18% 36%, rgba(148, 159, 151, 0.92) 0%, transparent 44%), radial-gradient(ellipse at 82% 48%, rgba(235, 226, 170, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 56% 8%, rgba(200, 213, 197, 0.92) 0%, transparent 40%), radial-gradient(ellipse at 44% 92%, rgba(238, 233, 208, 0.96) 0%, transparent 45%), linear-gradient(140deg, #e6e9dc 0%, #eee9d0 100%)",
+    blush:
+      "radial-gradient(ellipse at 20% 12%, rgba(111, 138, 167, 0.94) 0%, transparent 45%), radial-gradient(ellipse at 38% 54%, rgba(215, 179, 190, 0.98) 0%, transparent 48%), radial-gradient(ellipse at 82% 20%, rgba(229, 207, 199, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 82% 82%, rgba(168, 181, 192, 0.95) 0%, transparent 45%), linear-gradient(145deg, #e8dfe2 0%, #dce3e6 100%)"
+  };
+
+  var LEGACY_PRESET_IDS = {
+    coast: "zen",
+    dusk: "sage",
+    paper: "blush"
+  };
+
+  var THEME_COLORS = {
+    mist: "#eef2f1",
+    zen: "#f4f1ea",
+    sage: "#e9eadf",
+    blush: "#ebe3e5"
   };
 
   var chats = {
@@ -145,6 +158,7 @@
   var blurOutput = document.getElementById("blurOutput");
   var toast = document.getElementById("toast");
   var toastText = document.getElementById("toastText");
+  var themeColorMeta = document.getElementById("themeColorMeta");
 
   var activeChatId = "linxia";
   var toastTimer = null;
@@ -156,8 +170,13 @@
   var draftUrl = null;
 
   function copySettings(settings) {
+    var presetId = normalizePresetId(settings.id);
+    var themeId = normalizePresetId(
+      settings.theme || (presetId !== "custom" ? presetId : "mist")
+    );
     return {
-      id: settings.id,
+      id: presetId,
+      theme: Object.prototype.hasOwnProperty.call(PRESETS, themeId) ? themeId : "mist",
       dim: Number(settings.dim),
       blur: Number(settings.blur)
     };
@@ -167,21 +186,48 @@
     return Math.min(maximum, Math.max(minimum, value));
   }
 
+  function readStoredNumber(value, fallback, minimum, maximum) {
+    var number = Number(value);
+    return Number.isFinite(number) ? clamp(number, minimum, maximum) : fallback;
+  }
+
+  function normalizePresetId(id) {
+    return LEGACY_PRESET_IDS[id] || id;
+  }
+
   function isKnownWallpaper(id) {
-    return Object.prototype.hasOwnProperty.call(PRESETS, id) || id === "custom";
+    var normalizedId = normalizePresetId(id);
+    return Object.prototype.hasOwnProperty.call(PRESETS, normalizedId) || normalizedId === "custom";
   }
 
   function readSettings() {
     try {
       var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (!parsed || parsed.version !== 1 || !isKnownWallpaper(parsed.id)) {
+      if (
+        !parsed ||
+        (parsed.version !== 1 && parsed.version !== 2) ||
+        !isKnownWallpaper(parsed.id)
+      ) {
         return copySettings(DEFAULT_SETTINGS);
       }
-      return {
-        id: parsed.id,
-        dim: clamp(Number(parsed.dim) || 0, 0, 48),
-        blur: clamp(Number(parsed.blur) || 0, 0, 12)
+      var presetId = normalizePresetId(parsed.id);
+      var themeId = normalizePresetId(
+        parsed.theme || (presetId !== "custom" ? presetId : "mist")
+      );
+      var migratedSettings = {
+        id: presetId,
+        theme: Object.prototype.hasOwnProperty.call(PRESETS, themeId) ? themeId : "mist",
+        dim: readStoredNumber(parsed.dim, DEFAULT_SETTINGS.dim, 0, 48),
+        blur: readStoredNumber(parsed.blur, DEFAULT_SETTINGS.blur, 0, 12)
       };
+      if (
+        parsed.version !== 2 ||
+        parsed.id !== migratedSettings.id ||
+        parsed.theme !== migratedSettings.theme
+      ) {
+        writeSettings(migratedSettings);
+      }
+      return migratedSettings;
     } catch (error) {
       return copySettings(DEFAULT_SETTINGS);
     }
@@ -192,8 +238,9 @@
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
-          version: 1,
+          version: 2,
           id: settings.id,
+          theme: settings.theme,
           dim: settings.dim,
           blur: settings.blur
         })
@@ -413,6 +460,8 @@
     if (!backgroundImage) {
       backgroundImage = PRESETS.mist;
     }
+    root.dataset.theme = settings.theme;
+    themeColorMeta.setAttribute("content", THEME_COLORS[settings.theme] || THEME_COLORS.mist);
     root.style.setProperty("--wallpaper-image", backgroundImage);
     root.style.setProperty("--wallpaper-dim", String(settings.dim / 100));
     root.style.setProperty("--wallpaper-blur", String(settings.blur) + "px");
@@ -423,11 +472,21 @@
     blurOutput.textContent = String(draftSettings.blur) + "px";
     dimRange.value = String(draftSettings.dim);
     blurRange.value = String(draftSettings.blur);
+    dimRange.style.setProperty(
+      "--range-progress",
+      String((draftSettings.dim / Number(dimRange.max)) * 100) + "%"
+    );
+    blurRange.style.setProperty(
+      "--range-progress",
+      String((draftSettings.blur / Number(blurRange.max)) * 100) + "%"
+    );
   }
 
   function updateWallpaperOptions() {
     document.querySelectorAll(".wallpaper-option").forEach(function (option) {
-      option.classList.toggle("selected", option.dataset.wallpaper === draftSettings.id);
+      var isSelected = option.dataset.wallpaper === draftSettings.id;
+      option.classList.toggle("selected", isSelected);
+      option.setAttribute("aria-pressed", String(isSelected));
     });
   }
 
@@ -640,6 +699,9 @@
       customUrl = draftUrl;
     }
 
+    if (draftSettings.id !== "custom" && draftUrl && draftUrl !== customUrl) {
+      URL.revokeObjectURL(draftUrl);
+    }
     appliedSettings = copySettings(draftSettings);
     if (appliedSettings.id !== "custom" || savedToDevice) {
       writeSettings(appliedSettings);
@@ -805,6 +867,9 @@
       return;
     }
     draftSettings.id = wallpaperId;
+    if (wallpaperId !== "custom") {
+      draftSettings.theme = wallpaperId;
+    }
     updateWallpaperOptions();
     applyWallpaper(draftSettings, draftUrl);
   });
@@ -855,6 +920,7 @@
 
   renderMessages(true);
   resizeMessageInput();
+  applyWallpaper(appliedSettings, null);
   initializeWallpaper();
 })();
 
