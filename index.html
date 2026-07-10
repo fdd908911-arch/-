@@ -6,7 +6,7 @@
     <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
     <meta
       name="description"
-      content="岛屿信箱开场页，记录在一起的日子并进入聊天"
+      content="岛屿信箱开场页，记录在一起的日子并进入 Chat、Diary 与 Memory"
     />
     <link
       rel="icon"
@@ -34,7 +34,7 @@
       }
     </script>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
-    <link rel="stylesheet" href="home.css?v=20260711-home-daily-v4" />
+    <link rel="stylesheet" href="home.css?v=20260711-home-diary-v5" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="home-page">
@@ -120,15 +120,19 @@
             </button>
           </article>
 
-          <article class="weather-card" aria-labelledby="weatherCardTitle">
+          <a
+            class="weather-card"
+            href="diary.html"
+            aria-label="打开今天的 Diary 日记"
+          >
             <div class="weather-card-glow" aria-hidden="true"></div>
             <header class="home-card-header">
               <span class="home-card-kicker" id="weatherCardTitle">
                 今天 · <span id="todayDateLabel">—</span>
               </span>
-              <button class="home-card-action" id="editDailyButton" type="button" aria-label="编辑今天的天气和想说的话">
-                <svg><use href="#home-icon-edit"></use></svg>
-              </button>
+              <span class="chat-arrow" aria-hidden="true">
+                <svg><use href="#home-icon-arrow"></use></svg>
+              </span>
             </header>
 
             <div class="weather-content">
@@ -142,11 +146,11 @@
               <blockquote id="dailyNote">今天想说的话，写在这里。</blockquote>
             </div>
 
-            <footer class="weather-footer">只保存在这台设备</footer>
-          </article>
+            <footer class="weather-footer">打开 Diary · 只保存在这台设备</footer>
+          </a>
         </div>
 
-        <a class="chat-entry-card" href="chat.html" aria-label="进入聊天">
+        <a class="chat-entry-card" href="chat.html" aria-label="进入 Chat 聊天页">
           <div class="chat-entry-decoration" aria-hidden="true"></div>
           <header class="home-card-header">
             <span class="home-card-kicker">常用入口</span>
@@ -155,7 +159,7 @@
           <div class="chat-entry-content">
             <span class="chat-entry-icon"><svg><use href="#home-icon-chat"></use></svg></span>
             <div>
-              <h1>聊天</h1>
+              <h1>Chat</h1>
               <p>进入我们的对话</p>
             </div>
           </div>
@@ -218,81 +222,13 @@
       </form>
     </dialog>
 
-    <dialog class="date-dialog daily-dialog" id="dailyDialog" aria-labelledby="dailyDialogTitle">
-      <form class="date-dialog-card" id="dailyForm" method="dialog">
-        <header class="date-dialog-header">
-          <div>
-            <span>今天的记录</span>
-            <h2 id="dailyDialogTitle">天气和想说的话</h2>
-            <p id="dailyDialogDate">每天单独保存，只留在这台设备。</p>
-          </div>
-          <button class="date-dialog-close" id="dailyDialogClose" type="button" aria-label="关闭">
-            <svg><use href="#home-icon-close"></use></svg>
-          </button>
-        </header>
-
-        <div class="daily-form-grid">
-          <label class="daily-field" for="dailyWeather">
-            <span>天气</span>
-            <select id="dailyWeather" name="dailyWeather">
-              <option value="">待记录</option>
-              <option value="sunny">晴</option>
-              <option value="partly-cloudy">晴间多云</option>
-              <option value="cloudy">多云</option>
-              <option value="rainy">下雨</option>
-              <option value="storm">雷雨</option>
-              <option value="snowy">下雪</option>
-              <option value="foggy">有雾</option>
-              <option value="windy">有风</option>
-            </select>
-          </label>
-          <label class="daily-field" for="dailyTemperature">
-            <span>温度（可不填）</span>
-            <input
-              id="dailyTemperature"
-              name="dailyTemperature"
-              type="number"
-              inputmode="decimal"
-              min="-50"
-              max="60"
-              step="0.1"
-              placeholder="例如 26"
-            />
-          </label>
-        </div>
-
-        <label class="daily-note-field" for="dailyNoteInput">
-          <span>今天想说的话</span>
-          <textarea
-            id="dailyNoteInput"
-            name="dailyNote"
-            rows="3"
-            maxlength="80"
-            placeholder="写一句今天想说的话"
-          ></textarea>
-        </label>
-        <p class="date-error" id="dailyError" role="alert" hidden></p>
-
-        <footer class="date-dialog-footer">
-          <button class="clear-date-button" id="dailyResetButton" type="button">清空今天</button>
-          <div>
-            <button class="date-cancel-button" id="dailyCancelButton" type="button">取消</button>
-            <button class="date-save-button" type="submit">
-              <svg><use href="#home-icon-check"></use></svg>
-              保存
-            </button>
-          </div>
-        </footer>
-      </form>
-    </dialog>
-
     <div class="home-toast" id="homeToast" role="status" aria-live="polite" hidden>
       <span><svg><use href="#home-icon-check"></use></svg></span>
       <strong id="homeToastText"></strong>
     </div>
 
-    <script src="clawd-pet.js?v=20260711-clawd-v4"></script>
-    <script src="home.js?v=20260711-home-daily-v4"></script>
+    <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="home.js?v=20260711-home-diary-v5"></script>
   </body>
 </html>
 
