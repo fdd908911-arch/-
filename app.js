@@ -39,45 +39,18 @@
     blush: "烟粉雾蓝"
   };
 
+  var workspaces = {
+    volo: { name: "Volo", view: "volo" },
+    group: { name: "群聊", view: "group", chatId: "design" },
+    terminal: { name: "终端", view: "terminal" }
+  };
+
   var chats = {
-    linxia: {
-      name: "林夏",
-      status: "刚刚在线",
-      avatarClass: "avatar-linxia",
-      initial: "夏",
-      reply: "好呀，这个版本已经很有感觉了。换成自己的照片应该也很好看 ✨",
-      messages: [
-        { type: "date", text: "今天" },
-        { direction: "incoming", text: "在吗？我刚看到你发的页面草图。", time: "10:31" },
-        {
-          direction: "outgoing",
-          text: "在的。正在试一个更安静的聊天界面，想让背景也能自己换。",
-          time: "10:34",
-          read: true
-        },
-        {
-          direction: "incoming",
-          text: "这个想法不错。消息气泡轻一点，背景就能透出来，但字还是要看得清。",
-          time: "10:36"
-        },
-        {
-          direction: "outgoing",
-          text: "所以加了遮罩和模糊调节。你更喜欢哪种颜色？",
-          time: "10:39",
-          read: true
-        },
-        {
-          direction: "incoming",
-          text: "我也觉得雾蓝色很舒服，像下过雨的清晨。",
-          time: "10:42"
-        }
-      ]
-    },
     design: {
-      name: "设计讨论组",
+      name: "群聊",
       status: "8 位成员，3 人在线",
       avatarClass: "avatar-design",
-      initial: "设",
+      initial: "群",
       reply: "收到，我会把这条也放进下一轮评审里。",
       messages: [
         { type: "date", text: "今天" },
@@ -95,40 +68,6 @@
           direction: "outgoing",
           text: "我来整理反馈，下午再发一版。",
           time: "09:22",
-          read: true
-        }
-      ]
-    },
-    zhou: {
-      name: "周屿",
-      status: "昨天在线",
-      avatarClass: "avatar-zhou",
-      initial: "屿",
-      reply: "没问题，到时候我把路线也发你。",
-      messages: [
-        { type: "date", text: "昨天" },
-        { direction: "incoming", text: "周末天气不错，要不要去海边走走？", time: "18:20" },
-        {
-          direction: "outgoing",
-          text: "可以啊，傍晚的光应该很好。",
-          time: "18:24",
-          read: true
-        },
-        { direction: "incoming", text: "下周见，别忘了带相机 📷", time: "18:27" }
-      ]
-    },
-    notes: {
-      name: "收藏夹",
-      status: "仅自己可见",
-      avatarClass: "avatar-notes",
-      initial: "记",
-      reply: "",
-      messages: [
-        { type: "date", text: "周二" },
-        {
-          direction: "outgoing",
-          text: "旅行清单\n· 相机和备用电池\n· 一件薄外套\n· 海边路线",
-          time: "21:06",
           read: true
         }
       ]
@@ -152,7 +91,8 @@
   var headerAvatar = document.getElementById("headerAvatar");
   var sidebar = document.getElementById("sidebar");
   var sidebarScrim = document.getElementById("sidebarScrim");
-  var mobileMenuButton = document.getElementById("mobileMenuButton");
+  var mobileMenuButtons = document.querySelectorAll("[data-open-sidebar]");
+  var workspaceViews = document.querySelectorAll("[data-workspace-view]");
   var backgroundDialog = document.getElementById("backgroundDialog");
   var backgroundFile = document.getElementById("backgroundFile");
   var uploadDropzone = document.getElementById("uploadDropzone");
@@ -168,7 +108,8 @@
   var themeColorMeta = document.getElementById("themeColorMeta");
   var currentThemeName = document.getElementById("currentThemeName");
 
-  var activeChatId = "linxia";
+  var activeViewId = "volo";
+  var activeChatId = "design";
   var toastTimer = null;
   var appliedSettings = readSettings();
   var draftSettings = copySettings(appliedSettings);
@@ -382,11 +323,11 @@
       return;
     }
     chat.isTyping = true;
-    if (activeChatId === chatId) {
+    if (activeViewId === "group" && activeChatId === chatId) {
       renderMessages(true);
     }
     window.setTimeout(function () {
-      if (chat.isTyping && activeChatId === chatId) {
+      if (chat.isTyping && activeViewId === "group" && activeChatId === chatId) {
         emitClawd("thinking", "等回复中…", {
           duration: 1700,
           priority: 3,
@@ -400,7 +341,7 @@
       chat.messages.push({ direction: "incoming", text: chat.reply, time: replyTime });
       chat.replyTimer = null;
       updateConversationPreview(chatId, chat.reply, replyTime);
-      if (activeChatId === chatId) {
+      if (activeViewId === "group" && activeChatId === chatId) {
         var wasNearBottom = distanceFromBottom() < 160;
         renderMessages(wasNearBottom);
         if (!wasNearBottom) {
@@ -421,6 +362,9 @@
   }
 
   function sendMessage() {
+    if (activeViewId !== "group") {
+      return;
+    }
     var value = messageInput.value.trim();
     if (!value) {
       return;
@@ -443,31 +387,49 @@
     simulateReply(activeChatId);
   }
 
-  function switchConversation(chatId) {
-    if (!chats[chatId]) {
+  function switchWorkspace(viewId, silent) {
+    var workspace = workspaces[viewId];
+    if (!workspace) {
       return;
     }
-    activeChatId = chatId;
-    var chat = chats[chatId];
+    activeViewId = viewId;
+    document.body.dataset.chatView = workspace.view;
+    workspaceViews.forEach(function (view) {
+      view.hidden = view.dataset.workspaceView !== workspace.view;
+    });
     conversationList.querySelectorAll(".conversation-item").forEach(function (item) {
-      item.classList.toggle("active", item.dataset.chat === chatId);
-      if (item.dataset.chat === chatId) {
+      var isActive = item.dataset.workspace === viewId;
+      item.classList.toggle("active", isActive);
+      if (isActive) {
+        item.setAttribute("aria-current", "page");
         var badge = item.querySelector(".unread-badge");
         if (badge) {
           badge.remove();
         }
+      } else {
+        item.removeAttribute("aria-current");
       }
     });
-    headerName.textContent = chat.name;
-    headerStatus.textContent = chat.status;
-    headerAvatar.className = "avatar " + chat.avatarClass;
-    headerAvatar.textContent = chat.initial;
-    renderMessages(true);
+    emojiPanel.hidden = true;
+    emojiButton.setAttribute("aria-expanded", "false");
+    scrollBottomButton.classList.remove("visible");
+    scrollUnread.hidden = true;
+    if (workspace.view === "group") {
+      activeChatId = workspace.chatId;
+      var chat = chats[activeChatId];
+      headerName.textContent = chat.name;
+      headerStatus.textContent = chat.status;
+      headerAvatar.className = "avatar " + chat.avatarClass;
+      headerAvatar.textContent = chat.initial;
+      renderMessages(true);
+    }
     closeSidebar();
-    emitClawd("conducting", "切换到“" + chat.name + "”", {
-      duration: 1900,
-      priority: 3
-    });
+    if (!silent) {
+      emitClawd("conducting", "切换到“" + workspace.name + "”", {
+        duration: 1900,
+        priority: 3
+      });
+    }
   }
 
   function openSidebar() {
@@ -968,7 +930,7 @@
   conversationList.addEventListener("click", function (event) {
     var item = event.target.closest(".conversation-item");
     if (item) {
-      switchConversation(item.dataset.chat);
+      switchWorkspace(item.dataset.workspace);
     }
   });
 
@@ -1014,7 +976,9 @@
       priority: 3
     });
   });
-  mobileMenuButton.addEventListener("click", openSidebar);
+  mobileMenuButtons.forEach(function (button) {
+    button.addEventListener("click", openSidebar);
+  });
   sidebarScrim.addEventListener("click", closeSidebar);
 
   document.querySelector(".quick-theme-options").addEventListener("click", function (event) {
@@ -1124,7 +1088,7 @@
     }
   });
 
-  renderMessages(true);
+  switchWorkspace("volo", true);
   resizeMessageInput();
   applyWallpaper(appliedSettings, null);
   initializeWallpaper();
