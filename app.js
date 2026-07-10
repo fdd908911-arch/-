@@ -1,0 +1,860 @@
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "island-chat.preferences.v1";
+  var DATABASE_NAME = "island-chat-local";
+  var DATABASE_STORE = "wallpapers";
+  var CUSTOM_WALLPAPER_KEY = "custom-wallpaper";
+  var MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+  var DEFAULT_SETTINGS = { id: "mist", dim: 16, blur: 0 };
+
+  var PRESETS = {
+    mist:
+      "radial-gradient(circle at 18% 18%, rgba(144, 187, 206, 0.48) 0 7%, transparent 24%), radial-gradient(circle at 86% 30%, rgba(77, 132, 157, 0.5) 0 9%, transparent 28%), linear-gradient(145deg, #7898a6 0%, #476b7b 46%, #273f4c 100%)",
+    coast:
+      "radial-gradient(ellipse at 46% 95%, rgba(246, 219, 163, 0.66) 0 10%, transparent 35%), linear-gradient(165deg, #80b7c8 0 44%, #39798e 45% 62%, #203f52 63%)",
+    dusk:
+      "radial-gradient(circle at 74% 28%, rgba(255, 183, 153, 0.45), transparent 20%), linear-gradient(145deg, #815c76 0%, #414b72 47%, #202c42 100%)",
+    paper:
+      "radial-gradient(circle at 15% 30%, rgba(118, 143, 133, 0.22), transparent 24%), repeating-linear-gradient(135deg, rgba(84, 106, 100, 0.05) 0 1px, transparent 1px 12px), linear-gradient(145deg, #d3d0bf, #aeb6aa)"
+  };
+
+  var chats = {
+    linxia: {
+      name: "林夏",
+      status: "刚刚在线",
+      avatarClass: "avatar-linxia",
+      initial: "夏",
+      reply: "好呀，这个版本已经很有感觉了。换成自己的照片应该也很好看 ✨",
+      messages: [
+        { type: "date", text: "今天" },
+        { direction: "incoming", text: "在吗？我刚看到你发的页面草图。", time: "10:31" },
+        {
+          direction: "outgoing",
+          text: "在的。正在试一个更安静的聊天界面，想让背景也能自己换。",
+          time: "10:34",
+          read: true
+        },
+        {
+          direction: "incoming",
+          text: "这个想法不错。消息气泡轻一点，背景就能透出来，但字还是要看得清。",
+          time: "10:36"
+        },
+        {
+          direction: "outgoing",
+          text: "所以加了遮罩和模糊调节。你更喜欢哪种颜色？",
+          time: "10:39",
+          read: true
+        },
+        {
+          direction: "incoming",
+          text: "我也觉得雾蓝色很舒服，像下过雨的清晨。",
+          time: "10:42"
+        }
+      ]
+    },
+    design: {
+      name: "设计讨论组",
+      status: "8 位成员，3 人在线",
+      avatarClass: "avatar-design",
+      initial: "设",
+      reply: "收到，我会把这条也放进下一轮评审里。",
+      messages: [
+        { type: "date", text: "今天" },
+        {
+          direction: "incoming",
+          text: "周屿：新版原型发群里了，大家有空帮忙看看交互。",
+          time: "09:16"
+        },
+        {
+          direction: "incoming",
+          text: "许遥：移动端的输入区可以再收一点，背景入口保留就很好。",
+          time: "09:18"
+        },
+        {
+          direction: "outgoing",
+          text: "我来整理反馈，下午再发一版。",
+          time: "09:22",
+          read: true
+        }
+      ]
+    },
+    zhou: {
+      name: "周屿",
+      status: "昨天在线",
+      avatarClass: "avatar-zhou",
+      initial: "屿",
+      reply: "没问题，到时候我把路线也发你。",
+      messages: [
+        { type: "date", text: "昨天" },
+        { direction: "incoming", text: "周末天气不错，要不要去海边走走？", time: "18:20" },
+        {
+          direction: "outgoing",
+          text: "可以啊，傍晚的光应该很好。",
+          time: "18:24",
+          read: true
+        },
+        { direction: "incoming", text: "下周见，别忘了带相机 📷", time: "18:27" }
+      ]
+    },
+    notes: {
+      name: "收藏夹",
+      status: "仅自己可见",
+      avatarClass: "avatar-notes",
+      initial: "记",
+      reply: "",
+      messages: [
+        { type: "date", text: "周二" },
+        {
+          direction: "outgoing",
+          text: "旅行清单\n· 相机和备用电池\n· 一件薄外套\n· 海边路线",
+          time: "21:06",
+          read: true
+        }
+      ]
+    }
+  };
+
+  var root = document.documentElement;
+  var messageList = document.getElementById("messageList");
+  var messageScroll = document.getElementById("messageScroll");
+  var messageInput = document.getElementById("messageInput");
+  var sendButton = document.getElementById("sendButton");
+  var composer = document.getElementById("composer");
+  var emojiButton = document.getElementById("emojiButton");
+  var emojiPanel = document.getElementById("emojiPanel");
+  var scrollBottomButton = document.getElementById("scrollBottomButton");
+  var scrollUnread = document.getElementById("scrollUnread");
+  var conversationList = document.getElementById("conversationList");
+  var conversationSearch = document.getElementById("conversationSearch");
+  var headerName = document.getElementById("headerName");
+  var headerStatus = document.getElementById("headerStatus");
+  var headerAvatar = document.getElementById("headerAvatar");
+  var sidebar = document.getElementById("sidebar");
+  var sidebarScrim = document.getElementById("sidebarScrim");
+  var mobileMenuButton = document.getElementById("mobileMenuButton");
+  var backgroundDialog = document.getElementById("backgroundDialog");
+  var backgroundFile = document.getElementById("backgroundFile");
+  var uploadDropzone = document.getElementById("uploadDropzone");
+  var uploadError = document.getElementById("uploadError");
+  var customWallpaperOption = document.getElementById("customWallpaperOption");
+  var customWallpaperSwatch = document.getElementById("customWallpaperSwatch");
+  var dimRange = document.getElementById("dimRange");
+  var blurRange = document.getElementById("blurRange");
+  var dimOutput = document.getElementById("dimOutput");
+  var blurOutput = document.getElementById("blurOutput");
+  var toast = document.getElementById("toast");
+  var toastText = document.getElementById("toastText");
+
+  var activeChatId = "linxia";
+  var toastTimer = null;
+  var appliedSettings = readSettings();
+  var draftSettings = copySettings(appliedSettings);
+  var customBlob = null;
+  var customUrl = null;
+  var draftBlob = null;
+  var draftUrl = null;
+
+  function copySettings(settings) {
+    return {
+      id: settings.id,
+      dim: Number(settings.dim),
+      blur: Number(settings.blur)
+    };
+  }
+
+  function clamp(value, minimum, maximum) {
+    return Math.min(maximum, Math.max(minimum, value));
+  }
+
+  function isKnownWallpaper(id) {
+    return Object.prototype.hasOwnProperty.call(PRESETS, id) || id === "custom";
+  }
+
+  function readSettings() {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!parsed || parsed.version !== 1 || !isKnownWallpaper(parsed.id)) {
+        return copySettings(DEFAULT_SETTINGS);
+      }
+      return {
+        id: parsed.id,
+        dim: clamp(Number(parsed.dim) || 0, 0, 48),
+        blur: clamp(Number(parsed.blur) || 0, 0, 12)
+      };
+    } catch (error) {
+      return copySettings(DEFAULT_SETTINGS);
+    }
+  }
+
+  function writeSettings(settings) {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          version: 1,
+          id: settings.id,
+          dim: settings.dim,
+          blur: settings.blur
+        })
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function formatTime(date) {
+    return new Intl.DateTimeFormat("zh-CN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    }).format(date);
+  }
+
+  function createMessageElement(message) {
+    if (message.type === "date") {
+      var separator = document.createElement("div");
+      separator.className = "date-separator";
+      separator.textContent = message.text;
+      return separator;
+    }
+
+    var row = document.createElement("div");
+    row.className = "message-row " + message.direction;
+    var bubble = document.createElement("div");
+    bubble.className = "message-bubble";
+    var body = document.createElement("p");
+    body.textContent = message.text;
+    bubble.appendChild(body);
+
+    var meta = document.createElement("span");
+    meta.className = "message-meta";
+    var time = document.createElement("time");
+    time.textContent = message.time;
+    meta.appendChild(time);
+    if (message.direction === "outgoing") {
+      var checks = document.createElement("span");
+      checks.className = "message-checks";
+      checks.setAttribute("aria-label", message.read ? "已读" : "已发送");
+      checks.textContent = message.read ? "✓✓" : "✓";
+      meta.appendChild(checks);
+    }
+    bubble.appendChild(meta);
+    row.appendChild(bubble);
+    return row;
+  }
+
+  function createTypingElement() {
+    var row = document.createElement("div");
+    row.className = "typing-row";
+    row.setAttribute("aria-label", "对方正在输入");
+    var bubble = document.createElement("div");
+    bubble.className = "typing-bubble";
+    for (var index = 0; index < 3; index += 1) {
+      bubble.appendChild(document.createElement("span"));
+    }
+    row.appendChild(bubble);
+    return row;
+  }
+
+  function renderMessages(shouldScroll) {
+    var chat = chats[activeChatId];
+    var fragment = document.createDocumentFragment();
+    chat.messages.forEach(function (message) {
+      fragment.appendChild(createMessageElement(message));
+    });
+    if (chat.isTyping) {
+      fragment.appendChild(createTypingElement());
+    }
+    messageList.replaceChildren(fragment);
+    if (shouldScroll) {
+      requestAnimationFrame(scrollToBottom);
+    }
+  }
+
+  function scrollToBottom() {
+    messageScroll.scrollTop = messageScroll.scrollHeight;
+    scrollBottomButton.classList.remove("visible");
+    scrollUnread.hidden = true;
+  }
+
+  function distanceFromBottom() {
+    return messageScroll.scrollHeight - messageScroll.scrollTop - messageScroll.clientHeight;
+  }
+
+  function updateScrollButton() {
+    scrollBottomButton.classList.toggle("visible", distanceFromBottom() > 110);
+  }
+
+  function resizeMessageInput() {
+    messageInput.style.height = "auto";
+    var nextHeight = Math.min(messageInput.scrollHeight, 118);
+    messageInput.style.height = Math.max(nextHeight, 40) + "px";
+    messageInput.style.overflowY = messageInput.scrollHeight > 118 ? "auto" : "hidden";
+    sendButton.disabled = messageInput.value.trim().length === 0;
+  }
+
+  function updateConversationPreview(chatId, text, time) {
+    var item = conversationList.querySelector('[data-chat="' + chatId + '"]');
+    if (!item) {
+      return;
+    }
+    var preview = item.querySelector(".message-preview");
+    var timeElement = item.querySelector("time");
+    if (preview) {
+      preview.textContent = text.replace(/\s+/g, " ");
+    }
+    if (timeElement) {
+      timeElement.textContent = time;
+    }
+  }
+
+  function simulateReply(chatId) {
+    var chat = chats[chatId];
+    if (!chat.reply || chat.replyTimer) {
+      return;
+    }
+    chat.isTyping = true;
+    if (activeChatId === chatId) {
+      renderMessages(true);
+    }
+    chat.replyTimer = window.setTimeout(function () {
+      var replyTime = formatTime(new Date());
+      chat.isTyping = false;
+      chat.messages.push({ direction: "incoming", text: chat.reply, time: replyTime });
+      chat.replyTimer = null;
+      updateConversationPreview(chatId, chat.reply, replyTime);
+      if (activeChatId === chatId) {
+        var wasNearBottom = distanceFromBottom() < 160;
+        renderMessages(wasNearBottom);
+        if (!wasNearBottom) {
+          scrollUnread.hidden = false;
+          scrollBottomButton.classList.add("visible");
+        }
+      }
+    }, 1150);
+  }
+
+  function sendMessage() {
+    var value = messageInput.value.trim();
+    if (!value) {
+      return;
+    }
+    var time = formatTime(new Date());
+    chats[activeChatId].messages.push({
+      direction: "outgoing",
+      text: value,
+      time: time,
+      read: true
+    });
+    updateConversationPreview(activeChatId, value, time);
+    messageInput.value = "";
+    resizeMessageInput();
+    renderMessages(true);
+    simulateReply(activeChatId);
+  }
+
+  function switchConversation(chatId) {
+    if (!chats[chatId]) {
+      return;
+    }
+    activeChatId = chatId;
+    var chat = chats[chatId];
+    conversationList.querySelectorAll(".conversation-item").forEach(function (item) {
+      item.classList.toggle("active", item.dataset.chat === chatId);
+      if (item.dataset.chat === chatId) {
+        var badge = item.querySelector(".unread-badge");
+        if (badge) {
+          badge.remove();
+        }
+      }
+    });
+    headerName.textContent = chat.name;
+    headerStatus.textContent = chat.status;
+    headerAvatar.className = "avatar " + chat.avatarClass;
+    headerAvatar.textContent = chat.initial;
+    renderMessages(true);
+    closeSidebar();
+  }
+
+  function openSidebar() {
+    sidebar.classList.add("open");
+    sidebarScrim.classList.add("visible");
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("open");
+    sidebarScrim.classList.remove("visible");
+  }
+
+  function showToast(message) {
+    window.clearTimeout(toastTimer);
+    toastText.textContent = message;
+    toast.hidden = false;
+    requestAnimationFrame(function () {
+      toast.classList.add("visible");
+    });
+    toastTimer = window.setTimeout(function () {
+      toast.classList.remove("visible");
+      window.setTimeout(function () {
+        if (!toast.classList.contains("visible")) {
+          toast.hidden = true;
+        }
+      }, 190);
+    }, 2400);
+  }
+
+  function applyWallpaper(settings, imageUrl) {
+    var backgroundImage = PRESETS[settings.id];
+    if (settings.id === "custom" && imageUrl) {
+      backgroundImage = 'url("' + imageUrl.replace(/"/g, "%22") + '")';
+    }
+    if (!backgroundImage) {
+      backgroundImage = PRESETS.mist;
+    }
+    root.style.setProperty("--wallpaper-image", backgroundImage);
+    root.style.setProperty("--wallpaper-dim", String(settings.dim / 100));
+    root.style.setProperty("--wallpaper-blur", String(settings.blur) + "px");
+  }
+
+  function updateRangeOutputs() {
+    dimOutput.textContent = String(draftSettings.dim) + "%";
+    blurOutput.textContent = String(draftSettings.blur) + "px";
+    dimRange.value = String(draftSettings.dim);
+    blurRange.value = String(draftSettings.blur);
+  }
+
+  function updateWallpaperOptions() {
+    document.querySelectorAll(".wallpaper-option").forEach(function (option) {
+      option.classList.toggle("selected", option.dataset.wallpaper === draftSettings.id);
+    });
+  }
+
+  function refreshCustomOption(imageUrl) {
+    if (imageUrl) {
+      customWallpaperOption.hidden = false;
+      customWallpaperSwatch.style.backgroundImage =
+        'linear-gradient(rgba(5, 14, 20, 0.08), rgba(5, 14, 20, 0.08)), url("' +
+        imageUrl.replace(/"/g, "%22") +
+        '")';
+    } else {
+      customWallpaperOption.hidden = true;
+      customWallpaperSwatch.style.backgroundImage = "";
+    }
+  }
+
+  function clearUploadError() {
+    uploadError.hidden = true;
+    uploadError.textContent = "";
+  }
+
+  function showUploadError(message) {
+    uploadError.textContent = message;
+    uploadError.hidden = false;
+  }
+
+  function openBackgroundDialog() {
+    draftSettings = copySettings(appliedSettings);
+    draftBlob = customBlob;
+    draftUrl = customUrl;
+    clearUploadError();
+    backgroundFile.value = "";
+    uploadDropzone.querySelector(".upload-copy strong").textContent = "选择图片或拖放到这里";
+    updateRangeOutputs();
+    refreshCustomOption(draftUrl);
+    updateWallpaperOptions();
+    applyWallpaper(draftSettings, draftUrl);
+    if (typeof backgroundDialog.showModal === "function") {
+      backgroundDialog.showModal();
+    } else {
+      backgroundDialog.setAttribute("open", "");
+    }
+  }
+
+  function discardDraftUrl() {
+    if (draftUrl && draftUrl !== customUrl) {
+      URL.revokeObjectURL(draftUrl);
+    }
+    draftUrl = null;
+    draftBlob = null;
+  }
+
+  function closeBackgroundDialog(keepPreview) {
+    if (!keepPreview) {
+      discardDraftUrl();
+      applyWallpaper(appliedSettings, customUrl);
+    }
+    if (backgroundDialog.open) {
+      backgroundDialog.close();
+    } else {
+      backgroundDialog.removeAttribute("open");
+    }
+  }
+
+  function verifyImage(file) {
+    return new Promise(function (resolve, reject) {
+      var verificationUrl = URL.createObjectURL(file);
+      var image = new Image();
+      image.onload = function () {
+        URL.revokeObjectURL(verificationUrl);
+        if (image.naturalWidth < 1 || image.naturalHeight < 1) {
+          reject(new Error("empty-image"));
+          return;
+        }
+        resolve();
+      };
+      image.onerror = function () {
+        URL.revokeObjectURL(verificationUrl);
+        reject(new Error("invalid-image"));
+      };
+      image.src = verificationUrl;
+    });
+  }
+
+  async function useUploadedFile(file) {
+    clearUploadError();
+    if (!file) {
+      return;
+    }
+    var supportedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (supportedTypes.indexOf(file.type) === -1) {
+      showUploadError("请选择 JPG、PNG、WebP 或 GIF 图片。");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      showUploadError("图片超过 10 MB，请压缩后再试。");
+      return;
+    }
+    try {
+      await verifyImage(file);
+    } catch (error) {
+      showUploadError("这张图片无法读取，请换一张再试。");
+      return;
+    }
+
+    if (draftUrl && draftUrl !== customUrl) {
+      URL.revokeObjectURL(draftUrl);
+    }
+    draftBlob = file;
+    draftUrl = URL.createObjectURL(file);
+    draftSettings.id = "custom";
+    refreshCustomOption(draftUrl);
+    updateWallpaperOptions();
+    applyWallpaper(draftSettings, draftUrl);
+    uploadDropzone.querySelector(".upload-copy strong").textContent = "已选择：" + file.name;
+    showToast("图片已载入，点击“应用背景”保存");
+  }
+
+  function openDatabase() {
+    return new Promise(function (resolve, reject) {
+      if (!("indexedDB" in window)) {
+        reject(new Error("indexeddb-unavailable"));
+        return;
+      }
+      var request = indexedDB.open(DATABASE_NAME, 1);
+      request.onupgradeneeded = function () {
+        var database = request.result;
+        if (!database.objectStoreNames.contains(DATABASE_STORE)) {
+          database.createObjectStore(DATABASE_STORE);
+        }
+      };
+      request.onsuccess = function () {
+        resolve(request.result);
+      };
+      request.onerror = function () {
+        reject(request.error || new Error("indexeddb-open-failed"));
+      };
+    });
+  }
+
+  async function readCustomWallpaper() {
+    var database = await openDatabase();
+    return new Promise(function (resolve, reject) {
+      var transaction = database.transaction(DATABASE_STORE, "readonly");
+      var request = transaction.objectStore(DATABASE_STORE).get(CUSTOM_WALLPAPER_KEY);
+      request.onsuccess = function () {
+        resolve(request.result || null);
+      };
+      request.onerror = function () {
+        reject(request.error || new Error("indexeddb-read-failed"));
+      };
+      transaction.oncomplete = function () {
+        database.close();
+      };
+    });
+  }
+
+  async function saveCustomWallpaper(blob) {
+    var database = await openDatabase();
+    return new Promise(function (resolve, reject) {
+      var transaction = database.transaction(DATABASE_STORE, "readwrite");
+      transaction.objectStore(DATABASE_STORE).put(blob, CUSTOM_WALLPAPER_KEY);
+      transaction.oncomplete = function () {
+        database.close();
+        resolve();
+      };
+      transaction.onerror = function () {
+        database.close();
+        reject(transaction.error || new Error("indexeddb-write-failed"));
+      };
+      transaction.onabort = function () {
+        database.close();
+        reject(transaction.error || new Error("indexeddb-write-aborted"));
+      };
+    });
+  }
+
+  async function deleteCustomWallpaper() {
+    var database = await openDatabase();
+    return new Promise(function (resolve, reject) {
+      var transaction = database.transaction(DATABASE_STORE, "readwrite");
+      transaction.objectStore(DATABASE_STORE).delete(CUSTOM_WALLPAPER_KEY);
+      transaction.oncomplete = function () {
+        database.close();
+        resolve();
+      };
+      transaction.onerror = function () {
+        database.close();
+        reject(transaction.error || new Error("indexeddb-delete-failed"));
+      };
+    });
+  }
+
+  async function applyDraftBackground() {
+    var savedToDevice = true;
+    if (draftSettings.id === "custom") {
+      if (!draftBlob || !draftUrl) {
+        showUploadError("请先选择一张图片。");
+        return;
+      }
+      try {
+        await saveCustomWallpaper(draftBlob);
+      } catch (error) {
+        savedToDevice = false;
+      }
+      if (customUrl && customUrl !== draftUrl) {
+        URL.revokeObjectURL(customUrl);
+      }
+      customBlob = draftBlob;
+      customUrl = draftUrl;
+    }
+
+    appliedSettings = copySettings(draftSettings);
+    if (appliedSettings.id !== "custom" || savedToDevice) {
+      writeSettings(appliedSettings);
+    }
+    draftBlob = null;
+    draftUrl = null;
+    applyWallpaper(appliedSettings, customUrl);
+    closeBackgroundDialog(true);
+    showToast(
+      savedToDevice
+        ? "聊天背景已更新"
+        : "背景已应用，但浏览器未允许长期保存"
+    );
+  }
+
+  async function resetBackground() {
+    try {
+      await deleteCustomWallpaper();
+    } catch (error) {
+      // The visual reset still succeeds if private storage is unavailable.
+    }
+    discardDraftUrl();
+    if (customUrl) {
+      URL.revokeObjectURL(customUrl);
+    }
+    customUrl = null;
+    customBlob = null;
+    appliedSettings = copySettings(DEFAULT_SETTINGS);
+    draftSettings = copySettings(DEFAULT_SETTINGS);
+    writeSettings(appliedSettings);
+    refreshCustomOption(null);
+    updateRangeOutputs();
+    updateWallpaperOptions();
+    applyWallpaper(appliedSettings, null);
+    closeBackgroundDialog(true);
+    showToast("已恢复默认背景并清除本地图片");
+  }
+
+  async function initializeWallpaper() {
+    try {
+      customBlob = await readCustomWallpaper();
+      if (customBlob) {
+        customUrl = URL.createObjectURL(customBlob);
+      }
+    } catch (error) {
+      customBlob = null;
+      customUrl = null;
+    }
+    if (appliedSettings.id === "custom" && !customUrl) {
+      appliedSettings = copySettings(DEFAULT_SETTINGS);
+      writeSettings(appliedSettings);
+    }
+    applyWallpaper(appliedSettings, customUrl);
+    refreshCustomOption(customUrl);
+  }
+
+  composer.addEventListener("submit", function (event) {
+    event.preventDefault();
+    sendMessage();
+  });
+
+  messageInput.addEventListener("input", resizeMessageInput);
+  messageInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
+
+  emojiButton.addEventListener("click", function () {
+    var willOpen = emojiPanel.hidden;
+    emojiPanel.hidden = !willOpen;
+    emojiButton.setAttribute("aria-expanded", String(willOpen));
+  });
+
+  emojiPanel.addEventListener("click", function (event) {
+    var target = event.target.closest("button");
+    if (!target) {
+      return;
+    }
+    var start = messageInput.selectionStart;
+    var end = messageInput.selectionEnd;
+    var value = messageInput.value;
+    messageInput.value = value.slice(0, start) + target.textContent + value.slice(end);
+    messageInput.selectionStart = messageInput.selectionEnd = start + target.textContent.length;
+    messageInput.focus();
+    emojiPanel.hidden = true;
+    emojiButton.setAttribute("aria-expanded", "false");
+    resizeMessageInput();
+  });
+
+  document.addEventListener("click", function (event) {
+    if (!emojiPanel.hidden && !emojiPanel.contains(event.target) && !emojiButton.contains(event.target)) {
+      emojiPanel.hidden = true;
+      emojiButton.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  conversationList.addEventListener("click", function (event) {
+    var item = event.target.closest(".conversation-item");
+    if (item) {
+      switchConversation(item.dataset.chat);
+    }
+  });
+
+  conversationSearch.addEventListener("input", function () {
+    var query = conversationSearch.value.trim().toLocaleLowerCase("zh-CN");
+    conversationList.querySelectorAll(".conversation-item").forEach(function (item) {
+      item.hidden = query.length > 0 && !item.textContent.toLocaleLowerCase("zh-CN").includes(query);
+    });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
+      event.preventDefault();
+      if (window.matchMedia("(max-width: 760px)").matches) {
+        openSidebar();
+      }
+      conversationSearch.focus();
+    }
+  });
+
+  messageScroll.addEventListener("scroll", updateScrollButton, { passive: true });
+  scrollBottomButton.addEventListener("click", scrollToBottom);
+  mobileMenuButton.addEventListener("click", openSidebar);
+  sidebarScrim.addEventListener("click", closeSidebar);
+
+  document.querySelectorAll("[data-toast]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      showToast(button.dataset.toast);
+    });
+  });
+
+  document.getElementById("sidebarBackgroundButton").addEventListener("click", openBackgroundDialog);
+  document.getElementById("headerBackgroundButton").addEventListener("click", openBackgroundDialog);
+  document.getElementById("backgroundCloseButton").addEventListener("click", function () {
+    closeBackgroundDialog(false);
+  });
+  document.getElementById("backgroundCancelButton").addEventListener("click", function () {
+    closeBackgroundDialog(false);
+  });
+  document.getElementById("backgroundApplyButton").addEventListener("click", applyDraftBackground);
+  document.getElementById("resetBackgroundButton").addEventListener("click", resetBackground);
+
+  backgroundDialog.addEventListener("cancel", function (event) {
+    event.preventDefault();
+    closeBackgroundDialog(false);
+  });
+
+  backgroundDialog.addEventListener("click", function (event) {
+    if (event.target === backgroundDialog) {
+      closeBackgroundDialog(false);
+    }
+  });
+
+  document.getElementById("wallpaperGrid").addEventListener("click", function (event) {
+    var option = event.target.closest(".wallpaper-option");
+    if (!option) {
+      return;
+    }
+    var wallpaperId = option.dataset.wallpaper;
+    if (wallpaperId === "custom" && !draftUrl) {
+      return;
+    }
+    draftSettings.id = wallpaperId;
+    updateWallpaperOptions();
+    applyWallpaper(draftSettings, draftUrl);
+  });
+
+  dimRange.addEventListener("input", function () {
+    draftSettings.dim = Number(dimRange.value);
+    updateRangeOutputs();
+    applyWallpaper(draftSettings, draftUrl);
+  });
+
+  blurRange.addEventListener("input", function () {
+    draftSettings.blur = Number(blurRange.value);
+    updateRangeOutputs();
+    applyWallpaper(draftSettings, draftUrl);
+  });
+
+  backgroundFile.addEventListener("change", function () {
+    useUploadedFile(backgroundFile.files && backgroundFile.files[0]);
+  });
+
+  ["dragenter", "dragover"].forEach(function (eventName) {
+    uploadDropzone.addEventListener(eventName, function (event) {
+      event.preventDefault();
+      uploadDropzone.classList.add("dragging");
+    });
+  });
+
+  ["dragleave", "drop"].forEach(function (eventName) {
+    uploadDropzone.addEventListener(eventName, function (event) {
+      event.preventDefault();
+      uploadDropzone.classList.remove("dragging");
+    });
+  });
+
+  uploadDropzone.addEventListener("drop", function (event) {
+    var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+    useUploadedFile(file);
+  });
+
+  window.addEventListener("beforeunload", function () {
+    if (draftUrl && draftUrl !== customUrl) {
+      URL.revokeObjectURL(draftUrl);
+    }
+    if (customUrl) {
+      URL.revokeObjectURL(customUrl);
+    }
+  });
+
+  renderMessages(true);
+  resizeMessageInput();
+  initializeWallpaper();
+})();
+
