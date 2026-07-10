@@ -1,0 +1,164 @@
+.clawd-pet-root {
+  --clawd-pet-size: 104px;
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+  width: var(--clawd-pet-size);
+  height: var(--clawd-pet-size);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body:not(.home-page) .clawd-pet-root {
+  bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+}
+
+.clawd-pet-button {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: visible;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  border: 0;
+  border-radius: 44% 52% 48% 54%;
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.72), transparent 30%),
+    radial-gradient(circle at 72% 76%, rgba(126, 164, 186, 0.2), transparent 48%),
+    rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(83, 108, 119, 0.08),
+    0 14px 34px rgba(55, 76, 88, 0.13);
+  backdrop-filter: blur(12px) saturate(128%);
+  -webkit-backdrop-filter: blur(12px) saturate(128%);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.clawd-pet-button::before,
+.clawd-pet-button::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+  border-radius: 999px;
+}
+
+.clawd-pet-button::before {
+  inset: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-right-color: rgba(255, 255, 255, 0.14);
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.clawd-pet-button::after {
+  top: 17px;
+  right: 19px;
+  width: 9px;
+  height: 9px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: -8px 9px 0 -3px rgba(255, 255, 255, 0.5);
+}
+
+.clawd-pet-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84), 0 18px 38px rgba(55, 76, 88, 0.18);
+}
+
+.clawd-pet-button:focus-visible {
+  outline: 3px solid rgba(110, 148, 170, 0.48);
+  outline-offset: 4px;
+}
+
+.clawd-pet-root.is-dragging .clawd-pet-button {
+  cursor: grabbing;
+  transform: scale(1.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 22px 46px rgba(55, 76, 88, 0.22);
+}
+
+.clawd-pet-art {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 168%;
+  height: 168%;
+  max-width: none;
+  pointer-events: none;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 7px 7px rgba(63, 75, 79, 0.17));
+  transform: translate(-50%, -50%);
+}
+
+.clawd-pet-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 1px);
+  width: max-content;
+  max-width: min(190px, calc(100vw - 28px));
+  padding: 8px 12px;
+  color: #485c65;
+  font: 600 12px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 14px 14px 14px 5px;
+  background: rgba(250, 250, 247, 0.76);
+  box-shadow: 0 10px 26px rgba(55, 76, 88, 0.13);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  transform: translate(-50%, 8px) scale(0.96);
+  transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.clawd-pet-root.is-speaking .clawd-pet-bubble {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .clawd-pet-button { background: rgba(244, 247, 246, 0.92); }
+  .clawd-pet-bubble { background: rgba(250, 250, 247, 0.96); }
+}
+
+@media (max-width: 760px) {
+  .clawd-pet-root {
+    --clawd-pet-size: 86px;
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body:not(.home-page) .clawd-pet-root {
+    bottom: calc(132px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .clawd-pet-bubble {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px), (max-height: 560px) {
+  .clawd-pet-root { --clawd-pet-size: 76px; }
+  body:not(.home-page) .clawd-pet-root {
+    bottom: calc(116px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clawd-pet-button,
+  .clawd-pet-bubble { transition-duration: 1ms; }
+}
+
+@media print {
+  .clawd-pet-root { display: none; }
+}
+
