@@ -34,7 +34,7 @@
       }
     </script>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
-    <link rel="stylesheet" href="home.css?v=20260711-home-entry-v6" />
+    <link rel="stylesheet" href="home.css?v=20260711-home-compact-v7" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="home-page">
@@ -150,42 +150,44 @@
           </a>
         </div>
 
-        <a class="chat-entry-card" href="chat.html" aria-label="进入 Chat 聊天页">
-          <div class="chat-entry-decoration" aria-hidden="true"></div>
-          <header class="home-card-header">
-            <span class="home-card-kicker">常用入口</span>
-            <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
-          </header>
-          <div class="chat-entry-content">
-            <span class="chat-entry-icon"><svg><use href="#home-icon-chat"></use></svg></span>
-            <div>
-              <h1>Chat</h1>
-              <p>进入我们的对话</p>
+        <div class="entry-stack" aria-label="主要入口">
+          <a class="chat-entry-card" href="chat.html" aria-label="进入 Chat 聊天页">
+            <div class="chat-entry-decoration" aria-hidden="true"></div>
+            <header class="home-card-header">
+              <span class="home-card-kicker">常用入口</span>
+              <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+            </header>
+            <div class="chat-entry-content">
+              <span class="chat-entry-icon"><svg><use href="#home-icon-chat"></use></svg></span>
+              <div>
+                <h1>Chat</h1>
+                <p>进入我们的对话</p>
+              </div>
             </div>
-          </div>
-          <div class="chat-entry-footer">
-            <span>继续说说话</span>
-          </div>
-        </a>
+            <div class="chat-entry-footer">
+              <span>继续说说话</span>
+            </div>
+          </a>
+
+          <a class="memory-entry-card" href="memory.html" aria-label="进入 Memory 回忆页">
+            <div class="memory-entry-decoration" aria-hidden="true"></div>
+            <header class="home-card-header">
+              <span class="home-card-kicker">珍藏片段</span>
+              <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+            </header>
+            <div class="memory-entry-content">
+              <span class="memory-entry-icon"><svg><use href="#home-icon-memory"></use></svg></span>
+              <div>
+                <h2>Memory</h2>
+                <p>收藏我们的回忆</p>
+              </div>
+            </div>
+            <footer class="memory-entry-footer">留给时间慢慢填满</footer>
+          </a>
+        </div>
       </section>
 
-      <section class="future-space" aria-label="更多入口">
-        <a class="memory-entry-card" href="memory.html" aria-label="进入 Memory 回忆页">
-          <div class="memory-entry-decoration" aria-hidden="true"></div>
-          <header class="home-card-header">
-            <span class="home-card-kicker">珍藏片段</span>
-            <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
-          </header>
-          <div class="memory-entry-content">
-            <span class="memory-entry-icon"><svg><use href="#home-icon-memory"></use></svg></span>
-            <div>
-              <h2>Memory</h2>
-              <p>收藏我们的回忆</p>
-            </div>
-          </div>
-          <footer class="memory-entry-footer">留给时间慢慢填满</footer>
-        </a>
-      </section>
+      <section class="future-space" aria-label="预留内容区域"></section>
     </main>
 
     <dialog class="date-dialog" id="dateDialog" aria-labelledby="dateDialogTitle">
