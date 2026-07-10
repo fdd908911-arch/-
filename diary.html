@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
+    <meta name="description" content="岛屿信箱的 Diary 日记页，按日期记录天气和想说的话" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23a88f91'/%3E%3Cpath d='M18 13h28v38H18zM25 22h14M25 30h14M25 38h9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <title>岛屿 · Diary</title>
+    <script>
+      try {
+        var savedAppearance = JSON.parse(
+          localStorage.getItem("island-chat.preferences.v1")
+        );
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var savedTheme =
+          (savedAppearance &&
+            (savedAppearance.theme ||
+              legacyThemes[savedAppearance.id] ||
+              savedAppearance.id)) ||
+          "mist";
+        var themeColors = {
+          mist: "#eef2f1",
+          zen: "#f4f1ea",
+          sage: "#e9eadf",
+          blush: "#ebe3e5"
+        };
+        if (!themeColors[savedTheme]) {
+          savedTheme = "mist";
+        }
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute(
+          "content",
+          themeColors[savedTheme]
+        );
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
+    <link rel="stylesheet" href="home.css?v=20260711-home-diary-v5" />
+    <link rel="stylesheet" href="diary.css?v=20260711-diary-v1" />
+    <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+  </head>
+  <body class="home-page diary-page" data-diary-font="serif">
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="diary-icon-back" viewBox="0 0 24 24">
+        <path d="m15 5-7 7 7 7M8 12h11" />
+      </symbol>
+      <symbol id="diary-icon-left" viewBox="0 0 24 24">
+        <path d="m14.5 6-6 6 6 6" />
+      </symbol>
+      <symbol id="diary-icon-right" viewBox="0 0 24 24">
+        <path d="m9.5 6 6 6-6 6" />
+      </symbol>
+      <symbol id="diary-icon-calendar" viewBox="0 0 24 24">
+        <rect x="3.5" y="5.5" width="17" height="15" rx="3" />
+        <path d="M8 3.5v4M16 3.5v4M3.5 10h17" />
+      </symbol>
+      <symbol id="diary-icon-save" viewBox="0 0 24 24">
+        <path d="M5 4h12l2 2v14H5V4Z" />
+        <path d="M8 4v6h8V4M8 20v-6h8v6" />
+      </symbol>
+      <symbol id="diary-icon-trash" viewBox="0 0 24 24">
+        <path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5" />
+      </symbol>
+      <symbol id="diary-icon-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="10" rx="3" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+      </symbol>
+    </svg>
+
+    <span class="home-ambient home-ambient-one" aria-hidden="true"></span>
+    <span class="home-ambient home-ambient-two" aria-hidden="true"></span>
+
+    <main class="diary-shell">
+      <header class="diary-header">
+        <a class="diary-back" href="index.html" aria-label="返回开场页">
+          <svg><use href="#diary-icon-back"></use></svg>
+        </a>
+        <div class="diary-heading">
+          <span>OUR DAILY NOTES</span>
+          <h1>Diary</h1>
+          <p id="diaryHeadingDate">正在打开今天……</p>
+        </div>
+        <div class="diary-save-state" id="diarySaveState" role="status" aria-live="polite">
+          <span class="diary-status-dot" aria-hidden="true"></span>
+          <span id="diarySaveStateText">准备记录</span>
+        </div>
+      </header>
+
+      <form class="diary-workspace" id="diaryForm" novalidate>
+        <aside class="diary-controls" aria-label="日记设置">
+          <section class="diary-control-section diary-date-section" aria-labelledby="diaryDateTitle">
+            <header class="diary-section-heading">
+              <span id="diaryDateTitle">记录日期</span>
+              <svg aria-hidden="true"><use href="#diary-icon-calendar"></use></svg>
+            </header>
+            <div class="diary-date-row">
+              <button class="diary-day-button" id="previousDayButton" type="button" aria-label="前一天">
+                <svg><use href="#diary-icon-left"></use></svg>
+              </button>
+              <label class="diary-date-input" for="diaryDate">
+                <span class="visually-hidden">选择日记日期</span>
+                <input id="diaryDate" name="diaryDate" type="date" required />
+              </label>
+              <button class="diary-day-button" id="nextDayButton" type="button" aria-label="后一天">
+                <svg><use href="#diary-icon-right"></use></svg>
+              </button>
+            </div>
+          </section>
+
+          <section class="diary-control-section" aria-labelledby="diaryWeatherTitle">
+            <header class="diary-section-heading">
+              <span id="diaryWeatherTitle">今天的天气</span>
+              <span class="diary-live-weather" id="diaryWeatherEmoji" aria-hidden="true">○</span>
+            </header>
+            <div class="diary-weather-grid">
+              <label class="diary-field" for="diaryWeather">
+                <span>天气</span>
+                <select id="diaryWeather" name="diaryWeather">
+                  <option value="">待记录</option>
+                  <option value="sunny">晴</option>
+                  <option value="partly-cloudy">晴间多云</option>
+                  <option value="cloudy">多云</option>
+                  <option value="rainy">下雨</option>
+                  <option value="storm">雷雨</option>
+                  <option value="snowy">下雪</option>
+                  <option value="foggy">有雾</option>
+                  <option value="windy">有风</option>
+                </select>
+              </label>
+              <label class="diary-field" for="diaryTemperature">
+                <span>温度</span>
+                <span class="diary-temperature-input">
+                  <input
+                    id="diaryTemperature"
+                    name="diaryTemperature"
+                    type="number"
+                    inputmode="decimal"
+                    min="-50"
+                    max="60"
+                    step="0.1"
+                    placeholder="26"
+                    aria-describedby="diaryError"
+                  />
+                  <span aria-hidden="true">℃</span>
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <fieldset class="diary-control-section diary-font-section">
+            <legend>日记字体</legend>
+            <div class="diary-font-options">
+              <label>
+                <input type="radio" name="diaryFont" value="handwriting" />
+                <span class="diary-font-handwriting">手写</span>
+              </label>
+              <label>
+                <input type="radio" name="diaryFont" value="serif" checked />
+                <span class="diary-font-serif">宋体</span>
+              </label>
+              <label>
+                <input type="radio" name="diaryFont" value="modern" />
+                <span class="diary-font-modern">简洁</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <p class="diary-error" id="diaryError" role="alert" hidden></p>
+          <div class="diary-local-note">
+            <svg aria-hidden="true"><use href="#diary-icon-lock"></use></svg>
+            <p><strong>只属于你们</strong><span>内容只保存在这台设备，不会上传。</span></p>
+          </div>
+        </aside>
+
+        <article class="diary-paper" aria-labelledby="diaryPaperTitle">
+          <header class="diary-paper-header">
+            <div>
+              <span id="diaryPaperYear">—</span>
+              <h2 id="diaryPaperTitle">今天的日记</h2>
+            </div>
+            <div class="diary-paper-weather" aria-label="当前记录的天气">
+              <span id="diaryPaperWeatherEmoji" aria-hidden="true">○</span>
+              <span id="diaryPaperWeatherText">天气待记录</span>
+            </div>
+          </header>
+
+          <label class="diary-writing" for="diaryText">
+            <span>今天想说的话</span>
+            <textarea
+              id="diaryText"
+              name="diaryText"
+              rows="12"
+              maxlength="2000"
+              placeholder="今天发生了什么？把想留住的心情慢慢写下来……"
+            ></textarea>
+          </label>
+
+          <footer class="diary-paper-footer">
+            <span class="diary-character-count" aria-hidden="true">
+              <strong id="diaryCharacterCount">0</strong> / 2000
+            </span>
+            <div class="diary-actions">
+              <button class="diary-clear-button" id="diaryClearButton" type="button">
+                <svg><use href="#diary-icon-trash"></use></svg>
+                <span>清空</span>
+              </button>
+              <button class="diary-save-button" type="submit">
+                <svg><use href="#diary-icon-save"></use></svg>
+                <span>保存日记</span>
+              </button>
+            </div>
+          </footer>
+        </article>
+      </form>
+    </main>
+
+    <div class="diary-toast" id="diaryToast" role="status" aria-live="polite" hidden>
+      <span class="diary-toast-mark" aria-hidden="true">✓</span>
+      <strong id="diaryToastText"></strong>
+    </div>
+
+    <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="diary.js?v=20260711-diary-v1"></script>
+  </body>
+</html>
+
