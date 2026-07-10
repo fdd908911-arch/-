@@ -177,6 +177,17 @@
   var draftBlob = null;
   var draftUrl = null;
 
+  function emitClawd(state, phrase, options) {
+    var detail = Object.assign(
+      {
+        state: state,
+        phrase: phrase || ""
+      },
+      options || {}
+    );
+    document.dispatchEvent(new CustomEvent("clawd:action", { detail: detail }));
+  }
+
   function copySettings(settings) {
     var presetId = normalizePresetId(settings.id);
     var themeId = normalizePresetId(
@@ -374,6 +385,15 @@
     if (activeChatId === chatId) {
       renderMessages(true);
     }
+    window.setTimeout(function () {
+      if (chat.isTyping && activeChatId === chatId) {
+        emitClawd("thinking", "等回复中…", {
+          duration: 1700,
+          priority: 3,
+          force: true
+        });
+      }
+    }, 420);
     chat.replyTimer = window.setTimeout(function () {
       var replyTime = formatTime(new Date());
       chat.isTyping = false;
@@ -387,6 +407,15 @@
           scrollUnread.hidden = false;
           scrollBottomButton.classList.add("visible");
         }
+        emitClawd("notification", "收到新消息啦", {
+          duration: 1450,
+          priority: 4,
+          next: {
+            name: "happy",
+            duration: 1250,
+            priority: 4
+          }
+        });
       }
     }, 1150);
   }
@@ -407,6 +436,10 @@
     messageInput.value = "";
     resizeMessageInput();
     renderMessages(true);
+    emitClawd("beacon", "消息送出去啦", {
+      duration: 900,
+      priority: 3
+    });
     simulateReply(activeChatId);
   }
 
@@ -431,6 +464,10 @@
     headerAvatar.textContent = chat.initial;
     renderMessages(true);
     closeSidebar();
+    emitClawd("conducting", "切换到“" + chat.name + "”", {
+      duration: 1900,
+      priority: 3
+    });
   }
 
   function openSidebar() {
@@ -514,6 +551,15 @@
       closeBackgroundDialog(true);
     }
     showToast("已切换为“" + THEME_NAMES[themeId] + "”");
+    emitClawd("wizard", "换上新配色啦", {
+      duration: 1900,
+      priority: 3,
+      next: {
+        name: "eureka",
+        duration: 1200,
+        priority: 3
+      }
+    });
   }
 
   function updateRangeOutputs() {
@@ -560,6 +606,10 @@
   function showUploadError(message) {
     uploadError.textContent = message;
     uploadError.hidden = false;
+    emitClawd("confused", "这张图片好像不行", {
+      duration: 2800,
+      priority: 4
+    });
   }
 
   function openBackgroundDialog() {
@@ -578,6 +628,10 @@
     } else {
       backgroundDialog.setAttribute("open", "");
     }
+    emitClawd("builder", "准备布置新背景", {
+      duration: 2600,
+      priority: 3
+    });
   }
 
   function discardDraftUrl() {
@@ -652,6 +706,15 @@
     applyWallpaper(draftSettings, draftUrl);
     uploadDropzone.querySelector(".upload-copy strong").textContent = "已选择：" + file.name;
     showToast("图片已载入，点击“应用背景”保存");
+    emitClawd("carrying", "图片搬来啦", {
+      duration: 1600,
+      priority: 3,
+      next: {
+        name: "building",
+        duration: 1700,
+        priority: 3
+      }
+    });
   }
 
   function openDatabase() {
@@ -764,6 +827,10 @@
         ? "聊天背景已更新"
         : "背景已应用，但浏览器未允许长期保存"
     );
+    emitClawd(savedToDevice ? "happy" : "confused", savedToDevice ? "背景布置好啦" : "背景已用上，但没有保存", {
+      duration: 2400,
+      priority: savedToDevice ? 3 : 4
+    });
   }
 
   async function resetBackground() {
@@ -787,6 +854,10 @@
     applyWallpaper(appliedSettings, null);
     closeBackgroundDialog(true);
     showToast("已恢复默认背景并清除本地图片");
+    emitClawd("sweeping", "恢复得干干净净", {
+      duration: 2800,
+      priority: 3
+    });
   }
 
   async function initializeWallpaper() {
@@ -812,7 +883,42 @@
     sendMessage();
   });
 
-  messageInput.addEventListener("input", resizeMessageInput);
+  messageInput.addEventListener("input", function () {
+    resizeMessageInput();
+    var length = messageInput.value.length;
+    if (length > 1800) {
+      emitClawd("overheated", "写了好多好多字", {
+        duration: 2500,
+        priority: 4
+      });
+    } else if (messageInput.value.trim()) {
+      emitClawd("typing", "", {
+        duration: 950,
+        priority: 1
+      });
+    } else {
+      emitClawd("idle", "", {
+        duration: 0,
+        priority: 0,
+        force: true
+      });
+    }
+  });
+  messageInput.addEventListener("focus", function () {
+    if (messageInput.value.trim()) {
+      emitClawd("typing", "", {
+        duration: 950,
+        priority: 1
+      });
+    }
+  });
+  messageInput.addEventListener("blur", function () {
+    emitClawd("idle", "", {
+      duration: 0,
+      priority: 0,
+      force: true
+    });
+  });
   messageInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault();
@@ -824,6 +930,12 @@
     var willOpen = emojiPanel.hidden;
     emojiPanel.hidden = !willOpen;
     emojiButton.setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+      emitClawd("grooving", "挑一个表情吧", {
+        duration: 1900,
+        priority: 3
+      });
+    }
   });
 
   emojiPanel.addEventListener("click", function (event) {
@@ -840,6 +952,10 @@
     emojiPanel.hidden = true;
     emojiButton.setAttribute("aria-expanded", "false");
     resizeMessageInput();
+    emitClawd("miniTyping", "小螃蟹也来打字", {
+      duration: 1700,
+      priority: 3
+    });
   });
 
   document.addEventListener("click", function (event) {
@@ -861,6 +977,23 @@
     conversationList.querySelectorAll(".conversation-item").forEach(function (item) {
       item.hidden = query.length > 0 && !item.textContent.toLocaleLowerCase("zh-CN").includes(query);
     });
+    if (!query) {
+      emitClawd("idle", "", {
+        duration: 0,
+        priority: 0,
+        force: true
+      });
+      return;
+    }
+    var hasResult = Array.from(
+      conversationList.querySelectorAll(".conversation-item")
+    ).some(function (item) {
+      return !item.hidden;
+    });
+    emitClawd(hasResult ? "debugger" : "confused", hasResult ? "正在认真搜索" : "什么都没找到", {
+      duration: 1600,
+      priority: hasResult ? 2 : 4
+    });
   });
 
   document.addEventListener("keydown", function (event) {
@@ -874,7 +1007,13 @@
   });
 
   messageScroll.addEventListener("scroll", updateScrollButton, { passive: true });
-  scrollBottomButton.addEventListener("click", scrollToBottom);
+  scrollBottomButton.addEventListener("click", function () {
+    scrollToBottom();
+    emitClawd("pushing", "回到最新消息", {
+      duration: 1500,
+      priority: 3
+    });
+  });
   mobileMenuButton.addEventListener("click", openSidebar);
   sidebarScrim.addEventListener("click", closeSidebar);
 
@@ -937,12 +1076,20 @@
     draftSettings.dim = Number(dimRange.value);
     updateRangeOutputs();
     applyWallpaper(draftSettings, draftUrl);
+    emitClawd("pushing", "", {
+      duration: 850,
+      priority: 2
+    });
   });
 
   blurRange.addEventListener("input", function () {
     draftSettings.blur = Number(blurRange.value);
     updateRangeOutputs();
     applyWallpaper(draftSettings, draftUrl);
+    emitClawd("pushing", "", {
+      duration: 850,
+      priority: 2
+    });
   });
 
   backgroundFile.addEventListener("change", function () {
