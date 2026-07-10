@@ -10,6 +10,7 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: opacity 160ms ease, visibility 160ms ease;
 }
 
 body:not(.home-page) .clawd-pet-root {
@@ -96,6 +97,13 @@ body:not(.home-page) .clawd-pet-root {
   transform: translate(-50%, -50%);
 }
 
+.clawd-pet-root[data-state="miniClawd"] .clawd-pet-art,
+.clawd-pet-root[data-state="miniTyping"] .clawd-pet-art,
+.clawd-pet-root[data-state="static"] .clawd-pet-art {
+  width: 66%;
+  height: 66%;
+}
+
 .clawd-pet-bubble {
   position: absolute;
   left: 50%;
@@ -122,6 +130,34 @@ body:not(.home-page) .clawd-pet-root {
 .clawd-pet-root.is-speaking .clawd-pet-bubble {
   opacity: 1;
   transform: translate(-50%, 0) scale(1);
+}
+
+.clawd-pet-root.is-near-left .clawd-pet-bubble {
+  left: 0;
+  transform: translate(0, 8px) scale(0.96);
+}
+
+.clawd-pet-root.is-near-left.is-speaking .clawd-pet-bubble {
+  transform: translate(0, 0) scale(1);
+}
+
+.clawd-pet-root.is-near-right .clawd-pet-bubble {
+  right: 0;
+  left: auto;
+  transform: translate(0, 8px) scale(0.96);
+}
+
+.clawd-pet-root.is-near-right.is-speaking .clawd-pet-bubble {
+  transform: translate(0, 0) scale(1);
+}
+
+.clawd-pet-root.is-suspended {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.clawd-pet-root.is-suspended .clawd-pet-button {
+  pointer-events: none;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
