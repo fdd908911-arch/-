@@ -13,7 +13,7 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%233193d1'/%3E%3Cpath d='M13 30 51 14 39 49l-9-10-7 7 1-13 22-14-27 11z' fill='white'/%3E%3C/svg%3E"
     />
     <title>岛屿信箱 · 对话</title>
-    <link rel="stylesheet" href="styles.css?v=20260710-4themes" />
+    <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
   </head>
   <body>
     <svg class="svg-sprite" aria-hidden="true">
@@ -161,6 +161,26 @@
         </nav>
 
         <footer class="sidebar-footer">
+          <div class="quick-theme-switcher" aria-label="快速切换界面配色">
+            <div class="quick-theme-copy">
+              <span>快速配色</span>
+              <strong id="currentThemeName">雾蓝杏粉</strong>
+            </div>
+            <div class="quick-theme-options">
+              <button class="quick-theme-chip active" type="button" data-quick-theme="mist" aria-label="切换到雾蓝杏粉" title="雾蓝杏粉">
+                <span class="quick-theme-swatch quick-mist"></span>
+              </button>
+              <button class="quick-theme-chip" type="button" data-quick-theme="zen" aria-label="切换到禅意米棕" title="禅意米棕">
+                <span class="quick-theme-swatch quick-zen"></span>
+              </button>
+              <button class="quick-theme-chip" type="button" data-quick-theme="sage" aria-label="切换到灰绿鹅黄" title="灰绿鹅黄">
+                <span class="quick-theme-swatch quick-sage"></span>
+              </button>
+              <button class="quick-theme-chip" type="button" data-quick-theme="blush" aria-label="切换到烟粉雾蓝" title="烟粉雾蓝">
+                <span class="quick-theme-swatch quick-blush"></span>
+              </button>
+            </div>
+          </div>
           <button class="background-entry" id="sidebarBackgroundButton" type="button">
             <span class="entry-icon"><svg><use href="#icon-image"></use></svg></span>
             <span>
@@ -267,7 +287,7 @@
           <div>
             <span class="eyebrow">个性化</span>
             <h2 id="backgroundDialogTitle">配色与聊天背景</h2>
-            <p>整套切换界面颜色，或使用你自己的照片。</p>
+            <p>点击配色立即切换，或使用你自己的照片。</p>
           </div>
           <button class="icon-button dialog-close" id="backgroundCloseButton" type="button" aria-label="关闭">
             <svg><use href="#icon-close"></use></svg>
@@ -278,7 +298,7 @@
           <section aria-labelledby="presetTitle">
             <div class="section-title-row">
               <h3 id="presetTitle">莫兰迪配色主题</h3>
-              <span>4 套</span>
+              <span>4 套 · 点击即换</span>
             </div>
             <div class="wallpaper-grid" id="wallpaperGrid">
               <button class="wallpaper-option selected" type="button" data-wallpaper="mist">
@@ -376,7 +396,7 @@
       <span id="toastText"></span>
     </div>
 
-    <script src="app.js?v=20260710-4themes"></script>
+    <script src="app.js?v=20260710-theme-switch-v3"></script>
   </body>
 </html>
 
