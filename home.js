@@ -38,6 +38,17 @@
   var startDate = readStartDate();
   var toastTimer = null;
 
+  function emitClawd(state, phrase, options) {
+    var detail = Object.assign(
+      {
+        state: state,
+        phrase: phrase || ""
+      },
+      options || {}
+    );
+    document.dispatchEvent(new CustomEvent("clawd:action", { detail: detail }));
+  }
+
   function readTheme() {
     try {
       var appearance = JSON.parse(localStorage.getItem(APPEARANCE_KEY));
@@ -154,6 +165,10 @@
     window.setTimeout(function () {
       dateInput.focus();
     }, 30);
+    emitClawd("thinking", "选一个重要的日子", {
+      duration: 2200,
+      priority: 2
+    });
   }
 
   function closeDateDialog() {
@@ -167,6 +182,10 @@
   function showDateError(message) {
     dateError.textContent = message;
     dateError.hidden = false;
+    emitClawd("confused", "这个日期好像不对", {
+      duration: 2600,
+      priority: 4
+    });
   }
 
   function showToast(message) {
@@ -190,6 +209,12 @@
   dateEntryButton.addEventListener("click", openDateDialog);
   dateDialogClose.addEventListener("click", closeDateDialog);
   dateCancelButton.addEventListener("click", closeDateDialog);
+  dateInput.addEventListener("input", function () {
+    emitClawd("typing", "", {
+      duration: 900,
+      priority: 1
+    });
+  });
 
   dateDialog.addEventListener("cancel", function (event) {
     event.preventDefault();
@@ -219,6 +244,15 @@
       renderDays();
       closeDateDialog();
       showToast("开始日期已保存");
+      emitClawd("eureka", "记住这个日子啦", {
+        duration: 2200,
+        priority: 3,
+        next: {
+          name: "happy",
+          duration: 1300,
+          priority: 3
+        }
+      });
     } catch (error) {
       showDateError("浏览器没有允许保存，请稍后再试。");
     }
@@ -230,7 +264,20 @@
     renderDays();
     closeDateDialog();
     showToast("开始日期已清除");
+    emitClawd("sweeping", "把日期清空啦", {
+      duration: 2600,
+      priority: 3
+    });
   });
+
+  document
+    .querySelector(".chat-entry-card")
+    .addEventListener("pointerdown", function () {
+      emitClawd("goingAway", "去聊天页见", {
+        duration: 900,
+        priority: 3
+      });
+    });
 
   window.addEventListener("pageshow", function () {
     syncTheme();
