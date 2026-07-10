@@ -3,6 +3,8 @@
 
   var APPEARANCE_KEY = "island-chat.preferences.v1";
   var RELATIONSHIP_KEY = "island-home.relationship.v1";
+  var DAILY_KEY = "island-home.daily.v1";
+  var DEFAULT_START_DATE = "2026-07-04";
   var DAY_MS = 24 * 60 * 60 * 1000;
   var LEGACY_THEMES = { coast: "zen", dusk: "sage", paper: "blush" };
   var THEME_NAMES = {
@@ -16,6 +18,16 @@
     zen: "#f4f1ea",
     sage: "#e9eadf",
     blush: "#ebe3e5"
+  };
+  var WEATHER_TYPES = {
+    sunny: { emoji: "☀️", label: "晴" },
+    "partly-cloudy": { emoji: "🌤️", label: "晴间多云" },
+    cloudy: { emoji: "☁️", label: "多云" },
+    rainy: { emoji: "🌧️", label: "下雨" },
+    storm: { emoji: "⛈️", label: "雷雨" },
+    snowy: { emoji: "🌨️", label: "下雪" },
+    foggy: { emoji: "🌫️", label: "有雾" },
+    windy: { emoji: "🌬️", label: "有风" }
   };
 
   var daysCount = document.getElementById("daysCount");
@@ -34,8 +46,26 @@
   var themeColorMeta = document.getElementById("themeColorMeta");
   var homeToast = document.getElementById("homeToast");
   var homeToastText = document.getElementById("homeToastText");
+  var todayDateLabel = document.getElementById("todayDateLabel");
+  var weatherEmoji = document.getElementById("weatherEmoji");
+  var weatherTemperature = document.getElementById("weatherTemperature");
+  var weatherCondition = document.getElementById("weatherCondition");
+  var dailyNote = document.getElementById("dailyNote");
+  var editDailyButton = document.getElementById("editDailyButton");
+  var dailyDialog = document.getElementById("dailyDialog");
+  var dailyForm = document.getElementById("dailyForm");
+  var dailyDialogDate = document.getElementById("dailyDialogDate");
+  var dailyDialogClose = document.getElementById("dailyDialogClose");
+  var dailyCancelButton = document.getElementById("dailyCancelButton");
+  var dailyResetButton = document.getElementById("dailyResetButton");
+  var dailyWeather = document.getElementById("dailyWeather");
+  var dailyTemperature = document.getElementById("dailyTemperature");
+  var dailyNoteInput = document.getElementById("dailyNoteInput");
+  var dailyError = document.getElementById("dailyError");
 
   var startDate = readStartDate();
+  var activeDay = todayString();
+  var dailyRecord = readDailyRecord(activeDay);
   var toastTimer = null;
 
   function emitClawd(state, phrase, options) {
@@ -71,19 +101,20 @@
   function readStartDate() {
     try {
       var saved = JSON.parse(localStorage.getItem(RELATIONSHIP_KEY));
-      if (saved && saved.version === 1 && isValidDateString(saved.startDate)) {
+      if (saved && saved.version === 2 && isValidDateString(saved.startDate)) {
         return saved.startDate;
       }
+      writeStartDate(DEFAULT_START_DATE);
     } catch (error) {
-      return null;
+      return DEFAULT_START_DATE;
     }
-    return null;
+    return DEFAULT_START_DATE;
   }
 
   function writeStartDate(value) {
     localStorage.setItem(
       RELATIONSHIP_KEY,
-      JSON.stringify({ version: 1, startDate: value })
+      JSON.stringify({ version: 2, startDate: value })
     );
   }
 
@@ -128,26 +159,141 @@
     return parts[0] + "年" + parts[1] + "月" + parts[2] + "日";
   }
 
+  function formatShortDate(dateString) {
+    var parts = dateString.split("-").map(Number);
+    return parts[0] + "." + parts[1] + "." + parts[2];
+  }
+
+  function localDateFromString(dateString) {
+    var parts = dateString.split("-").map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  function formatTodayLabel(dateString) {
+    var date = localDateFromString(dateString);
+    return new Intl.DateTimeFormat("zh-CN", {
+      month: "numeric",
+      day: "numeric"
+    }).format(date);
+  }
+
+  function formatDailyDialogDate(dateString) {
+    var date = localDateFromString(dateString);
+    return (
+      new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long"
+      }).format(date) + " · 每天单独保存"
+    );
+  }
+
+  function emptyDailyRecord() {
+    return {
+      weather: "",
+      temperature: null,
+      message: ""
+    };
+  }
+
+  function readDailyStore() {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(DAILY_KEY));
+      if (parsed && parsed.version === 1 && parsed.days && typeof parsed.days === "object") {
+        return parsed;
+      }
+    } catch (error) {
+      // A fresh store is used when local data is unavailable or malformed.
+    }
+    return { version: 1, days: {} };
+  }
+
+  function normalizeDailyRecord(record) {
+    if (!record || typeof record !== "object") {
+      return emptyDailyRecord();
+    }
+    var weather = Object.prototype.hasOwnProperty.call(WEATHER_TYPES, record.weather)
+      ? record.weather
+      : "";
+    var temperature =
+      typeof record.temperature === "number" &&
+      Number.isFinite(record.temperature) &&
+      record.temperature >= -50 &&
+      record.temperature <= 60
+        ? record.temperature
+        : null;
+    var message =
+      typeof record.message === "string"
+        ? record.message.trim().slice(0, 80)
+        : "";
+    return {
+      weather: weather,
+      temperature: temperature,
+      message: message
+    };
+  }
+
+  function readDailyRecord(dateString) {
+    var store = readDailyStore();
+    return normalizeDailyRecord(store.days[dateString]);
+  }
+
+  function writeDailyRecord(dateString, record) {
+    var store = readDailyStore();
+    store.days[dateString] = {
+      weather: record.weather,
+      temperature: record.temperature,
+      message: record.message,
+      updatedAt: new Date().toISOString()
+    };
+    var dates = Object.keys(store.days).sort();
+    while (dates.length > 400) {
+      delete store.days[dates.shift()];
+    }
+    localStorage.setItem(DAILY_KEY, JSON.stringify(store));
+  }
+
+  function removeDailyRecord(dateString) {
+    var store = readDailyStore();
+    delete store.days[dateString];
+    localStorage.setItem(DAILY_KEY, JSON.stringify(store));
+  }
+
+  function formatTemperature(value) {
+    if (value === null) {
+      return "--°";
+    }
+    return String(Number.isInteger(value) ? value : value.toFixed(1)) + "℃";
+  }
+
+  function renderDaily() {
+    var weather = WEATHER_TYPES[dailyRecord.weather];
+    todayDateLabel.textContent = formatTodayLabel(activeDay);
+    weatherEmoji.textContent = weather ? weather.emoji : "○";
+    weatherTemperature.textContent = formatTemperature(dailyRecord.temperature);
+    weatherCondition.textContent = weather ? weather.label : "天气待记录";
+    dailyNote.textContent =
+      dailyRecord.message || "今天想说的话，写在这里。";
+  }
+
   function renderDays() {
     if (!startDate) {
-      daysCount.textContent = "—";
-      daysCaption.textContent = "设置开始日期后，会每天自动更新";
-      startDateLabel.textContent = "设置我们的日期";
-      clearDateButton.hidden = true;
-      return;
+      startDate = DEFAULT_START_DATE;
     }
 
     var days = relationshipDays(startDate);
     if (days < 1) {
-      startDate = null;
-      localStorage.removeItem(RELATIONSHIP_KEY);
+      startDate = DEFAULT_START_DATE;
+      writeStartDate(startDate);
       renderDays();
       return;
     }
 
     daysCount.textContent = String(days);
-    daysCaption.textContent = "从 " + formatDate(startDate) + " 开始";
-    startDateLabel.textContent = formatDate(startDate);
+    daysCaption.textContent = "FROM " + formatShortDate(startDate);
+    startDateLabel.textContent = formatShortDate(startDate);
+    startDateLabel.setAttribute("datetime", startDate);
     clearDateButton.hidden = false;
   }
 
@@ -156,7 +302,7 @@
     dateError.textContent = "";
     dateInput.max = todayString();
     dateInput.value = startDate || todayString();
-    clearDateButton.hidden = !startDate;
+    clearDateButton.hidden = false;
     if (typeof dateDialog.showModal === "function") {
       dateDialog.showModal();
     } else {
@@ -186,6 +332,79 @@
       duration: 2600,
       priority: 4
     });
+  }
+
+  function openDailyDialog() {
+    refreshDateSensitiveUI();
+    dailyError.hidden = true;
+    dailyError.textContent = "";
+    dailyDialogDate.textContent = formatDailyDialogDate(activeDay);
+    dailyWeather.value = dailyRecord.weather;
+    dailyTemperature.value =
+      dailyRecord.temperature === null ? "" : String(dailyRecord.temperature);
+    dailyNoteInput.value = dailyRecord.message;
+    if (typeof dailyDialog.showModal === "function") {
+      dailyDialog.showModal();
+    } else {
+      dailyDialog.setAttribute("open", "");
+    }
+    window.setTimeout(function () {
+      dailyWeather.focus();
+    }, 30);
+    emitClawd("thinking", "记录一下今天", {
+      duration: 1900,
+      priority: 2
+    });
+  }
+
+  function closeDailyDialog() {
+    if (dailyDialog.open) {
+      dailyDialog.close();
+    } else {
+      dailyDialog.removeAttribute("open");
+    }
+  }
+
+  function showDailyError(message) {
+    dailyError.textContent = message;
+    dailyError.hidden = false;
+    emitClawd("confused", "这里好像要改一下", {
+      duration: 2300,
+      priority: 4
+    });
+  }
+
+  function parseTemperature(value) {
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    if (!/^-?\d{1,2}(?:\.\d)?$/.test(trimmed)) {
+      throw new Error("温度请填写 -50 到 60 之间的数字，最多一位小数。");
+    }
+    var temperature = Number(trimmed);
+    if (
+      !Number.isFinite(temperature) ||
+      temperature < -50 ||
+      temperature > 60
+    ) {
+      throw new Error("温度需要在 -50℃ 到 60℃ 之间。");
+    }
+    return temperature;
+  }
+
+  function refreshDateSensitiveUI() {
+    var currentDay = todayString();
+    if (currentDay !== activeDay) {
+      activeDay = currentDay;
+      dailyRecord = readDailyRecord(activeDay);
+      if (dailyDialog.open) {
+        closeDailyDialog();
+        showToast("新的一天啦，请重新填写今天的记录");
+      }
+    }
+    renderDays();
+    renderDaily();
   }
 
   function showToast(message) {
@@ -259,15 +478,116 @@
   });
 
   clearDateButton.addEventListener("click", function () {
-    localStorage.removeItem(RELATIONSHIP_KEY);
-    startDate = null;
-    renderDays();
-    closeDateDialog();
-    showToast("开始日期已清除");
-    emitClawd("sweeping", "把日期清空啦", {
-      duration: 2600,
-      priority: 3
+    try {
+      writeStartDate(DEFAULT_START_DATE);
+      startDate = DEFAULT_START_DATE;
+      renderDays();
+      closeDateDialog();
+      showToast("已恢复为 FROM 2026.7.4");
+      emitClawd("sweeping", "恢复默认日期啦", {
+        duration: 2400,
+        priority: 3
+      });
+    } catch (error) {
+      showDateError("浏览器没有允许保存，请稍后再试。");
+    }
+  });
+
+  editDailyButton.addEventListener("click", openDailyDialog);
+  dailyDialogClose.addEventListener("click", closeDailyDialog);
+  dailyCancelButton.addEventListener("click", closeDailyDialog);
+
+  dailyDialog.addEventListener("cancel", function (event) {
+    event.preventDefault();
+    closeDailyDialog();
+  });
+
+  dailyDialog.addEventListener("click", function (event) {
+    if (event.target === dailyDialog) {
+      closeDailyDialog();
+    }
+  });
+
+  [dailyWeather, dailyTemperature, dailyNoteInput].forEach(function (field) {
+    field.addEventListener("input", function () {
+      dailyError.hidden = true;
+      dailyError.textContent = "";
     });
+  });
+
+  dailyNoteInput.addEventListener("input", function () {
+    emitClawd("typing", "", {
+      duration: 850,
+      priority: 1
+    });
+  });
+
+  dailyForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var currentDay = todayString();
+    if (currentDay !== activeDay) {
+      activeDay = currentDay;
+      dailyRecord = readDailyRecord(activeDay);
+      closeDailyDialog();
+      renderDaily();
+      showToast("新的一天啦，请重新填写今天的记录");
+      return;
+    }
+
+    var temperature;
+    try {
+      temperature = parseTemperature(dailyTemperature.value);
+    } catch (error) {
+      showDailyError(error.message);
+      return;
+    }
+
+    var weather = Object.prototype.hasOwnProperty.call(
+      WEATHER_TYPES,
+      dailyWeather.value
+    )
+      ? dailyWeather.value
+      : "";
+    var nextRecord = {
+      weather: weather,
+      temperature: temperature,
+      message: dailyNoteInput.value.trim().slice(0, 80)
+    };
+
+    try {
+      writeDailyRecord(activeDay, nextRecord);
+      dailyRecord = normalizeDailyRecord(nextRecord);
+      renderDaily();
+      closeDailyDialog();
+      showToast("今天的记录已保存");
+      emitClawd("eureka", "今天也记下来啦", {
+        duration: 2100,
+        priority: 3,
+        next: {
+          name: "happy",
+          duration: 1200,
+          priority: 3
+        }
+      });
+    } catch (error) {
+      showDailyError("浏览器没有允许保存，请稍后再试。");
+    }
+  });
+
+  dailyResetButton.addEventListener("click", function () {
+    try {
+      removeDailyRecord(activeDay);
+      dailyRecord = emptyDailyRecord();
+      renderDaily();
+      closeDailyDialog();
+      showToast("今天的记录已清空");
+      emitClawd("sweeping", "今天重新留白啦", {
+        duration: 2300,
+        priority: 3
+      });
+    } catch (error) {
+      showDailyError("浏览器没有允许清空，请稍后再试。");
+    }
   });
 
   document
@@ -286,13 +606,33 @@
 
   window.addEventListener("pageshow", function () {
     syncTheme();
-    renderDays();
+    refreshDateSensitiveUI();
   });
 
-  window.addEventListener("storage", syncTheme);
-  window.setInterval(renderDays, 60 * 1000);
+  window.addEventListener("focus", refreshDateSensitiveUI);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) {
+      refreshDateSensitiveUI();
+    }
+  });
+
+  window.addEventListener("storage", function (event) {
+    if (!event.key || event.key === APPEARANCE_KEY) {
+      syncTheme();
+    }
+    if (!event.key || event.key === RELATIONSHIP_KEY) {
+      startDate = readStartDate();
+      renderDays();
+    }
+    if (!event.key || event.key === DAILY_KEY) {
+      activeDay = todayString();
+      dailyRecord = readDailyRecord(activeDay);
+      renderDaily();
+    }
+  });
+  window.setInterval(refreshDateSensitiveUI, 60 * 1000);
 
   syncTheme();
-  renderDays();
+  refreshDateSensitiveUI();
 })();
 
