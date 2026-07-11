@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
     <meta
       name="description"
       content="洄·Maneo信箱的 Volo、群聊与终端入口"
@@ -13,10 +13,40 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23fff8ed'/%3E%3Cg fill='none' stroke='%23e5754c' stroke-width='4.5' stroke-linecap='round'%3E%3Cpath d='M32 7v19M32 38v19M7 32h19M38 32h19M14.3 14.3l13.5 13.5M36.2 36.2l13.5 13.5M49.7 14.3 36.2 27.8M27.8 36.2 14.3 49.7M21 9.5l7.5 17.4M35.5 37.1 43 54.5M9.5 43 26.9 35.5M37.1 28.5 54.5 21'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='4.5' fill='%23e5754c'/%3E%3C/svg%3E"
     />
     <title>洄·Maneo信箱 · 对话</title>
-    <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
+    <script>
+      try {
+        var savedAppearance = JSON.parse(
+          localStorage.getItem("island-chat.preferences.v1")
+        );
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var themeColors = {
+          mist: "#eef2f0",
+          zen: "#f2efe8",
+          sage: "#f1f1e7",
+          blush: "#ebeef1"
+        };
+        var savedTheme =
+          (savedAppearance &&
+            (savedAppearance.theme ||
+              legacyThemes[savedAppearance.id] ||
+              savedAppearance.id)) ||
+          "mist";
+        if (!themeColors[savedTheme]) {
+          savedTheme = "mist";
+        }
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute(
+          "content",
+          themeColors[savedTheme]
+        );
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="chat-navigation.css?v=20260711-flower-brand-v1" />
     <link rel="stylesheet" href="chat-views.css?v=20260711-chat-nav-v1" />
-    <link rel="stylesheet" href="chat-hub.css?v=20260711-chat-hub-v2" />
+    <link rel="stylesheet" href="chat-hub.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="chat-page sidebarless-chat">
@@ -497,7 +527,7 @@
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
-    <script src="app.js?v=20260711-chat-hub-v1"></script>
+    <script src="app.js?v=20260711-theme-palettes-v1"></script>
     <script src="volo.js?v=20260711-chat-hub-v1"></script>
   </body>
 </html>
