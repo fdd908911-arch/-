@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
+    <meta name="description" content="Volo 现在的状态预留页" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23fff8ed'/%3E%3Cg fill='none' stroke='%23e5754c' stroke-width='4.5' stroke-linecap='round'%3E%3Cpath d='M32 7v19M32 38v19M7 32h19M38 32h19M14.3 14.3l13.5 13.5M36.2 36.2l13.5 13.5M49.7 14.3 36.2 27.8M27.8 36.2 14.3 49.7'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='4.5' fill='%23e5754c'/%3E%3C/svg%3E"
+    />
+    <title>岛屿 · Volo 状态</title>
+    <script>
+      try {
+        var savedAppearance = JSON.parse(
+          localStorage.getItem("island-chat.preferences.v1")
+        );
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var savedTheme =
+          (savedAppearance &&
+            (savedAppearance.theme ||
+              legacyThemes[savedAppearance.id] ||
+              savedAppearance.id)) ||
+          "mist";
+        var themeColors = {
+          mist: "#eef2f1",
+          zen: "#f4f1ea",
+          sage: "#e9eadf",
+          blush: "#ebe3e5"
+        };
+        if (!themeColors[savedTheme]) {
+          savedTheme = "mist";
+        }
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute(
+          "content",
+          themeColors[savedTheme]
+        );
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
+    <link rel="stylesheet" href="home.css?v=20260711-volo-status-v1" />
+    <link rel="stylesheet" href="memory.css?v=20260711-memory-v1" />
+    <link rel="stylesheet" href="status.css?v=20260711-volo-status-v1" />
+    <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+  </head>
+  <body class="home-page memory-page status-page">
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="status-icon-back" viewBox="0 0 24 24">
+        <path d="m15 5-7 7 7 7M8 12h11" />
+      </symbol>
+      <symbol id="status-icon-flower" viewBox="0 0 24 24">
+        <path d="M12 2.5v6M12 15.5v6M2.5 12h6M15.5 12h6M5.3 5.3l4.2 4.2M14.5 14.5l4.2 4.2M18.7 5.3l-4.2 4.2M9.5 14.5l-4.2 4.2" />
+        <circle cx="12" cy="12" r="2.2" />
+      </symbol>
+    </svg>
+
+    <span class="home-ambient home-ambient-one" aria-hidden="true"></span>
+    <span class="home-ambient home-ambient-two" aria-hidden="true"></span>
+
+    <div class="memory-shell">
+      <header class="memory-header">
+        <a class="memory-back" href="index.html" aria-label="返回开场页">
+          <svg><use href="#status-icon-back"></use></svg>
+        </a>
+        <div class="memory-heading">
+          <span class="memory-heading-icon status-heading-icon" aria-hidden="true">
+            <svg><use href="#status-icon-flower"></use></svg>
+          </span>
+          <div>
+            <h1>Volo 状态</h1>
+            <p>现在的状态</p>
+          </div>
+        </div>
+        <span class="memory-header-spacer" aria-hidden="true"></span>
+      </header>
+
+      <main class="memory-canvas status-canvas" aria-label="Volo 状态内容区域"></main>
+    </div>
+
+    <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+  </body>
+</html>
+
