@@ -6,7 +6,7 @@
     <meta id="themeColorMeta" name="theme-color" content="#eef2f1" />
     <meta
       name="description"
-      content="洄·Maneo信箱开场页，记录在一起的日子并进入 Chat、Diary、Memory 与 Volo 状态"
+      content="洄·Maneo信箱开场页，记录在一起的日子并进入 Chat、Diary、Memory、Volo 状态与世界"
     />
     <link
       rel="icon"
@@ -34,7 +34,7 @@
       }
     </script>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
-    <link rel="stylesheet" href="home.css?v=20260711-chat-routes-v1" />
+    <link rel="stylesheet" href="home.css?v=20260711-world-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="home-page">
@@ -64,6 +64,10 @@
       <symbol id="home-icon-status" viewBox="0 0 24 24">
         <path d="M12 2.5v6M12 15.5v6M2.5 12h6M15.5 12h6M5.3 5.3l4.2 4.2M14.5 14.5l4.2 4.2M18.7 5.3l-4.2 4.2M9.5 14.5l-4.2 4.2" />
         <circle cx="12" cy="12" r="2.2" />
+      </symbol>
+      <symbol id="home-icon-world" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M3.8 9h16.4M3.8 15h16.4M12 3.5c2.2 2.3 3.3 5.1 3.3 8.5S14.2 18.2 12 20.5C9.8 18.2 8.7 15.4 8.7 12S9.8 5.8 12 3.5Z" />
       </symbol>
       <symbol id="home-icon-arrow" viewBox="0 0 24 24">
         <path d="M5 12h14M14 7l5 5-5 5" />
@@ -139,6 +143,7 @@
             class="weather-card"
             href="diary.html"
             aria-label="打开今天的 Diary 日记"
+            data-clawd-destination="Diary"
           >
             <div class="weather-card-glow" aria-hidden="true"></div>
             <header class="home-card-header">
@@ -166,7 +171,7 @@
         </div>
 
         <div class="entry-stack" aria-label="主要入口">
-          <a class="chat-entry-card" href="chat.html#hub" aria-label="进入 Chat 入口页">
+          <a class="chat-entry-card" href="chat.html#hub" aria-label="进入 Chat 入口页" data-clawd-destination="Chat">
             <div class="chat-entry-decoration" aria-hidden="true"></div>
             <header class="home-card-header">
               <span class="home-card-kicker">常用入口</span>
@@ -184,7 +189,7 @@
             </div>
           </a>
 
-          <a class="memory-entry-card" href="memory.html" aria-label="进入 Memory 回忆页">
+          <a class="memory-entry-card" href="memory.html" aria-label="进入 Memory 回忆页" data-clawd-destination="Memory">
             <div class="memory-entry-decoration" aria-hidden="true"></div>
             <header class="home-card-header">
               <span class="home-card-kicker">珍藏片段</span>
@@ -203,7 +208,7 @@
       </section>
 
       <section class="future-space" aria-label="更多入口与预留内容区域">
-        <a class="status-entry-card" href="volo-status.html" aria-label="查看 Volo 现在的状态">
+        <a class="status-entry-card" href="volo-status.html" aria-label="查看 Volo 现在的状态" data-clawd-destination="Volo 状态">
           <div class="status-entry-decoration" aria-hidden="true"></div>
           <header class="home-card-header">
             <span class="home-card-kicker">现在的状态</span>
@@ -217,6 +222,22 @@
             </div>
           </div>
           <footer class="status-entry-footer">打开状态页 · 内容稍后添加</footer>
+        </a>
+
+        <a class="world-entry-card" href="world.html" aria-label="进入世界页面" data-clawd-destination="世界">
+          <div class="world-entry-decoration" aria-hidden="true"></div>
+          <header class="home-card-header">
+            <span class="home-card-kicker">我们的天地</span>
+            <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+          </header>
+          <div class="world-entry-content">
+            <span class="world-entry-icon"><svg><use href="#home-icon-world"></use></svg></span>
+            <div>
+              <h2>世界</h2>
+              <p>走进我们共同的小世界</p>
+            </div>
+          </div>
+          <footer class="world-entry-footer">打开世界 · 内容稍后添加</footer>
         </a>
       </section>
     </main>
@@ -259,6 +280,6 @@
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
-    <script src="home.js?v=20260711-chat-hub-v1"></script>
+    <script src="home.js?v=20260711-world-v1"></script>
   </body>
 </html>
