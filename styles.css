@@ -8,6 +8,10 @@
   --panel-rgb: 248, 248, 245;
   --ink-rgb: 53, 68, 78;
   --accent-rgb: 88, 125, 150;
+  --glass-fill: rgba(var(--panel-rgb), 0.42);
+  --glass-fill-strong: rgba(var(--panel-rgb), 0.6);
+  --glass-edge: rgba(255, 255, 255, 0.62);
+  --glass-edge-soft: rgba(255, 255, 255, 0.3);
   --line: rgba(53, 68, 78, 0.11);
   --line-strong: rgba(53, 68, 78, 0.18);
   --text: #35444e;
@@ -24,8 +28,25 @@
   --success-strong: #365f48;
   --success-muted: #536f5d;
   --danger: #b56e76;
+  --danger-rgb: 181, 110, 118;
   --brand-start: #adc4d4;
   --brand-end: #7ea4ba;
+  --heart-accent: #c77d88;
+  --weather-accent-rgb: 235, 207, 151;
+  --memory-accent-start: #d7a8b5;
+  --memory-accent-end: #9b7182;
+  --memory-accent-rgb: 155, 113, 130;
+  --status-accent-start: #ee9a78;
+  --status-accent-end: #d86649;
+  --status-accent-rgb: 216, 102, 73;
+  --world-accent-start: #9bbcaf;
+  --world-accent-end: #5c8b85;
+  --world-accent-rgb: 92, 139, 133;
+  --route-volo: #c8674d;
+  --route-group: #358b86;
+  --route-group-rgb: 53, 139, 134;
+  --route-terminal: #43535d;
+  --route-terminal-rgb: 67, 83, 93;
   --chat-base: #dce6e7;
   --header-bg: rgba(248, 248, 245, 0.93);
   --sidebar-footer-bg: rgba(231, 237, 235, 0.7);
@@ -78,8 +99,31 @@
   --blue-soft: rgba(113, 100, 91, 0.12);
   --button-start: #6a5d54;
   --button-end: #51463f;
+  --green: #7d9276;
+  --success-rgb: 101, 127, 96;
+  --success: #657f60;
+  --success-strong: #4e654a;
+  --success-muted: #6e7969;
+  --danger: #a56f70;
+  --danger-rgb: 165, 111, 112;
   --brand-start: #d5c9ba;
   --brand-end: #9e9389;
+  --heart-accent: #a88278;
+  --weather-accent-rgb: 217, 196, 166;
+  --memory-accent-start: #d8c7c1;
+  --memory-accent-end: #9a7b76;
+  --memory-accent-rgb: 154, 123, 118;
+  --status-accent-start: #d7bd9f;
+  --status-accent-end: #a47f62;
+  --status-accent-rgb: 164, 127, 98;
+  --world-accent-start: #c9c3b6;
+  --world-accent-end: #7b7469;
+  --world-accent-rgb: 123, 116, 105;
+  --route-volo: #a27057;
+  --route-group: #7c8172;
+  --route-group-rgb: 124, 129, 114;
+  --route-terminal: #5d5651;
+  --route-terminal-rgb: 93, 86, 81;
   --chat-base: #e6dfd5;
   --header-bg: rgba(248, 245, 238, 0.94);
   --sidebar-footer-bg: rgba(235, 229, 220, 0.72);
@@ -123,8 +167,31 @@
   --blue-soft: rgba(93, 112, 100, 0.12);
   --button-start: #56695d;
   --button-end: #415347;
+  --green: #66846c;
+  --success-rgb: 91, 126, 99;
+  --success: #5b7e63;
+  --success-strong: #45634c;
+  --success-muted: #60736a;
+  --danger: #a8706a;
+  --danger-rgb: 168, 112, 106;
   --brand-start: #c8d5c5;
   --brand-end: #84978b;
+  --heart-accent: #9f817d;
+  --weather-accent-rgb: 235, 226, 170;
+  --memory-accent-start: #d8c7b3;
+  --memory-accent-end: #9b837c;
+  --memory-accent-rgb: 155, 131, 124;
+  --status-accent-start: #e7d890;
+  --status-accent-end: #a08e55;
+  --status-accent-rgb: 160, 142, 85;
+  --world-accent-start: #c8d5c5;
+  --world-accent-end: #6e8776;
+  --world-accent-rgb: 110, 135, 118;
+  --route-volo: #9c765c;
+  --route-group: #62806e;
+  --route-group-rgb: 98, 128, 110;
+  --route-terminal: #4f5d55;
+  --route-terminal-rgb: 79, 93, 85;
   --chat-base: #e3e6d8;
   --header-bg: rgba(248, 248, 238, 0.94);
   --sidebar-footer-bg: rgba(229, 233, 219, 0.72);
@@ -168,8 +235,31 @@
   --blue-soft: rgba(78, 110, 139, 0.12);
   --button-start: #486984;
   --button-end: #35536c;
+  --green: #688c79;
+  --success-rgb: 91, 128, 111;
+  --success: #5b806f;
+  --success-strong: #446657;
+  --success-muted: #61766c;
+  --danger: #b46f82;
+  --danger-rgb: 180, 111, 130;
   --brand-start: #a8b5c0;
   --brand-end: #6f8aa7;
+  --heart-accent: #bd7c91;
+  --weather-accent-rgb: 229, 207, 199;
+  --memory-accent-start: #dfb8c4;
+  --memory-accent-end: #a66f84;
+  --memory-accent-rgb: 166, 111, 132;
+  --status-accent-start: #e7c9bf;
+  --status-accent-end: #b98278;
+  --status-accent-rgb: 185, 130, 120;
+  --world-accent-start: #b6c4cf;
+  --world-accent-end: #6f8aa7;
+  --world-accent-rgb: 111, 138, 167;
+  --route-volo: #b9796b;
+  --route-group: #617f98;
+  --route-group-rgb: 97, 127, 152;
+  --route-terminal: #485c70;
+  --route-terminal-rgb: 72, 92, 112;
   --chat-base: #e1dfe3;
   --header-bg: rgba(248, 244, 243, 0.94);
   --sidebar-footer-bg: rgba(234, 226, 228, 0.72);
@@ -274,8 +364,8 @@ svg {
   left: -8vw;
   width: 32vw;
   height: 32vw;
-  border: 1px solid rgba(79, 161, 213, 0.13);
-  box-shadow: inset 0 0 100px rgba(79, 161, 213, 0.05);
+  border: 1px solid rgba(var(--accent-rgb), 0.13);
+  box-shadow: inset 0 0 100px rgba(var(--accent-rgb), 0.05);
 }
 
 .ambient-two {
@@ -283,7 +373,7 @@ svg {
   bottom: -12vw;
   width: 28vw;
   height: 28vw;
-  border: 1px solid rgba(88, 207, 156, 0.09);
+  border: 1px solid rgba(var(--success-rgb), 0.09);
 }
 
 .app-shell {
@@ -546,7 +636,7 @@ svg {
 }
 
 .avatar-design {
-  --avatar-bg: linear-gradient(145deg, #5dbeaa, #337f87);
+  --avatar-bg: linear-gradient(145deg, var(--world-accent-start), var(--route-group));
 }
 
 .avatar-zhou {
@@ -828,8 +918,8 @@ svg {
   height: 8px;
   border: 2px solid var(--panel-strong);
   border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 3px rgba(88, 207, 156, 0.08);
+  background: var(--success);
+  box-shadow: 0 0 0 3px rgba(var(--success-rgb), 0.08);
 }
 
 .sidebar-scrim {
@@ -1815,12 +1905,12 @@ svg {
 }
 
 .text-button.danger {
-  color: #b88c91;
+  color: var(--danger);
 }
 
 .text-button.danger:hover {
-  background: rgba(255, 110, 110, 0.07);
-  color: #f0a2a2;
+  background: rgba(var(--danger-rgb), 0.07);
+  color: var(--danger);
 }
 
 .text-button svg {
@@ -1886,8 +1976,8 @@ svg {
   height: 27px;
   place-items: center;
   border-radius: 9px;
-  background: rgba(88, 207, 156, 0.12);
-  color: #72d5aa;
+  background: rgba(var(--success-rgb), 0.12);
+  color: var(--success-strong);
 }
 
 .toast-check svg {
@@ -2580,4 +2670,3 @@ svg {
     transition-duration: 0.01ms !important;
   }
 }
-
