@@ -26,10 +26,10 @@
   };
 
   var THEME_COLORS = {
-    mist: "#eef2f1",
-    zen: "#f4f1ea",
-    sage: "#e9eadf",
-    blush: "#ebe3e5"
+    mist: "#eef2f0",
+    zen: "#f2efe8",
+    sage: "#f1f1e7",
+    blush: "#ebeef1"
   };
 
   var THEME_NAMES = {
@@ -1040,4 +1040,3 @@
   applyWallpaper(appliedSettings, null);
   initializeWallpaper();
 })();
-
