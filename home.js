@@ -394,15 +394,16 @@
   });
 
   document
-    .querySelectorAll(".chat-route-link, .memory-entry-card, .status-entry-card, .weather-card")
+    .querySelectorAll(".chat-entry-card, .memory-entry-card, .status-entry-card, .weather-card")
     .forEach(function (entry) {
       entry.addEventListener("pointerdown", function () {
-        var destination = entry.dataset.destination ||
-          (entry.classList.contains("status-entry-card")
-            ? "Volo 状态"
-            : entry.classList.contains("memory-entry-card")
-              ? "Memory"
-              : "Diary");
+        var destination = entry.classList.contains("status-entry-card")
+          ? "Volo 状态"
+          : entry.classList.contains("memory-entry-card")
+            ? "Memory"
+            : entry.classList.contains("weather-card")
+              ? "Diary"
+              : "Chat";
         emitClawd("goingAway", "去" + destination + "见", {
           duration: 900,
           priority: 3
