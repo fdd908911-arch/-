@@ -1,4 +1,4 @@
-# 岛屿信箱
+# 洄·Maneo信箱
 
 一个支持本地自定义聊天背景的 Telegram 风格对话页原型。
 
@@ -34,4 +34,3 @@
 ## 第三方素材
 
 像素螃蟹动画来自 [marciogranzotto/clawd-tank](https://github.com/marciogranzotto/clawd-tank)，按 MIT License 使用。许可和署名详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
