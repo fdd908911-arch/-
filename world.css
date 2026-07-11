@@ -1,8 +1,12 @@
 .world-heading-icon {
-  border: 1px solid rgba(92, 139, 133, 0.22);
-  background: linear-gradient(145deg, #dcebe5, #9bbcaf);
-  box-shadow: 0 8px 20px rgba(74, 126, 120, 0.16);
-  color: #426f6b;
+  border: 1px solid rgba(var(--world-accent-rgb), 0.22);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.68),
+    rgba(var(--world-accent-rgb), 0.26)
+  );
+  box-shadow: 0 8px 20px rgba(var(--world-accent-rgb), 0.16);
+  color: var(--world-accent-end);
 }
 
 .world-heading-icon svg {
