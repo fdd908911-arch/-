@@ -409,6 +409,10 @@
   display: grid;
 }
 
+.volo-global-menu-button {
+  display: none;
+}
+
 .volo-main {
   display: flex;
   min-height: 0;
@@ -875,6 +879,10 @@
   }
 
   .volo-menu-button {
+    display: grid;
+  }
+
+  .volo-global-menu-button {
     display: grid;
   }
 
