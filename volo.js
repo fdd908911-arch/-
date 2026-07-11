@@ -7,6 +7,13 @@
   var messageScroll = document.getElementById("voloMessageScroll");
   var messageList = document.getElementById("voloMessageList");
   var emptyState = document.getElementById("voloEmpty");
+  var drawer = document.getElementById("voloDrawer");
+  var drawerButton = document.getElementById("voloDrawerButton");
+  var drawerClose = document.getElementById("voloDrawerClose");
+  var drawerScrim = document.getElementById("voloDrawerScrim");
+  var newChatButton = document.getElementById("voloNewChatButton");
+  var currentChatButton = document.getElementById("voloCurrentChatButton");
+  var mainSidebarButton = document.getElementById("voloMainSidebarButton");
   var messages = [];
   var isTyping = false;
   var replyTimer = 0;
@@ -42,6 +49,21 @@
     input.style.height = Math.max(height, 28) + "px";
     input.style.overflowY = input.scrollHeight > 120 ? "auto" : "hidden";
     sendButton.disabled = input.value.trim().length === 0;
+  }
+
+  function setDrawerOpen(open, restoreFocus) {
+    drawer.classList.toggle("is-open", open);
+    drawerScrim.classList.toggle("is-open", open);
+    drawer.setAttribute("aria-hidden", String(!open));
+    drawer.toggleAttribute("inert", !open);
+    drawerButton.setAttribute("aria-expanded", String(open));
+    if (open) {
+      window.setTimeout(function () {
+        newChatButton.focus();
+      }, 80);
+    } else if (restoreFocus) {
+      drawerButton.focus();
+    }
   }
 
   function createUserMessage(message) {
@@ -140,6 +162,26 @@
     }
   }
 
+  function startNewChat() {
+    window.clearTimeout(replyTimer);
+    replyTimer = 0;
+    isTyping = false;
+    replyIndex = 0;
+    messages = [];
+    input.value = "";
+    resizeInput();
+    renderMessages(false);
+    updateSidebarPreview("想聊什么都可以", "现在");
+    setDrawerOpen(false, false);
+    requestAnimationFrame(function () {
+      input.focus();
+    });
+    emitClawd("happy", "New chat with Volo", {
+      duration: 1100,
+      priority: 3
+    });
+  }
+
   function queueReply() {
     window.clearTimeout(replyTimer);
     isTyping = true;
@@ -189,6 +231,29 @@
     sendMessage();
   });
 
+  drawerButton.addEventListener("click", function () {
+    setDrawerOpen(drawerButton.getAttribute("aria-expanded") !== "true", false);
+  });
+
+  drawerClose.addEventListener("click", function () {
+    setDrawerOpen(false, true);
+  });
+
+  drawerScrim.addEventListener("click", function () {
+    setDrawerOpen(false, true);
+  });
+
+  newChatButton.addEventListener("click", startNewChat);
+
+  currentChatButton.addEventListener("click", function () {
+    setDrawerOpen(false, false);
+    input.focus();
+  });
+
+  mainSidebarButton.addEventListener("click", function () {
+    setDrawerOpen(false, false);
+  });
+
   input.addEventListener("input", function () {
     resizeInput();
     if (input.value.trim()) {
@@ -213,6 +278,19 @@
       duration: 1000,
       priority: 2
     });
+  });
+
+  document.addEventListener("click", function (event) {
+    var workspaceButton = event.target.closest("[data-workspace]");
+    if (workspaceButton && workspaceButton.dataset.workspace !== "volo") {
+      setDrawerOpen(false, false);
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && drawer.classList.contains("is-open")) {
+      setDrawerOpen(false, true);
+    }
   });
 
   resizeInput();
