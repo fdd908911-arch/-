@@ -8,10 +8,10 @@
   var AUTO_SAVE_DELAY = 850;
   var LEGACY_THEMES = { coast: "zen", dusk: "sage", paper: "blush" };
   var THEME_COLORS = {
-    mist: "#eef2f1",
-    zen: "#f4f1ea",
-    sage: "#e9eadf",
-    blush: "#ebe3e5"
+    mist: "#eef2f0",
+    zen: "#f2efe8",
+    sage: "#f1f1e7",
+    blush: "#ebeef1"
   };
   var WEATHER_TYPES = {
     sunny: { emoji: "☀️", label: "晴" },
@@ -619,4 +619,3 @@
   applyFont(readFont(), false);
   loadSelectedRecord();
 })();
-
