@@ -9,6 +9,27 @@
   border-radius: 13px;
 }
 
+.brand-flower-mark {
+  border: 1px solid rgba(229, 117, 76, 0.18);
+  background: rgba(255, 248, 237, 0.78);
+  box-shadow: 0 7px 19px rgba(229, 117, 76, 0.1);
+}
+
+.brand-flower-mark:hover .brand-flower-image {
+  transform: rotate(18deg) scale(1.06);
+}
+
+.brand-flower-image {
+  display: block;
+  width: 31px;
+  height: 31px;
+  background-image: var(--ysclaude-flower-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition: transform 220ms ease;
+}
+
 .brand-copy span {
   font-size: 10px;
   font-weight: 650;
