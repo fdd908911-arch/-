@@ -84,6 +84,233 @@
   --volo-border: #e8dcdc;
 }
 
+.volo-drawer-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  border: 0;
+  background: rgba(20, 20, 19, 0.14);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
+}
+
+.volo-drawer-scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.volo-drawer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 12;
+  display: flex;
+  width: min(300px, calc(100% - 56px));
+  flex-direction: column;
+  padding: 16px 14px 14px;
+  border-right: 1px solid var(--volo-border);
+  background:
+    radial-gradient(circle at 18% 4%, rgba(229, 117, 76, 0.07), transparent 31%),
+    color-mix(in srgb, var(--volo-panel) 96%, var(--volo-bg));
+  box-shadow: 22px 0 50px rgba(47, 41, 34, 0.12);
+  transform: translateX(calc(-100% - 24px));
+  transition: transform 240ms cubic-bezier(0.22, 0.78, 0.24, 1);
+}
+
+.volo-drawer.is-open {
+  transform: translateX(0);
+}
+
+.volo-drawer-header {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.volo-drawer-brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.volo-drawer-brand > span:last-child,
+.volo-current-chat > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-drawer-brand strong {
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.volo-drawer-brand small {
+  margin-top: 2px;
+  color: var(--volo-muted);
+  font-size: 10px;
+}
+
+.volo-drawer-flower,
+.volo-current-chat-flower {
+  display: block;
+  flex: 0 0 auto;
+  background-image: var(--ysclaude-flower-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.volo-drawer-flower {
+  width: 31px;
+  height: 31px;
+}
+
+.volo-drawer-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--volo-text-soft);
+}
+
+.volo-drawer-close:hover,
+.volo-main-chat-button:hover {
+  background: var(--volo-hover);
+  color: var(--volo-text);
+}
+
+.volo-drawer-close svg,
+.volo-new-chat-button svg,
+.volo-main-chat-button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-new-chat-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 11px;
+  margin-top: 18px;
+  padding: 7px 10px;
+  border: 1px solid rgba(217, 119, 6, 0.16);
+  border-radius: 14px;
+  background: var(--volo-accent-soft);
+  color: #8f4d08;
+  text-align: left;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.volo-new-chat-button:hover {
+  box-shadow: 0 8px 22px rgba(174, 91, 10, 0.11);
+  transform: translateY(-1px);
+}
+
+.volo-new-chat-button:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.volo-new-chat-button > span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.volo-new-chat-button strong {
+  font-size: 13px;
+  font-weight: 680;
+}
+
+.volo-drawer-section {
+  margin-top: 25px;
+}
+
+.volo-drawer-section h2 {
+  margin: 0 0 8px 9px;
+  color: var(--volo-muted);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.volo-current-chat {
+  display: flex;
+  width: 100%;
+  min-height: 57px;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: var(--volo-hover);
+  color: var(--volo-text);
+  text-align: left;
+}
+
+.volo-current-chat-flower {
+  width: 30px;
+  height: 30px;
+}
+
+.volo-current-chat strong {
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.volo-current-chat small {
+  max-width: 185px;
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--volo-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-drawer-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--volo-border);
+}
+
+.volo-main-chat-button {
+  display: none;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 11px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--volo-text-soft);
+  font-size: 11px;
+  text-align: left;
+}
+
 .volo-topbar {
   position: absolute;
   top: 0;
@@ -624,6 +851,16 @@
     height: calc(76px + env(safe-area-inset-top));
   }
 
+  .volo-drawer {
+    width: min(310px, calc(100% - 44px));
+    padding-top: calc(12px + env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .volo-main-chat-button {
+    display: flex;
+  }
+
   .volo-topbar-group,
   .volo-center-button {
     top: calc(8px + env(safe-area-inset-top));
@@ -710,6 +947,11 @@
   .volo-typing span,
   .volo-flower-button.is-blooming {
     animation: none;
+  }
+
+  .volo-drawer,
+  .volo-drawer-scrim {
+    transition: none;
   }
 }
 
