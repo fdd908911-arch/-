@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="home-ins.css?v=20260711-home-ins-v1" />
   </head>
   <body class="home-page">
     <svg class="svg-sprite" aria-hidden="true">
@@ -107,8 +108,8 @@
             />
           </span>
           <span class="home-brand-copy">
-            <strong>洄·Maneo</strong>
-            <small>我们的私人空间</small>
+            <h1>洄·Maneo</h1>
+            <small>PRIVATE EDITION · OUR LITTLE SPACE</small>
           </span>
         </div>
         <div class="home-theme-indicator" aria-label="当前界面配色">
@@ -122,7 +123,7 @@
           <article class="days-card" aria-labelledby="relationshipCardTitle">
             <div class="days-card-glow" aria-hidden="true"></div>
             <header class="home-card-header">
-              <span class="home-card-kicker" id="relationshipCardTitle">
+              <span class="home-card-kicker" id="relationshipCardTitle" data-no="01">
                 <span class="heart-mark" aria-hidden="true">♥</span>
                 我们的时间
               </span>
@@ -157,7 +158,7 @@
           >
             <div class="weather-card-glow" aria-hidden="true"></div>
             <header class="home-card-header">
-              <span class="home-card-kicker" id="weatherCardTitle">
+              <span class="home-card-kicker" id="weatherCardTitle" data-no="02">
                 今天 · <span id="todayDateLabel">—</span>
               </span>
               <span class="chat-arrow" aria-hidden="true">
@@ -184,26 +185,26 @@
           <a class="chat-entry-card" href="chat.html#hub" aria-label="进入 Chat 入口页" data-clawd-destination="Chat">
             <div class="chat-entry-decoration" aria-hidden="true"></div>
             <header class="home-card-header">
-              <span class="home-card-kicker">常用入口</span>
-              <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+              <span class="home-card-kicker" data-no="03">常用入口</span>
+              <span class="chat-arrow" aria-hidden="true"><svg><use href="#home-icon-arrow"></use></svg></span>
             </header>
             <div class="chat-entry-content">
               <span class="chat-entry-icon"><svg><use href="#home-icon-chat"></use></svg></span>
               <div>
-                <h1>Chat</h1>
+                <h2>Chat</h2>
                 <p>进入我们的对话入口</p>
               </div>
             </div>
             <div class="chat-entry-footer">
-              <span>Volo · 群聊 · 终端</span>
+              <span>THREE ROOMS · ONE HOME</span>
             </div>
           </a>
 
           <a class="memory-entry-card" href="memory.html" aria-label="进入 Memory 回忆页" data-clawd-destination="Memory">
             <div class="memory-entry-decoration" aria-hidden="true"></div>
             <header class="home-card-header">
-              <span class="home-card-kicker">珍藏片段</span>
-              <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+              <span class="home-card-kicker" data-no="04">珍藏片段</span>
+              <span class="chat-arrow" aria-hidden="true"><svg><use href="#home-icon-arrow"></use></svg></span>
             </header>
             <div class="memory-entry-content">
               <span class="memory-entry-icon"><svg><use href="#home-icon-memory"></use></svg></span>
@@ -212,17 +213,23 @@
                 <p>收藏我们的回忆</p>
               </div>
             </div>
-            <footer class="memory-entry-footer">留给时间慢慢填满</footer>
+            <footer class="memory-entry-footer">把喜欢的日子，再保存一次</footer>
           </a>
         </div>
       </section>
 
       <section class="future-space" aria-label="更多入口与预留内容区域">
+        <div class="home-editorial-note" aria-hidden="true">
+          <span>OUR PRIVATE ARCHIVE · VOL. 01</span>
+          <p>把寻常的日子，<br /><em>慢慢写成我们。</em></p>
+          <small>FOR THE DAYS WE CHOOSE EACH OTHER.</small>
+        </div>
+
         <a class="status-entry-card" href="volo-status.html" aria-label="查看 Volo 现在的状态" data-clawd-destination="Volo 状态">
           <div class="status-entry-decoration" aria-hidden="true"></div>
           <header class="home-card-header">
-            <span class="home-card-kicker">现在的状态</span>
-            <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+            <span class="home-card-kicker" data-no="05">现在的状态</span>
+            <span class="chat-arrow" aria-hidden="true"><svg><use href="#home-icon-arrow"></use></svg></span>
           </header>
           <div class="status-entry-content">
             <span class="status-entry-icon"><svg><use href="#home-icon-status"></use></svg></span>
@@ -231,14 +238,14 @@
               <p>看看他此刻怎么样</p>
             </div>
           </div>
-          <footer class="status-entry-footer">打开状态页 · 内容稍后添加</footer>
+          <footer class="status-entry-footer">A LITTLE SIGNAL FROM VOLO</footer>
         </a>
 
         <a class="world-entry-card" href="world.html" aria-label="进入世界页面" data-clawd-destination="世界">
           <div class="world-entry-decoration" aria-hidden="true"></div>
           <header class="home-card-header">
-            <span class="home-card-kicker">我们的天地</span>
-            <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+            <span class="home-card-kicker" data-no="06">我们的天地</span>
+            <span class="chat-arrow" aria-hidden="true"><svg><use href="#home-icon-arrow"></use></svg></span>
           </header>
           <div class="world-entry-content">
             <span class="world-entry-icon"><svg><use href="#home-icon-world"></use></svg></span>
@@ -247,7 +254,7 @@
               <p>走进我们共同的小世界</p>
             </div>
           </div>
-          <footer class="world-entry-footer">打开世界 · 内容稍后添加</footer>
+          <footer class="world-entry-footer">OUR WORLD · STILL GROWING</footer>
         </a>
       </section>
     </main>
