@@ -14,7 +14,7 @@
     />
     <title>岛屿信箱 · 对话</title>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
-    <link rel="stylesheet" href="chat-views.css?v=20260711-chat-views-v1" />
+    <link rel="stylesheet" href="chat-views.css?v=20260711-chat-views-v2" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="chat-page">
@@ -269,7 +269,11 @@
             <div class="volo-message-scroll" id="voloMessageScroll">
               <div class="volo-message-list" id="voloMessageList" role="log" aria-live="polite" aria-label="Volo 消息">
                 <section class="volo-empty" id="voloEmpty">
-                  <span class="volo-welcome-flower" aria-hidden="true"></span>
+                  <button
+                    class="volo-welcome-flower volo-flower-button"
+                    type="button"
+                    aria-label="让 Volo 的小花动起来"
+                  ></button>
                   <h1>今天想聊些什么？</h1>
                 </section>
               </div>
@@ -512,7 +516,7 @@
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
     <script src="app.js?v=20260711-chat-views-v1"></script>
-    <script src="volo.js?v=20260711-volo-v1"></script>
+    <script src="volo.js?v=20260711-volo-v2"></script>
   </body>
 </html>
 
