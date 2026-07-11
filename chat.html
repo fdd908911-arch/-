@@ -16,9 +16,10 @@
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
     <link rel="stylesheet" href="chat-navigation.css?v=20260711-flower-brand-v1" />
     <link rel="stylesheet" href="chat-views.css?v=20260711-chat-nav-v1" />
+    <link rel="stylesheet" href="chat-hub.css?v=20260711-chat-hub-v2" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
-  <body class="chat-page">
+  <body class="chat-page sidebarless-chat">
     <svg class="svg-sprite" aria-hidden="true">
       <symbol id="icon-menu" viewBox="0 0 24 24">
         <path d="M4 7h16M4 12h16M4 17h16" />
@@ -112,112 +113,78 @@
         <rect x="3" y="4" width="18" height="16" rx="3" />
         <path d="m7 9 3 3-3 3M13 15h4" />
       </symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="9" r="3" />
+        <circle cx="16.5" cy="10.5" r="2.4" />
+        <path d="M3.5 19c.5-3.3 2.3-5 5.5-5s5 1.7 5.5 5M14 15c2.9-.7 5.2.7 6 3.5" />
+      </symbol>
     </svg>
 
     <div class="ambient ambient-one" aria-hidden="true"></div>
     <div class="ambient ambient-two" aria-hidden="true"></div>
 
     <div class="app-shell">
-      <aside class="sidebar" id="sidebar" aria-label="会话列表">
-        <header class="sidebar-header">
-          <a class="brand-mark brand-flower-mark" href="index.html" aria-label="返回开场页">
-            <span class="brand-flower-image" aria-hidden="true"></span>
-          </a>
-          <div class="brand-copy">
-            <strong>岛屿信箱</strong>
-            <span>Chat</span>
-          </div>
-          <button class="sidebar-close-button" id="sidebarCloseButton" type="button" aria-label="关闭 Chat 菜单">
-            <svg><use href="#icon-close"></use></svg>
-          </button>
-        </header>
-
-        <button class="sidebar-new-chat" id="globalNewChatButton" type="button">
-          <span class="sidebar-new-chat-icon"><svg><use href="#icon-plus"></use></svg></span>
-          <span>
-            <strong>New chat</strong>
-            <small>开始和 Volo 对话</small>
-          </span>
-        </button>
-
-        <div class="sidebar-search">
-          <svg aria-hidden="true"><use href="#icon-search"></use></svg>
-          <input id="conversationSearch" type="search" placeholder="搜索对话和工具" autocomplete="off" aria-label="搜索对话和工具" />
-          <kbd>Ctrl K</kbd>
-        </div>
-
-        <nav class="conversation-list" id="conversationList">
-          <section class="sidebar-nav-section" data-nav-section aria-labelledby="conversationSectionTitle">
-            <h2 id="conversationSectionTitle">
-              <span>对话</span>
-            </h2>
-
-            <button class="conversation-item active" type="button" data-workspace="volo" aria-current="page">
-              <span class="avatar avatar-volo" aria-hidden="true"></span>
-              <span class="conversation-copy">
-                <span class="conversation-row">
-                  <strong>Volo</strong>
-                  <time>现在</time>
-                </span>
-                <span class="conversation-row preview-row">
-                  <span class="message-preview">AI 对话 · 想聊什么都可以</span>
-                </span>
-              </span>
-            </button>
-
-            <button class="conversation-item" type="button" data-workspace="group" data-chat="design">
-              <span class="avatar avatar-design" aria-hidden="true">群</span>
-              <span class="conversation-copy">
-                <span class="conversation-row">
-                  <strong>群聊</strong>
-                  <time>09:16</time>
-                </span>
-                <span class="conversation-row preview-row">
-                  <span class="message-preview">周屿：新版原型发群里了</span>
-                  <span class="unread-badge">3</span>
-                </span>
-              </span>
-            </button>
-          </section>
-
-          <section class="sidebar-nav-section sidebar-tools-section" data-nav-section aria-labelledby="toolsSectionTitle">
-            <h2 id="toolsSectionTitle">
-              <span>工具</span>
-            </h2>
-
-            <button class="conversation-item tool-entry" type="button" data-workspace="terminal">
-              <span class="avatar avatar-terminal" aria-hidden="true">&gt;_</span>
-              <span class="conversation-copy">
-                <span class="conversation-row">
-                  <strong>终端</strong>
-                  <span class="conversation-status">预留</span>
-                </span>
-                <span class="conversation-row preview-row">
-                  <span class="message-preview">开发工具 · 暂未开放</span>
-                </span>
-              </span>
-            </button>
-          </section>
-
-          <p class="conversation-empty" id="conversationEmpty" hidden>没有找到这个入口</p>
-        </nav>
-
-        <footer class="sidebar-footer">
-          <button class="background-entry" id="sidebarBackgroundButton" type="button">
-            <span class="entry-icon"><svg><use href="#icon-settings"></use></svg></span>
-            <span>
-              <strong>外观与背景</strong>
-              <small><span id="currentThemeName">雾蓝杏粉</span> · 配色、图片</small>
-            </span>
-            <svg class="entry-chevron"><use href="#icon-back"></use></svg>
-          </button>
-        </footer>
-      </aside>
-
-      <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="关闭会话列表"></button>
-
       <section class="chat-panel" aria-label="Chat 工作区">
-        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="Volo">
+        <section class="workspace-view chat-hub-view" id="chatHubView" data-workspace-view="hub" aria-label="Chat 入口">
+          <header class="chat-hub-header">
+            <a class="chat-hub-home" href="index.html" aria-label="返回开场页">
+              <svg><use href="#icon-back"></use></svg>
+            </a>
+            <div class="chat-hub-brand">
+              <span class="chat-hub-flower" aria-hidden="true"></span>
+              <span>
+                <h1>Chat</h1>
+                <p>选择想进入的页面</p>
+              </span>
+            </div>
+            <button class="chat-hub-appearance" id="hubAppearanceButton" type="button" aria-label="打开外观与背景设置">
+              <svg><use href="#icon-settings"></use></svg>
+              <span>外观</span>
+            </button>
+          </header>
+
+          <main class="chat-hub-main">
+            <div class="chat-hub-intro">
+              <span>岛屿信箱</span>
+              <h2>今天想去哪里？</h2>
+              <p>三个入口彼此独立，随时可以回到这里。</p>
+            </div>
+
+            <nav class="chat-hub-grid" aria-label="Chat 页面入口">
+              <a class="chat-hub-tile chat-hub-tile-volo" href="#volo" data-workspace="volo">
+                <span class="chat-hub-tile-topline">AI conversation</span>
+                <span class="chat-hub-tile-mark chat-hub-tile-flower" aria-hidden="true"></span>
+                <span class="chat-hub-tile-copy">
+                  <strong>Volo</strong>
+                  <small>和 Volo 单独说说话</small>
+                </span>
+                <span class="chat-hub-tile-arrow" aria-hidden="true"><svg><use href="#icon-back"></use></svg></span>
+              </a>
+
+              <a class="chat-hub-tile chat-hub-tile-group" href="#group" data-workspace="group">
+                <span class="chat-hub-tile-topline">Group chat</span>
+                <span class="chat-hub-tile-mark" aria-hidden="true"><svg><use href="#icon-users"></use></svg></span>
+                <span class="chat-hub-tile-copy">
+                  <strong>群聊</strong>
+                  <small>进入现在的 Telegram 风格群聊</small>
+                </span>
+                <span class="chat-hub-tile-arrow" aria-hidden="true"><svg><use href="#icon-back"></use></svg></span>
+              </a>
+
+              <a class="chat-hub-tile chat-hub-tile-terminal" href="#terminal" data-workspace="terminal">
+                <span class="chat-hub-tile-topline">Workspace</span>
+                <span class="chat-hub-tile-mark" aria-hidden="true"><svg><use href="#icon-terminal"></use></svg></span>
+                <span class="chat-hub-tile-copy">
+                  <strong>终端</strong>
+                  <small>暂时保留为空白页面</small>
+                </span>
+                <span class="chat-hub-tile-arrow" aria-hidden="true"><svg><use href="#icon-back"></use></svg></span>
+              </a>
+            </nav>
+          </main>
+        </section>
+
+        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="Volo" hidden>
           <button
             class="volo-drawer-scrim"
             id="voloDrawerScrim"
@@ -255,25 +222,13 @@
               </button>
             </section>
 
-            <footer class="volo-drawer-footer">
-              <button class="volo-main-chat-button" id="voloMainSidebarButton" type="button" data-open-sidebar>
-                <svg><use href="#icon-menu"></use></svg>
-                <span>Chat list</span>
-              </button>
-            </footer>
           </aside>
 
           <header class="volo-topbar">
             <nav class="volo-topbar-group volo-topbar-left" aria-label="Volo 左侧工具">
-              <button
-                class="volo-topbar-button volo-global-menu-button"
-                type="button"
-                data-open-sidebar
-                aria-label="打开 Chat 列表"
-                title="Chat list"
-              >
-                <svg><use href="#icon-menu"></use></svg>
-              </button>
+              <a class="volo-topbar-button volo-hub-back-button" href="#hub" data-workspace="hub" aria-label="返回 Chat 首页" title="Back to Chat">
+                <svg><use href="#icon-back"></use></svg>
+              </a>
               <button
                 class="volo-topbar-button volo-menu-button"
                 id="voloDrawerButton"
@@ -339,9 +294,9 @@
 
         <section class="workspace-view group-view" id="groupView" data-workspace-view="group" aria-label="群聊" hidden>
           <header class="chat-header">
-            <button class="icon-button mobile-menu" type="button" data-open-sidebar aria-label="打开入口列表">
-              <svg><use href="#icon-menu"></use></svg>
-            </button>
+            <a class="icon-button chat-view-back" href="#hub" data-workspace="hub" aria-label="返回 Chat 首页">
+              <svg><use href="#icon-back"></use></svg>
+            </a>
 
             <button class="chat-person" type="button" data-toast="群聊详情将在下一步接入">
               <span class="avatar avatar-design" id="headerAvatar" aria-hidden="true">群</span>
@@ -412,9 +367,9 @@
 
         <section class="workspace-view terminal-view" id="terminalView" data-workspace-view="terminal" aria-label="终端" hidden>
           <header class="terminal-header">
-            <button class="terminal-header-button terminal-menu-button" type="button" data-open-sidebar aria-label="打开入口列表">
-              <svg><use href="#icon-menu"></use></svg>
-            </button>
+            <a class="terminal-header-button chat-view-back" href="#hub" data-workspace="hub" aria-label="返回 Chat 首页">
+              <svg><use href="#icon-back"></use></svg>
+            </a>
             <span class="terminal-header-icon" aria-hidden="true"><svg><use href="#icon-terminal"></use></svg></span>
             <div>
               <h2>终端</h2>
@@ -542,8 +497,8 @@
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
-    <script src="app.js?v=20260711-chat-routes-v1"></script>
-    <script src="volo.js?v=20260711-chat-nav-v1"></script>
+    <script src="app.js?v=20260711-chat-hub-v1"></script>
+    <script src="volo.js?v=20260711-chat-hub-v1"></script>
   </body>
 </html>
 
