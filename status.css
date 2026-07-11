@@ -1,8 +1,12 @@
 .status-heading-icon {
-  border: 1px solid rgba(229, 117, 76, 0.2);
-  background: linear-gradient(145deg, #fff5e9, #f7d8c5);
-  box-shadow: 0 8px 20px rgba(216, 102, 73, 0.14);
-  color: #dc6d4e;
+  border: 1px solid rgba(var(--status-accent-rgb), 0.2);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.68),
+    rgba(var(--status-accent-rgb), 0.24)
+  );
+  box-shadow: 0 8px 20px rgba(var(--status-accent-rgb), 0.14);
+  color: var(--status-accent-end);
 }
 
 .status-heading-icon svg {
@@ -18,4 +22,3 @@
 .status-canvas {
   position: relative;
 }
-
