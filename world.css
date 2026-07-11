@@ -21,4 +21,126 @@
 
 .world-canvas {
   position: relative;
+  padding: 34px 0 52px;
+}
+
+.world-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.world-section-card {
+  position: relative;
+  display: grid;
+  min-height: 220px;
+  overflow: hidden;
+  align-items: end;
+  padding: 30px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.5), transparent 55%),
+    rgba(var(--panel-rgb), 0.46);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 20px 48px rgba(var(--ink-rgb), 0.09);
+  color: inherit;
+  text-decoration: none;
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(20px) saturate(120%);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.world-section-card:hover {
+  border-color: rgba(var(--world-accent-rgb), 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 24px 52px rgba(var(--ink-rgb), 0.12);
+  transform: translateY(-2px);
+}
+
+.world-section-card:focus-visible {
+  outline: 3px solid rgba(var(--world-accent-rgb), 0.32);
+  outline-offset: 3px;
+}
+
+.world-section-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.world-section-copy p {
+  margin: 0 0 14px;
+  color: var(--world-accent-end);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.world-section-copy h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.world-section-copy span {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.world-section-arrow {
+  position: absolute;
+  right: 26px;
+  bottom: 25px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(var(--world-accent-rgb), 0.22);
+  border-radius: 50%;
+  color: var(--world-accent-end);
+  font-size: 17px;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .world-section-card {
+    background: var(--panel);
+  }
+}
+
+@media (max-width: 760px) {
+  .world-canvas {
+    padding: 22px 0 38px;
+  }
+
+  .world-sections {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .world-section-card {
+    min-height: 200px;
+    padding: 24px;
+    border-radius: 25px;
+  }
+
+  .world-section-copy h2 {
+    font-size: 29px;
+  }
+}
+
+@media (max-width: 430px) {
+  .world-section-copy span {
+    max-width: 135px;
+    line-height: 1.5;
+  }
 }
