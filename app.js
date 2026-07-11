@@ -40,6 +40,7 @@
   };
 
   var workspaces = {
+    hub: { name: "Chat", view: "hub" },
     volo: { name: "Volo", view: "volo" },
     group: { name: "群聊", view: "group", chatId: "design" },
     terminal: { name: "终端", view: "terminal" }
@@ -84,17 +85,9 @@
   var emojiPanel = document.getElementById("emojiPanel");
   var scrollBottomButton = document.getElementById("scrollBottomButton");
   var scrollUnread = document.getElementById("scrollUnread");
-  var conversationList = document.getElementById("conversationList");
-  var conversationSearch = document.getElementById("conversationSearch");
   var headerName = document.getElementById("headerName");
   var headerStatus = document.getElementById("headerStatus");
   var headerAvatar = document.getElementById("headerAvatar");
-  var sidebar = document.getElementById("sidebar");
-  var sidebarScrim = document.getElementById("sidebarScrim");
-  var sidebarCloseButton = document.getElementById("sidebarCloseButton");
-  var globalNewChatButton = document.getElementById("globalNewChatButton");
-  var conversationEmpty = document.getElementById("conversationEmpty");
-  var mobileMenuButtons = document.querySelectorAll("[data-open-sidebar]");
   var workspaceViews = document.querySelectorAll("[data-workspace-view]");
   var backgroundDialog = document.getElementById("backgroundDialog");
   var backgroundFile = document.getElementById("backgroundFile");
@@ -109,9 +102,8 @@
   var toast = document.getElementById("toast");
   var toastText = document.getElementById("toastText");
   var themeColorMeta = document.getElementById("themeColorMeta");
-  var currentThemeName = document.getElementById("currentThemeName");
 
-  var activeViewId = "volo";
+  var activeViewId = "hub";
   var activeChatId = "design";
   var toastTimer = null;
   var appliedSettings = readSettings();
@@ -306,18 +298,9 @@
   }
 
   function updateConversationPreview(chatId, text, time) {
-    var item = conversationList.querySelector('[data-chat="' + chatId + '"]');
-    if (!item) {
-      return;
-    }
-    var preview = item.querySelector(".message-preview");
-    var timeElement = item.querySelector("time");
-    if (preview) {
-      preview.textContent = text.replace(/\s+/g, " ");
-    }
-    if (timeElement) {
-      timeElement.textContent = time;
-    }
+    void chatId;
+    void text;
+    void time;
   }
 
   function simulateReply(chatId) {
@@ -392,7 +375,7 @@
 
   function readWorkspaceFromHash() {
     var hashValue = window.location.hash.replace(/^#/, "").toLocaleLowerCase();
-    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "volo";
+    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "hub";
   }
 
   function updateWorkspaceHash(viewId) {
@@ -401,9 +384,13 @@
       return;
     }
     try {
-      window.history.replaceState(null, "", nextHash);
+      window.history.replaceState(
+        null,
+        "",
+        window.location.href.split("#")[0] + nextHash
+      );
     } catch (error) {
-      window.location.hash = viewId;
+      window.location.replace(nextHash);
     }
   }
 
@@ -418,19 +405,6 @@
     workspaceViews.forEach(function (view) {
       view.hidden = view.dataset.workspaceView !== workspace.view;
     });
-    conversationList.querySelectorAll(".conversation-item").forEach(function (item) {
-      var isActive = item.dataset.workspace === viewId;
-      item.classList.toggle("active", isActive);
-      if (isActive) {
-        item.setAttribute("aria-current", "page");
-        var badge = item.querySelector(".unread-badge");
-        if (badge) {
-          badge.remove();
-        }
-      } else {
-        item.removeAttribute("aria-current");
-      }
-    });
     emojiPanel.hidden = true;
     emojiButton.setAttribute("aria-expanded", "false");
     scrollBottomButton.classList.remove("visible");
@@ -444,23 +418,12 @@
       headerAvatar.textContent = chat.initial;
       renderMessages(true);
     }
-    closeSidebar();
     if (!silent) {
       emitClawd("conducting", "切换到“" + workspace.name + "”", {
         duration: 1900,
         priority: 3
       });
     }
-  }
-
-  function openSidebar() {
-    sidebar.classList.add("open");
-    sidebarScrim.classList.add("visible");
-  }
-
-  function closeSidebar() {
-    sidebar.classList.remove("open");
-    sidebarScrim.classList.remove("visible");
   }
 
   function showToast(message) {
@@ -497,7 +460,7 @@
   }
 
   function updateQuickThemeSwitcher(themeId) {
-    currentThemeName.textContent = THEME_NAMES[themeId] || THEME_NAMES.mist;
+    void themeId;
     document.querySelectorAll("[data-quick-theme]").forEach(function (button) {
       var isActive = button.dataset.quickTheme === themeId;
       button.classList.toggle("active", isActive);
@@ -948,61 +911,6 @@
     }
   });
 
-  conversationList.addEventListener("click", function (event) {
-    var item = event.target.closest(".conversation-item");
-    if (item) {
-      switchWorkspace(item.dataset.workspace);
-    }
-  });
-
-  conversationSearch.addEventListener("input", function () {
-    var query = conversationSearch.value.trim().toLocaleLowerCase("zh-CN");
-    var items = Array.from(conversationList.querySelectorAll(".conversation-item"));
-    items.forEach(function (item) {
-      item.hidden = query.length > 0 && !item.textContent.toLocaleLowerCase("zh-CN").includes(query);
-    });
-    conversationList.querySelectorAll("[data-nav-section]").forEach(function (section) {
-      section.hidden = !section.querySelector(".conversation-item:not([hidden])");
-    });
-    var hasResult = items.some(function (item) {
-      return !item.hidden;
-    });
-    conversationEmpty.hidden = hasResult;
-    if (!query) {
-      emitClawd("idle", "", {
-        duration: 0,
-        priority: 0,
-        force: true
-      });
-      return;
-    }
-    emitClawd(hasResult ? "debugger" : "confused", hasResult ? "正在认真搜索" : "什么都没找到", {
-      duration: 1600,
-      priority: hasResult ? 2 : 4
-    });
-  });
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
-      if (document.activeElement === conversationSearch && conversationSearch.value) {
-        conversationSearch.value = "";
-        conversationSearch.dispatchEvent(new Event("input"));
-        return;
-      }
-      if (sidebar.classList.contains("open")) {
-        closeSidebar();
-        return;
-      }
-    }
-    if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
-      event.preventDefault();
-      if (window.matchMedia("(max-width: 760px)").matches) {
-        openSidebar();
-      }
-      conversationSearch.focus();
-    }
-  });
-
   messageScroll.addEventListener("scroll", updateScrollButton, { passive: true });
   scrollBottomButton.addEventListener("click", function () {
     scrollToBottom();
@@ -1011,20 +919,6 @@
       priority: 3
     });
   });
-  mobileMenuButtons.forEach(function (button) {
-    button.addEventListener("click", openSidebar);
-  });
-  sidebarScrim.addEventListener("click", closeSidebar);
-  sidebarCloseButton.addEventListener("click", closeSidebar);
-
-  globalNewChatButton.addEventListener("click", function () {
-    conversationSearch.value = "";
-    conversationSearch.dispatchEvent(new Event("input"));
-    switchWorkspace("volo", true);
-    document.dispatchEvent(new CustomEvent("volo:new-chat"));
-    closeSidebar();
-  });
-
   var quickThemeOptions = document.querySelector(".quick-theme-options");
   if (quickThemeOptions) {
     quickThemeOptions.addEventListener("click", function (event) {
@@ -1033,7 +927,6 @@
         return;
       }
       commitThemeImmediately(button.dataset.quickTheme, true);
-      closeSidebar();
     });
   }
 
@@ -1043,11 +936,8 @@
     });
   });
 
-  document.getElementById("sidebarBackgroundButton").addEventListener("click", function () {
-    closeSidebar();
-    openBackgroundDialog();
-  });
   document.getElementById("headerBackgroundButton").addEventListener("click", openBackgroundDialog);
+  document.getElementById("hubAppearanceButton").addEventListener("click", openBackgroundDialog);
   document.getElementById("backgroundCloseButton").addEventListener("click", function () {
     closeBackgroundDialog(false);
   });
