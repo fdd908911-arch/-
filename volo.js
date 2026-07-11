@@ -13,7 +13,6 @@
   var drawerScrim = document.getElementById("voloDrawerScrim");
   var newChatButton = document.getElementById("voloNewChatButton");
   var currentChatButton = document.getElementById("voloCurrentChatButton");
-  var mainSidebarButton = document.getElementById("voloMainSidebarButton");
   var topNewChatButton = document.getElementById("voloTopNewChatButton");
   var messages = [];
   var isTyping = false;
@@ -252,10 +251,6 @@
     input.focus();
   });
 
-  mainSidebarButton.addEventListener("click", function () {
-    setDrawerOpen(false, false);
-  });
-
   input.addEventListener("input", function () {
     resizeInput();
     if (input.value.trim()) {
@@ -296,6 +291,12 @@
   });
 
   document.addEventListener("volo:new-chat", startNewChat);
+
+  window.addEventListener("hashchange", function () {
+    if (window.location.hash !== "#volo") {
+      setDrawerOpen(false, false);
+    }
+  });
 
   resizeInput();
   renderMessages(false);
