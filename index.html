@@ -34,7 +34,7 @@
       }
     </script>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
-    <link rel="stylesheet" href="home.css?v=20260711-volo-status-v1" />
+    <link rel="stylesheet" href="home.css?v=20260711-chat-routes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="home-page">
@@ -47,6 +47,15 @@
       <symbol id="home-icon-chat" viewBox="0 0 24 24">
         <path d="M5 18.5 3.8 21l3.8-1.2c1.3.7 2.8 1 4.4 1 5 0 9-3.7 9-8.4S17 4 12 4s-9 3.7-9 8.4c0 2.4.7 4.4 2 6.1Z" />
         <path d="M8 12h.1M12 12h.1M16 12h.1" />
+      </symbol>
+      <symbol id="home-icon-group" viewBox="0 0 24 24">
+        <circle cx="9" cy="9" r="3" />
+        <circle cx="16.5" cy="10.5" r="2.4" />
+        <path d="M3.5 19c.5-3.3 2.3-5 5.5-5s5 1.7 5.5 5M14 15c2.9-.7 5.2.7 6 3.5" />
+      </symbol>
+      <symbol id="home-icon-terminal" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="16" rx="3" />
+        <path d="m7 9 3 3-3 3M13 15h4" />
       </symbol>
       <symbol id="home-icon-memory" viewBox="0 0 24 24">
         <path d="M5 4.5h11.5A2.5 2.5 0 0 1 19 7v12.5H7.5A2.5 2.5 0 0 1 5 17V4.5Z" />
@@ -157,23 +166,34 @@
         </div>
 
         <div class="entry-stack" aria-label="主要入口">
-          <a class="chat-entry-card" href="chat.html" aria-label="进入 Chat 聊天页">
+          <section class="chat-entry-card chat-hub-card" aria-labelledby="chatHubTitle">
             <div class="chat-entry-decoration" aria-hidden="true"></div>
             <header class="home-card-header">
-              <span class="home-card-kicker">常用入口</span>
-              <span class="chat-arrow"><svg><use href="#home-icon-arrow"></use></svg></span>
+              <span class="home-card-kicker">对话入口</span>
+              <span class="chat-hub-hint">3 个入口</span>
             </header>
             <div class="chat-entry-content">
               <span class="chat-entry-icon"><svg><use href="#home-icon-chat"></use></svg></span>
               <div>
-                <h1>Chat</h1>
-                <p>进入我们的对话</p>
+                <h1 id="chatHubTitle">Chat</h1>
+                <p>选择想进入的页面</p>
               </div>
             </div>
-            <div class="chat-entry-footer">
-              <span>继续说说话</span>
-            </div>
-          </a>
+            <nav class="chat-route-grid" aria-label="Chat 入口">
+              <a class="chat-route-link chat-route-volo" href="chat.html#volo" data-destination="Volo">
+                <svg><use href="#home-icon-status"></use></svg>
+                <span>Volo</span>
+              </a>
+              <a class="chat-route-link chat-route-group" href="chat.html#group" data-destination="群聊">
+                <svg><use href="#home-icon-group"></use></svg>
+                <span>群聊</span>
+              </a>
+              <a class="chat-route-link chat-route-terminal" href="chat.html#terminal" data-destination="终端">
+                <svg><use href="#home-icon-terminal"></use></svg>
+                <span>终端</span>
+              </a>
+            </nav>
+          </section>
 
           <a class="memory-entry-card" href="memory.html" aria-label="进入 Memory 回忆页">
             <div class="memory-entry-decoration" aria-hidden="true"></div>
@@ -250,7 +270,7 @@
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
-    <script src="home.js?v=20260711-volo-status-v1"></script>
+    <script src="home.js?v=20260711-chat-routes-v1"></script>
   </body>
 </html>
 
