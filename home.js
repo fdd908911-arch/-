@@ -394,16 +394,10 @@
   });
 
   document
-    .querySelectorAll(".chat-entry-card, .memory-entry-card, .status-entry-card, .weather-card")
+    .querySelectorAll("[data-clawd-destination]")
     .forEach(function (entry) {
       entry.addEventListener("pointerdown", function () {
-        var destination = entry.classList.contains("status-entry-card")
-          ? "Volo 状态"
-          : entry.classList.contains("memory-entry-card")
-            ? "Memory"
-            : entry.classList.contains("weather-card")
-              ? "Diary"
-              : "Chat";
+        var destination = entry.dataset.clawdDestination;
         emitClawd("goingAway", "去" + destination + "见", {
           duration: 900,
           priority: 3
@@ -442,4 +436,3 @@
   syncTheme();
   refreshDateSensitiveUI();
 })();
-
