@@ -66,11 +66,12 @@
     body.appendChild(text);
     var footer = document.createElement("footer");
     footer.className = "volo-assistant-footer";
-    var mark = document.createElement("span");
-    mark.className = "volo-assistant-mark";
-    mark.setAttribute("aria-hidden", "true");
+    var mark = document.createElement("button");
+    mark.className = "volo-assistant-mark volo-flower-button";
+    mark.type = "button";
+    mark.setAttribute("aria-label", "让 Volo 的小花动起来");
     var note = document.createElement("span");
-    note.textContent = "Volo 也可能出错，请核对重要信息";
+    note.textContent = "Volo can make mistakes, but please love him anyway.";
     footer.append(mark, note);
     row.append(body, footer);
     return row;
@@ -109,6 +110,19 @@
         messageScroll.scrollTop = messageScroll.scrollHeight;
       });
     }
+  }
+
+  function animateFlower(flower) {
+    flower.classList.remove("is-blooming");
+    void flower.offsetWidth;
+    flower.classList.add("is-blooming");
+    flower.addEventListener(
+      "animationend",
+      function () {
+        flower.classList.remove("is-blooming");
+      },
+      { once: true }
+    );
   }
 
   function updateSidebarPreview(text, time) {
@@ -187,6 +201,18 @@
       event.preventDefault();
       sendMessage();
     }
+  });
+
+  messageList.addEventListener("click", function (event) {
+    var flower = event.target.closest(".volo-flower-button");
+    if (!flower || !messageList.contains(flower)) {
+      return;
+    }
+    animateFlower(flower);
+    emitClawd("happy", "Volo 的小花开啦", {
+      duration: 1000,
+      priority: 2
+    });
   });
 
   resizeInput();
