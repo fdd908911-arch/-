@@ -606,6 +606,109 @@
     box-shadow 200ms ease;
 }
 
+.chat-hub-card {
+  padding: 16px 18px 14px;
+}
+
+.chat-hub-card .chat-entry-content {
+  gap: 11px;
+  margin: 3px 0 5px;
+}
+
+.chat-hub-card .chat-entry-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+}
+
+.chat-hub-card .chat-entry-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.chat-hub-card .chat-entry-content h1 {
+  font-size: 24px;
+}
+
+.chat-hub-card .chat-entry-content p {
+  margin-top: 3px;
+  font-size: 9.5px;
+}
+
+.chat-hub-hint {
+  color: var(--muted);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+}
+
+.chat-route-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.chat-route-link {
+  display: flex;
+  min-width: 0;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 7px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 11px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.36), transparent),
+    rgba(var(--panel-rgb), 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  color: var(--text-soft);
+  font-size: 9.5px;
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.chat-route-link svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.chat-route-link:hover {
+  border-color: rgba(var(--accent-rgb), 0.36);
+  background-color: rgba(var(--panel-rgb), 0.44);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.chat-route-link:focus-visible {
+  outline: 3px solid rgba(var(--accent-rgb), 0.22);
+  outline-offset: 2px;
+}
+
+.chat-route-volo {
+  color: #c8674d;
+}
+
+.chat-route-group {
+  color: #358b86;
+}
+
+.chat-route-terminal {
+  color: #4f606a;
+}
+
 .chat-entry-card:hover {
   border-color: rgba(var(--accent-rgb), 0.38);
   box-shadow: 0 28px 70px rgba(var(--ink-rgb), 0.15);
@@ -997,6 +1100,10 @@
     -webkit-backdrop-filter: blur(16px) saturate(116%);
     backdrop-filter: blur(16px) saturate(116%);
   }
+
+  .chat-route-link {
+    height: 44px;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -1009,6 +1116,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .status-entry-card {
+    transition-duration: 0.01ms !important;
+  }
+
+  .chat-route-link {
     transition-duration: 0.01ms !important;
   }
 }
