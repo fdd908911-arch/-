@@ -43,7 +43,7 @@
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="memory.css?v=20260711-theme-palettes-v1" />
-    <link rel="stylesheet" href="world.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="world.css?v=20260711-aquarium-card-v2" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="home-page memory-page world-page">
@@ -77,7 +77,18 @@
         <span class="memory-header-spacer" aria-hidden="true"></span>
       </header>
 
-      <main class="memory-canvas world-canvas" aria-label="世界内容区域"></main>
+      <main class="memory-canvas world-canvas" aria-label="世界内容区域">
+        <section class="world-sections" aria-label="世界栏目">
+          <a class="world-section-card aquarium-card" href="aquarium.html" aria-label="进入水族馆">
+            <div class="world-section-copy">
+              <p>WORLD · 01</p>
+              <h2>水族馆</h2>
+              <span>收藏我们遇见的鱼</span>
+            </div>
+            <span class="world-section-arrow" aria-hidden="true">→</span>
+          </a>
+        </section>
+      </main>
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
