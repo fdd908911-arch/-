@@ -14,7 +14,7 @@
     />
     <title>岛屿信箱 · 对话</title>
     <link rel="stylesheet" href="styles.css?v=20260710-theme-switch-v3" />
-    <link rel="stylesheet" href="chat-views.css?v=20260711-chat-views-v2" />
+    <link rel="stylesheet" href="chat-views.css?v=20260711-volo-drawer-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
   <body class="chat-page">
@@ -229,9 +229,61 @@
 
       <section class="chat-panel" aria-label="Chat 工作区">
         <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="Volo">
+          <button
+            class="volo-drawer-scrim"
+            id="voloDrawerScrim"
+            type="button"
+            aria-label="关闭 Volo 侧边栏"
+          ></button>
+
+          <aside class="volo-drawer" id="voloDrawer" aria-label="Volo 对话" aria-hidden="true" inert>
+            <header class="volo-drawer-header">
+              <div class="volo-drawer-brand">
+                <span class="volo-drawer-flower" aria-hidden="true"></span>
+                <span>
+                  <strong>Volo</strong>
+                  <small>Conversations</small>
+                </span>
+              </div>
+              <button class="volo-drawer-close" id="voloDrawerClose" type="button" aria-label="关闭 Volo 侧边栏">
+                <svg><use href="#icon-close"></use></svg>
+              </button>
+            </header>
+
+            <button class="volo-new-chat-button" id="voloNewChatButton" type="button">
+              <span><svg><use href="#icon-plus"></use></svg></span>
+              <strong>New chat</strong>
+            </button>
+
+            <section class="volo-drawer-section" aria-labelledby="voloChatsTitle">
+              <h2 id="voloChatsTitle">Chats</h2>
+              <button class="volo-current-chat" id="voloCurrentChatButton" type="button" aria-current="page">
+                <span class="volo-current-chat-flower" aria-hidden="true"></span>
+                <span>
+                  <strong>Volo</strong>
+                  <small>Current conversation</small>
+                </span>
+              </button>
+            </section>
+
+            <footer class="volo-drawer-footer">
+              <button class="volo-main-chat-button" id="voloMainSidebarButton" type="button" data-open-sidebar>
+                <svg><use href="#icon-menu"></use></svg>
+                <span>Chat list</span>
+              </button>
+            </footer>
+          </aside>
+
           <header class="volo-topbar">
             <nav class="volo-topbar-group volo-topbar-left" aria-label="Volo 左侧工具">
-              <button class="volo-topbar-button volo-menu-button" type="button" data-open-sidebar aria-label="打开入口列表">
+              <button
+                class="volo-topbar-button volo-menu-button"
+                id="voloDrawerButton"
+                type="button"
+                aria-label="打开 Volo 侧边栏"
+                aria-controls="voloDrawer"
+                aria-expanded="false"
+              >
                 <svg><use href="#icon-menu"></use></svg>
               </button>
               <button class="volo-topbar-button" type="button" aria-label="历史记录" data-toast="历史记录稍后接入">
@@ -516,7 +568,7 @@
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
     <script src="app.js?v=20260711-chat-views-v1"></script>
-    <script src="volo.js?v=20260711-volo-v2"></script>
+    <script src="volo.js?v=20260711-volo-drawer-v1"></script>
   </body>
 </html>
 
