@@ -76,8 +76,8 @@
   flex: 0 0 auto;
   place-items: center;
   border-radius: 12px;
-  background: linear-gradient(145deg, #d7a8b5, #9b7182);
-  box-shadow: 0 8px 20px rgba(155, 113, 130, 0.18);
+  background: linear-gradient(145deg, var(--memory-accent-start), var(--memory-accent-end));
+  box-shadow: 0 8px 20px rgba(var(--memory-accent-rgb), 0.18);
   color: white;
 }
 
@@ -172,4 +172,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-
