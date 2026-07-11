@@ -1,0 +1,21 @@
+.status-heading-icon {
+  border: 1px solid rgba(229, 117, 76, 0.2);
+  background: linear-gradient(145deg, #fff5e9, #f7d8c5);
+  box-shadow: 0 8px 20px rgba(216, 102, 73, 0.14);
+  color: #dc6d4e;
+}
+
+.status-heading-icon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.status-canvas {
+  position: relative;
+}
+
