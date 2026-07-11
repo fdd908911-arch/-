@@ -390,12 +390,30 @@
     simulateReply(activeChatId);
   }
 
+  function readWorkspaceFromHash() {
+    var hashValue = window.location.hash.replace(/^#/, "").toLocaleLowerCase();
+    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "volo";
+  }
+
+  function updateWorkspaceHash(viewId) {
+    var nextHash = "#" + viewId;
+    if (window.location.hash === nextHash) {
+      return;
+    }
+    try {
+      window.history.replaceState(null, "", nextHash);
+    } catch (error) {
+      window.location.hash = viewId;
+    }
+  }
+
   function switchWorkspace(viewId, silent) {
     var workspace = workspaces[viewId];
     if (!workspace) {
       return;
     }
     activeViewId = viewId;
+    updateWorkspaceHash(viewId);
     document.body.dataset.chatView = workspace.view;
     workspaceViews.forEach(function (view) {
       view.hidden = view.dataset.workspaceView !== workspace.view;
@@ -1120,7 +1138,14 @@
     }
   });
 
-  switchWorkspace("volo", true);
+  window.addEventListener("hashchange", function () {
+    var hashViewId = readWorkspaceFromHash();
+    if (hashViewId !== activeViewId) {
+      switchWorkspace(hashViewId, true);
+    }
+  });
+
+  switchWorkspace(readWorkspaceFromHash(), true);
   resizeMessageInput();
   applyWallpaper(appliedSettings, null);
   initializeWallpaper();
