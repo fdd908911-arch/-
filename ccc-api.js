@@ -14,6 +14,16 @@
     return window.location.origin;
   }
 
+  function normalizeBaseUrl(value) {
+    var normalized = String(value || "").trim().replace(/\/+$/, "");
+    if (!normalized) return "";
+    // Older connect.html versions saved only the site origin. On mcp.canian.top
+    // that path belongs to another app and returns HTML with HTTP 200. Migrate
+    // the legacy value to the API prefix for the current frontend scope.
+    if (normalized === window.location.origin) return defaultBaseUrl();
+    return normalized;
+  }
+
   function hasPairCookie() {
     return ("; " + document.cookie).indexOf("; ccc_paired=1") !== -1;
   }
@@ -22,10 +32,15 @@
   function readConfig() {
     try {
       var saved = JSON.parse(localStorage.getItem(CONFIG_KEY));
-      return {
-        baseUrl: String(saved && saved.baseUrl ? saved.baseUrl : "").replace(/\/+$/, ""),
+      var originalBaseUrl = String(saved && saved.baseUrl ? saved.baseUrl : "").replace(/\/+$/, "");
+      var next = {
+        baseUrl: normalizeBaseUrl(originalBaseUrl),
         token: String(saved && saved.token ? saved.token : "")
       };
+      if (originalBaseUrl && next.baseUrl !== originalBaseUrl) {
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(next));
+      }
+      return next;
     } catch (error) {
       return { baseUrl: "", token: "" };
     }
@@ -73,7 +88,9 @@
     try {
       payload = await response.json();
     } catch (error) {
-      payload = {};
+      if (response.ok) {
+        throw new Error("服务器地址返回的不是 API 数据，请重新连接");
+      }
     }
     if (!response.ok || payload.ok === false) {
       var reason = payload.detail || payload.error || response.statusText || "request_failed";
@@ -111,7 +128,7 @@
 
   function saveConfig(baseUrl, token) {
     config = {
-      baseUrl: String(baseUrl || "").trim().replace(/\/+$/, ""),
+      baseUrl: normalizeBaseUrl(baseUrl),
       token: String(token || "").trim()
     };
     try { localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); } catch (error) {}

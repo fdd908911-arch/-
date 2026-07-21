@@ -215,8 +215,19 @@
     $("drivesFreshness").classList.toggle("is-live", Boolean(payload.available));
 
     if (!payload.available || !payload.display || !Object.keys(payload.display).length) {
-      $("drivesSummary").textContent = "暂时感受不到 Drivesoid 的实时信号。";
-      $("drivesSummaryNote").textContent = "其它状态仍可查看；这里会在服务恢复后自动重连。";
+      var reason = String(payload.reason || "");
+      if (reason === "not_configured") {
+        $("drivesFreshness").textContent = "需要连接";
+        $("drivesSummary").textContent = "这台设备还没有连接到洄。";
+        $("drivesSummaryNote").textContent = "连接成功后，Drivesoid 的实时数据会自动出现在这里。";
+      } else if (reason) {
+        $("drivesFreshness").textContent = "读取失败";
+        $("drivesSummary").textContent = "连接 Drivesoid 时出了点问题。";
+        $("drivesSummaryNote").textContent = reason;
+      } else {
+        $("drivesSummary").textContent = "暂时感受不到 Drivesoid 的实时信号。";
+        $("drivesSummaryNote").textContent = "其它状态仍可查看；这里会在服务恢复后自动重连。";
+      }
       $("drivesHighlights").innerHTML = "";
       $("drivesVitals").innerHTML = "";
       $("drivesGroups").innerHTML = "";
@@ -233,14 +244,14 @@
   async function load() {
     if (loading || document.hidden || !$("drivesDashboard")) return;
     if (!window.CCC || !window.CCC.isConfigured()) {
-      render({ available: false, display: {} });
+      render({ available: false, display: {}, reason: "not_configured" });
       return;
     }
     loading = true;
     try {
       render(await window.CCC.drivesStatus());
     } catch (error) {
-      render({ available: false, display: {}, reason: error.message });
+      render({ available: false, display: {}, reason: error.message || "读取失败" });
     } finally {
       loading = false;
     }

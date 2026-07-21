@@ -23,13 +23,15 @@
       var KEY="island-chat.ccc-connection.v1";
       var form=document.getElementById("form"),base=document.getElementById("base");
       var token=document.getElementById("token"),status=document.getElementById("status");
-      try{var saved=JSON.parse(localStorage.getItem(KEY)||"{}");base.value=saved.baseUrl||location.origin;token.value=saved.token||"";}catch(e){base.value=location.origin;}
+      function defaultBase(){return location.pathname.indexOf("/hui-v40/")===0?location.origin+"/hui-api":location.pathname.indexOf("/ccc/")===0?location.origin+"/ccc-api":location.origin;}
+      function normalize(value){var result=String(value||"").replace(/\/+$/g,"");return !result||result===location.origin?defaultBase():result;}
+      try{var saved=JSON.parse(localStorage.getItem(KEY)||"{}");base.value=normalize(saved.baseUrl);token.value=saved.token||"";}catch(e){base.value=defaultBase();}
       form.onsubmit=function(event){
         event.preventDefault();status.className="";status.textContent="正在连接……";
         var secret=token.value.replace(/^\s+|\s+$/g,"");
         if(!secret){status.className="error";status.textContent="请填写访问 Token";return false;}
         var xhr=new XMLHttpRequest();
-        var origin=base.value.replace(/\/+$/g,"");
+        var origin=normalize(base.value);
         xhr.open("GET",origin+"/sessions",true);
         xhr.setRequestHeader("X-Auth-Token",secret);
         xhr.onreadystatechange=function(){

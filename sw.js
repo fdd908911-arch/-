@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260721-v68-drives-dashboard`;
+const CACHE_NAME = `${CACHE_PREFIX}20260721-v69-mobile-api-base`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -28,18 +28,18 @@ const APP_SHELL = [
   "./diary.css",
   "./memory.css",
   "./status.css",
-  "./drives-dashboard.css?v=20260721-drives-v2",
+  "./drives-dashboard.css?v=20260721-drives-v3",
   "./world.css",
   "./clawd-pet.css",
   "./home.js",
   "./app.js",
-  "./ccc-api.js",
+  "./ccc-api.js?v=20260721-api-base-v2",
   "./router.js",
   "./group.js",
   "./volo.js",
   "./memory-dashboard.js",
   "./status.js",
-  "./drives-dashboard.js?v=20260721-drives-v2",
+  "./drives-dashboard.js?v=20260721-drives-v3",
   "./world.js",
   "./terminal.js",
   "./diary.js",
