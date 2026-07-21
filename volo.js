@@ -1,10 +1,6 @@
 (function () {
   "use strict";
 
-  var DRAFT_KEY = "island-chat.ccc-drafts.v1";
-  var composer = document.getElementById("voloComposer");
-  var input = document.getElementById("voloInput");
-  var sendButton = document.getElementById("voloSendButton");
   var drawer = document.getElementById("voloDrawer");
   var drawerButton = document.getElementById("voloDrawerButton");
   var drawerClose = document.getElementById("voloDrawerClose");
@@ -13,11 +9,11 @@
   var carrierPill = document.getElementById("voloCarrierPill");
 
   var selectedSession = window.CCC.getSelectedSession();
-  var drafts = readDrafts();
-  if (!window.VoloChat || !window.VoloMusic || !window.VoloSessions || !window.VoloVoice || !window.VoloUsage) {
+  if (!window.VoloChat || !window.VoloComposer || !window.VoloMusic || !window.VoloSessions || !window.VoloVoice || !window.VoloUsage) {
     throw new Error("Volo feature modules must load before volo.js");
   }
   var chat = null;
+  var composer = null;
   var music = null;
   var sessionRoster = null;
   var voice = window.VoloVoice.create({
@@ -46,11 +42,17 @@
       });
       usage.load();
     },
-    onSendingChange: resizeInput,
+    onSendingChange: function () { if (composer) composer.resize(); },
     renderSessions: function () { if (sessionRoster) sessionRoster.render(); },
     setConnectionState: function (online, label) {
       if (sessionRoster) sessionRoster.setConnectionState(online, label);
     }
+  });
+  composer = window.VoloComposer.create({
+    emitClawd: emitClawd,
+    getSelectedSession: function () { return selectedSession; },
+    isSending: function () { return chat.isSending(); },
+    onSubmit: function () { sendMessage(); }
   });
   sessionRoster = window.VoloSessions.create({
     chat: chat,
@@ -67,18 +69,6 @@
     );
   }
 
-  function readDrafts() {
-    try {
-      return JSON.parse(localStorage.getItem(DRAFT_KEY)) || {};
-    } catch (error) {
-      return {};
-    }
-  }
-
-  function writeDrafts() {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts));
-  }
-
   function currentCarrier() {
     return sessionRoster.isGatewaySession(selectedSession) ? "gateway" : "claude_code";
   }
@@ -88,17 +78,8 @@
     var gateway = currentCarrier() === "gateway";
     carrierPill.textContent = gateway ? "Volo · 陪我聊聊" : "Volo · Claude Code";
     carrierPill.classList.toggle("is-gateway", gateway);
-    input.placeholder = gateway ? "和 Volo 聊聊..." : "Reply to Volo...";
+    composer.setPlaceholder(gateway ? "和 Volo 聊聊..." : "Reply to Volo...");
     usage.updateCarrier(gateway);
-  }
-
-
-  function resizeInput() {
-    input.style.height = "auto";
-    var height = Math.min(input.scrollHeight, 120);
-    input.style.height = Math.max(height, 28) + "px";
-    input.style.overflowY = input.scrollHeight > 120 ? "auto" : "hidden";
-    sendButton.disabled = chat.isSending() || !selectedSession || input.value.trim().length === 0;
   }
 
   function setDrawerOpen(open, restoreFocus) {
@@ -135,9 +116,8 @@
   async function restoreSelectedSession(sessionId) {
     selectedSession = sessionId;
     window.CCC.setSelectedSession(sessionId);
-    input.value = drafts[sessionId] || "";
+    composer.selectSession(sessionId);
     updateCarrierPresentation();
-    resizeInput();
     await chat.loadHistory(sessionId);
   }
 
@@ -145,81 +125,43 @@
     if (!sessionId) {
       return;
     }
-    if (selectedSession) {
-      drafts[selectedSession] = input.value;
-      writeDrafts();
-    }
     selectedSession = sessionId;
     window.CCC.setSelectedSession(sessionId);
-    input.value = drafts[sessionId] || "";
+    composer.selectSession(sessionId);
     updateCarrierPresentation();
-    resizeInput();
     sessionRoster.render();
     await chat.selectSession(sessionId);
     setDrawerOpen(false, false);
-    input.focus();
+    composer.focus();
   }
 
   async function sendMessage(explicitValue) {
-    var sessionId = selectedSession;
+    var attempt = composer.prepareSend(explicitValue);
+    if (!attempt) return false;
+    var sessionId = attempt.sessionId;
     var carrier = currentCarrier();
-    var fromComposer = typeof explicitValue !== "string";
-    var value = (fromComposer ? input.value : explicitValue).trim();
-    if (!sessionId || !value || chat.isSending()) {
-      return false;
-    }
-    if (fromComposer) {
-      input.value = "";
-      drafts[sessionId] = "";
-      writeDrafts();
-    }
-    resizeInput();
     emitClawd("beacon", carrier === "gateway" ? "去找共同记忆" : "发到 " + sessionId, {
       duration: 900,
       priority: 3
     });
-    var sent = await chat.send(sessionId, carrier, value);
-    if (!sent && fromComposer) {
-      input.value = value;
-      drafts[sessionId] = value;
-      writeDrafts();
-    }
-    resizeInput();
+    var sent = await chat.send(sessionId, carrier, attempt.value);
+    composer.finishSend(attempt, sent);
     return sent;
   }
 
-  composer.addEventListener("submit", function (event) {
-    event.preventDefault();
-    sendMessage();
-  });
+  composer.bind();
   sessionRoster.bind();
   chat.bind();
   voice.bind();
   music.bind();
   usage.bind();
-  input.addEventListener("input", function () {
-    if (selectedSession) {
-      drafts[selectedSession] = input.value;
-      writeDrafts();
-    }
-    resizeInput();
-    if (input.value.trim()) {
-      emitClawd("typing", "", { duration: 900, priority: 1 });
-    }
-  });
-  input.addEventListener("keydown", function (event) {
-    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
-      event.preventDefault();
-      sendMessage();
-    }
-  });
   window.addEventListener("hashchange", function () {
     if (window.location.hash !== "#volo") {
       setDrawerOpen(false, false);
     }
   });
 
-  resizeInput();
+  composer.resize();
   chat.render(false);
   sessionRoster.load();
 })();

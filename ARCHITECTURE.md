@@ -35,6 +35,8 @@ split. Their order is therefore explicit and checked by
   voice recording and music analysis.
 - `features/volo-chat.js`: message cache, merge ordering, history loading,
   incremental polling, optimistic sends, typing state, and message rendering.
+- `features/volo-composer.js`: per-session draft persistence, input sizing,
+  keyboard submission, send-button state, and failed-send restoration.
 - `features/volo-sessions.js`: session roster and connection state, Gateway
   virtual session, session creation, compact, start, and stop dialogs.
 - `features/volo-music.js`: upload analysis, music message parsing, cards,
@@ -43,13 +45,13 @@ split. Their order is therefore explicit and checked by
   upload, and voice-analysis message formatting.
 - `features/volo-usage.js`: Gateway usage sidebar state, loading, formatting,
   and rendering.
-- `volo.js`: cross-feature session selection, composer drafts, carrier
+- `volo.js`: cross-feature session selection, send orchestration, carrier
   presentation, and drawer coordination.
 
 ## Next safe extractions
 
-1. Move composer sizing and draft persistence into `features/volo-composer.js`.
-2. Move drawer and carrier presentation into small page-surface modules.
+1. Move drawer and carrier presentation into small page-surface modules.
+2. Reduce `volo.js` to feature construction and cross-feature callbacks.
 3. Split memory detail renderers and arc visualization out of
    `memory-dashboard.js`.
 
