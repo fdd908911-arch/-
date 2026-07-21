@@ -37,6 +37,10 @@ split. Their order is therefore explicit and checked by
   incremental polling, optimistic sends, typing state, and message rendering.
 - `features/volo-composer.js`: per-session draft persistence, input sizing,
   keyboard submission, send-button state, and failed-send restoration.
+- `features/volo-drawer.js`: drawer visibility, accessibility state, focus, and
+  hash-change cleanup.
+- `features/volo-carrier.js`: Gateway/Claude Code label, composer placeholder,
+  and usage-panel presentation.
 - `features/volo-sessions.js`: session roster and connection state, Gateway
   virtual session, session creation, compact, start, and stop dialogs.
 - `features/volo-music.js`: upload analysis, music message parsing, cards,
@@ -45,13 +49,23 @@ split. Their order is therefore explicit and checked by
   upload, and voice-analysis message formatting.
 - `features/volo-usage.js`: Gateway usage sidebar state, loading, formatting,
   and rendering.
-- `volo.js`: cross-feature session selection, send orchestration, carrier
-  presentation, and drawer coordination.
+- `volo.js`: feature construction, cross-feature session selection, and send
+  orchestration. It does not query page DOM directly.
+
+## Regression checks
+
+- `npm run check` validates static references, classic-script order, legacy API
+  migration, feature ownership, and the `volo.js` size ceiling.
+- `npm run check:browser` runs the deployed chat and Drivesoid dashboards in
+  desktop Chromium and an Android Chrome viewport. Set `CCC_TEST_TOKEN`, or
+  point `CCC_TEST_TOKEN_FILE` at a file containing the browser access token.
+  `CCC_TEST_ORIGIN`, `PLAYWRIGHT_CORE_PATH`, and `CHROMIUM_PATH` can override
+  the deployed origin and local browser tooling.
 
 ## Next safe extractions
 
-1. Move drawer and carrier presentation into small page-surface modules.
-2. Reduce `volo.js` to feature construction and cross-feature callbacks.
+1. Keep `volo.js` limited to feature construction and cross-feature callbacks.
+2. Migrate one stable page at a time from classic globals to ES modules.
 3. Split memory detail renderers and arc visualization out of
    `memory-dashboard.js`.
 

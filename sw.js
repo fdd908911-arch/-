@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260721-v75-volo-composer-split`;
+const CACHE_NAME = `${CACHE_PREFIX}20260721-v76-volo-surface-split`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -42,9 +42,11 @@ const APP_SHELL = [
   "./features/volo-chat.js?v=20260721-chat-split-v1",
   "./features/volo-composer.js?v=20260721-composer-split-v1",
   "./features/volo-sessions.js?v=20260721-sessions-split-v1",
+  "./features/volo-drawer.js?v=20260721-drawer-split-v1",
+  "./features/volo-carrier.js?v=20260721-carrier-split-v1",
   "./features/volo-voice.js?v=20260721-voice-split-v1",
   "./features/volo-usage.js?v=20260721-usage-split-v1",
-  "./volo.js?v=20260721-volo-split-v5",
+  "./volo.js?v=20260721-volo-split-v6",
   "./memory-dashboard.js",
   "./status.js",
   "./drives-dashboard.js?v=20260721-drives-v3",

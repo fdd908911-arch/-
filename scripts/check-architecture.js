@@ -45,6 +45,8 @@ requireScriptOrder('chat.html', [
   'features/volo-chat.js',
   'features/volo-composer.js',
   'features/volo-sessions.js',
+  'features/volo-drawer.js',
+  'features/volo-carrier.js',
   'features/volo-voice.js',
   'features/volo-usage.js',
   'volo.js',
@@ -52,7 +54,7 @@ requireScriptOrder('chat.html', [
 
 const voloSource = source('volo.js');
 const voloLines = voloSource.split('\n').length;
-if (voloLines > 220) errors.push(`volo.js grew beyond 220 lines (${voloLines})`);
+if (voloLines > 150) errors.push(`volo.js grew beyond 150 lines (${voloLines})`);
 for (const forbidden of [
   'function createMusicCard',
   'function parseLrcLines',
@@ -78,6 +80,9 @@ for (const forbidden of [
   'function writeDrafts',
   'function resizeInput',
   'input.addEventListener("input"',
+  'function setDrawerOpen',
+  'function updateCarrierPresentation',
+  'document.getElementById',
 ]) {
   if (voloSource.includes(forbidden)) errors.push(`volo.js reclaimed extracted concern: ${forbidden}`);
 }
