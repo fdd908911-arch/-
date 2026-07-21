@@ -2,9 +2,7 @@
   "use strict";
 
   var DRAFT_KEY = "island-chat.ccc-drafts.v1";
-  var PROJECT_KEY = "island-chat.ccc-last-project.v1";
   var composer = document.getElementById("voloComposer");
-  var DEFAULT_GATEWAY_SESSION = "volo-gateway";
   var input = document.getElementById("voloInput");
   var sendButton = document.getElementById("voloSendButton");
   var drawer = document.getElementById("voloDrawer");
@@ -12,34 +10,16 @@
   var drawerClose = document.getElementById("voloDrawerClose");
   var drawerScrim = document.getElementById("voloDrawerScrim");
   var newChatButton = document.getElementById("voloNewChatButton");
-  var topNewChatButton = document.getElementById("voloTopNewChatButton");
-  var sessionList = document.getElementById("voloSessionList");
-  var connectionLabel = document.getElementById("voloConnectionLabel");
-  var connectionDot = document.getElementById("voloConnectionDot");
-  var createDialog = document.getElementById("sessionCreateDialog");
-  var createForm = document.getElementById("sessionCreateForm");
-  var createTitle = document.getElementById("sessionTitleInput");
-  var createName = document.getElementById("sessionNameInput");
-  var createProject = document.getElementById("sessionProjectInput");
-  var createError = document.getElementById("sessionCreateError");
-  var actionDialog = document.getElementById("sessionActionDialog");
   var carrierPill = document.getElementById("voloCarrierPill");
-  var actionTitle = document.getElementById("sessionActionDialogTitle");
-  var actionText = document.getElementById("sessionActionText");
-  var actionError = document.getElementById("sessionActionError");
-  var gatewayStatus = { enabled: false, online: false, gateway_session: DEFAULT_GATEWAY_SESSION };
-  var compactButton = document.getElementById("sessionCompactButton");
-  var closeButton = document.getElementById("sessionCloseButton");
 
-  var sessions = [];
   var selectedSession = window.CCC.getSelectedSession();
-  var actionSession = "";
   var drafts = readDrafts();
-  if (!window.VoloChat || !window.VoloMusic || !window.VoloVoice || !window.VoloUsage) {
+  if (!window.VoloChat || !window.VoloMusic || !window.VoloSessions || !window.VoloVoice || !window.VoloUsage) {
     throw new Error("Volo feature modules must load before volo.js");
   }
   var chat = null;
   var music = null;
+  var sessionRoster = null;
   var voice = window.VoloVoice.create({
     sendMessage: function (text) { return sendMessage(text); },
     emitClawd: emitClawd,
@@ -57,7 +37,7 @@
   chat = window.VoloChat.create({
     emitClawd: emitClawd,
     getSelectedSession: function () { return selectedSession; },
-    getSessionCount: function () { return sessions.length; },
+    getSessionCount: function () { return sessionRoster ? sessionRoster.count() : 0; },
     music: music,
     onGatewayReply: function (payload) {
       emitClawd("happy", payload.tools && payload.tools.length ? "Volo 用工具看过啦" : "Volo 回信啦", {
@@ -67,8 +47,16 @@
       usage.load();
     },
     onSendingChange: resizeInput,
-    renderSessions: renderSessions,
-    setConnectionState: setConnectionState
+    renderSessions: function () { if (sessionRoster) sessionRoster.render(); },
+    setConnectionState: function (online, label) {
+      if (sessionRoster) sessionRoster.setConnectionState(online, label);
+    }
+  });
+  sessionRoster = window.VoloSessions.create({
+    chat: chat,
+    getSelectedSession: function () { return selectedSession; },
+    onRestore: restoreSelectedSession,
+    onSelect: selectSession
   });
 
   function emitClawd(state, phrase, options) {
@@ -91,16 +79,8 @@
     localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts));
   }
 
-  function gatewaySessionId() {
-    return gatewayStatus.gateway_session || DEFAULT_GATEWAY_SESSION;
-  }
-
-  function isGatewaySession(sessionId) {
-    return sessionId === gatewaySessionId();
-  }
-
   function currentCarrier() {
-    return isGatewaySession(selectedSession) ? "gateway" : "claude_code";
+    return sessionRoster.isGatewaySession(selectedSession) ? "gateway" : "claude_code";
   }
 
   function updateCarrierPresentation() {
@@ -152,133 +132,13 @@
     setDrawerOpen(false, true);
   };
 
-  function sessionStatus(session) {
-    if (session.virtual) {
-      return session.status === "online" ? "记忆与工具在线" : "Volo 载体未连接";
-    }
-    if (chat.isTyping(session.tmux_session)) {
-      return "思考中";
-    }
-    if (session.status === "online") {
-      return "在线";
-    }
-    if (session.status === "shell_only") {
-      return "Claude 已退出";
-    }
-    return "已停止";
-  }
-
-  function renderSessions() {
-    if (!sessions.length) {
-      var empty = document.createElement("p");
-      empty.className = "volo-session-empty";
-      empty.textContent = window.CCC.isConfigured() ? "还没有窗口" : "连接服务器后显示窗口";
-      sessionList.replaceChildren(empty);
-      return;
-    }
-    var fragment = document.createDocumentFragment();
-    sessions.forEach(function (session) {
-      var sessionId = session.tmux_session;
-      var row = document.createElement("div");
-      row.className = "volo-session-row";
-      if (session.virtual) {
-        row.classList.add("volo-session-virtual");
-      }
-      if (sessionId === selectedSession) {
-        row.classList.add("active");
-      }
-      var button = document.createElement("button");
-      button.type = "button";
-      button.className = "volo-current-chat";
-      button.dataset.session = sessionId;
-      button.setAttribute("aria-current", sessionId === selectedSession ? "page" : "false");
-      var flower = document.createElement("span");
-      flower.className = "volo-current-chat-flower";
-      flower.setAttribute("aria-hidden", "true");
-      var copy = document.createElement("span");
-      var title = document.createElement("strong");
-      title.textContent = session.title || sessionId;
-      var status = document.createElement("small");
-      var unread = chat.unreadCount(sessionId);
-      status.textContent = sessionStatus(session) + (unread ? " · " + unread + " 条未读" : "");
-      copy.append(title, status);
-      button.append(flower, copy);
-      var menu = document.createElement("button");
-      menu.type = "button";
-      menu.className = "volo-session-menu";
-      menu.dataset.sessionAction = sessionId;
-      menu.setAttribute("aria-label", (session.title || sessionId) + " 窗口操作");
-      menu.textContent = "•••";
-      row.appendChild(button);
-      if (!session.virtual) {
-        row.appendChild(menu);
-      }
-      fragment.appendChild(row);
-    });
-    sessionList.replaceChildren(fragment);
-  }
-
-  function setConnectionState(online, label) {
-    connectionDot.classList.toggle("online", online);
-    connectionLabel.textContent = label;
-  }
-
-  function findSession(sessionId) {
-    return sessions.find(function (item) {
-      return item.tmux_session === sessionId;
-    });
-  }
-
-  async function loadSessions(preferred) {
-    if (!window.CCC.isConfigured()) {
-      setConnectionState(false, "未配置");
-      renderSessions();
-      return;
-    }
-    try {
-      var payloads = await Promise.all([
-        window.CCC.sessions(),
-        window.CCC.voloStatus().catch(function (error) {
-          return { enabled: false, online: false, reason: error.message };
-        })
-      ]);
-      var payload = payloads[0];
-      gatewayStatus = payloads[1] || gatewayStatus;
-      sessions = (payload.sessions || []).filter(function (session) {
-        return !session.archived && (session.tmux_session === "volo" || session.managed);
-      });
-      if (gatewayStatus.enabled) {
-        sessions.unshift({
-          tmux_session: gatewaySessionId(),
-          title: "Volo · 陪我聊聊",
-          status: gatewayStatus.online ? "online" : "stopped",
-          virtual: true
-        });
-      }
-      var tmuxCount = sessions.filter(function (session) { return !session.virtual; }).length;
-      setConnectionState(
-        true,
-        tmuxCount + " 个窗口" + (gatewayStatus.online ? " · 记忆在线" : "")
-      );
-      var wanted = preferred || selectedSession;
-      if (!findSession(wanted)) {
-        wanted = findSession("volo") ? "volo" : (sessions.length ? sessions[0].tmux_session : "");
-      }
-      renderSessions();
-      if (wanted && wanted !== selectedSession) {
-        await selectSession(wanted);
-      } else if (wanted) {
-        selectedSession = wanted;
-        window.CCC.setSelectedSession(wanted);
-        input.value = drafts[wanted] || "";
-        updateCarrierPresentation();
-        resizeInput();
-        await chat.loadHistory(wanted);
-      }
-    } catch (error) {
-      setConnectionState(false, error.message);
-      renderSessions();
-    }
+  async function restoreSelectedSession(sessionId) {
+    selectedSession = sessionId;
+    window.CCC.setSelectedSession(sessionId);
+    input.value = drafts[sessionId] || "";
+    updateCarrierPresentation();
+    resizeInput();
+    await chat.loadHistory(sessionId);
   }
 
   async function selectSession(sessionId) {
@@ -294,7 +154,7 @@
     input.value = drafts[sessionId] || "";
     updateCarrierPresentation();
     resizeInput();
-    renderSessions();
+    sessionRoster.render();
     await chat.selectSession(sessionId);
     setDrawerOpen(false, false);
     input.focus();
@@ -328,97 +188,11 @@
     return sent;
   }
 
-  function openCreateDialog() {
-    if (!window.CCC.isConfigured()) {
-      window.CCC.openConnectionDialog();
-      return;
-    }
-    createTitle.value = "";
-    createName.value = "";
-    createProject.value = localStorage.getItem(PROJECT_KEY) || "";
-    createError.hidden = true;
-    createDialog.showModal();
-    createTitle.focus();
-  }
-
-  function openActionDialog(sessionId) {
-    var session = findSession(sessionId);
-    if (!session) {
-      return;
-    }
-    actionSession = sessionId;
-    actionTitle.textContent = session.title || sessionId;
-    actionText.textContent =
-      session.status === "online"
-        ? "该窗口正在运行。停止 tmux 不会删除聊天历史。"
-        : "该窗口当前为 " + sessionStatus(session) + "，可以重新启动 Claude。";
-    actionError.hidden = true;
-    compactButton.disabled = session.status !== "online";
-    closeButton.textContent = session.status === "online" ? "停止窗口" : "启动窗口";
-    actionDialog.showModal();
-  }
-
-  createForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    createError.hidden = true;
-    var submit = createForm.querySelector('[type="submit"]');
-    submit.disabled = true;
-    try {
-      localStorage.setItem(PROJECT_KEY, createProject.value.trim());
-      var payload = await window.CCC.createSession(
-        createTitle.value.trim(),
-        createName.value.trim(),
-        createProject.value.trim()
-      );
-      createDialog.close();
-      await loadSessions(payload.session && payload.session.tmux_session);
-    } catch (error) {
-      createError.textContent = error.message;
-      createError.hidden = false;
-    } finally {
-      submit.disabled = false;
-    }
-  });
-
-  compactButton.addEventListener("click", async function () {
-    actionError.hidden = true;
-    try {
-      await window.CCC.sendTerminalText(
-        actionSession,
-        "/compact 只保留当前目标、关键决策、已修改文件、未完成事项、下一步和测试命令",
-        true
-      );
-      actionDialog.close();
-    } catch (error) {
-      actionError.textContent = error.message;
-      actionError.hidden = false;
-    }
-  });
-
-  closeButton.addEventListener("click", async function () {
-    var session = findSession(actionSession);
-    actionError.hidden = true;
-    try {
-      if (session && session.status === "online") {
-        if (!window.confirm("停止 " + (session.title || actionSession) + "？聊天历史会保留。")) {
-          return;
-        }
-        await window.CCC.closeSession(actionSession);
-      } else {
-        await window.CCC.startSession(actionSession);
-      }
-      actionDialog.close();
-      await loadSessions();
-    } catch (error) {
-      actionError.textContent = error.message;
-      actionError.hidden = false;
-    }
-  });
-
   composer.addEventListener("submit", function (event) {
     event.preventDefault();
     sendMessage();
   });
+  sessionRoster.bind();
   chat.bind();
   voice.bind();
   music.bind();
@@ -439,31 +213,6 @@
       sendMessage();
     }
   });
-  newChatButton.addEventListener("click", openCreateDialog);
-  topNewChatButton.addEventListener("click", openCreateDialog);
-
-  sessionList.addEventListener("click", function (event) {
-    var action = event.target.closest("[data-session-action]");
-    if (action) {
-      openActionDialog(action.dataset.sessionAction);
-      return;
-    }
-    var button = event.target.closest("[data-session]");
-    if (button) {
-      selectSession(button.dataset.session);
-    }
-  });
-
-  document.addEventListener("ccc:session-selected", function (event) {
-    var next = event.detail && event.detail.session;
-    if (next && next !== selectedSession && findSession(next)) {
-      selectSession(next);
-    }
-  });
-
-  document.addEventListener("ccc:config-changed", function () {
-    loadSessions();
-  });
   window.addEventListener("hashchange", function () {
     if (window.location.hash !== "#volo") {
       setDrawerOpen(false, false);
@@ -472,5 +221,5 @@
 
   resizeInput();
   chat.render(false);
-  loadSessions();
+  sessionRoster.load();
 })();
