@@ -42,6 +42,7 @@ requireScriptOrder('chat.html', [
   'ccc-api.js',
   'features/volo-media-status.js',
   'features/volo-music.js',
+  'features/volo-chat.js',
   'features/volo-voice.js',
   'features/volo-usage.js',
   'volo.js',
@@ -49,7 +50,7 @@ requireScriptOrder('chat.html', [
 
 const voloSource = source('volo.js');
 const voloLines = voloSource.split('\n').length;
-if (voloLines > 850) errors.push(`volo.js grew beyond 850 lines (${voloLines})`);
+if (voloLines > 600) errors.push(`volo.js grew beyond 600 lines (${voloLines})`);
 for (const forbidden of [
   'function createMusicCard',
   'function parseLrcLines',
@@ -60,6 +61,12 @@ for (const forbidden of [
   'function renderUsage',
   'function loadUsage',
   'function setUsageOpen',
+  'function mergeMessages',
+  'function createAssistantMessage',
+  'function renderMessages',
+  'function loadHistory',
+  'function pollSelected',
+  'function schedulePoll',
 ]) {
   if (voloSource.includes(forbidden)) errors.push(`volo.js reclaimed extracted concern: ${forbidden}`);
 }

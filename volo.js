@@ -7,9 +7,6 @@
   var DEFAULT_GATEWAY_SESSION = "volo-gateway";
   var input = document.getElementById("voloInput");
   var sendButton = document.getElementById("voloSendButton");
-  var messageScroll = document.getElementById("voloMessageScroll");
-  var messageList = document.getElementById("voloMessageList");
-  var emptyState = document.getElementById("voloEmpty");
   var drawer = document.getElementById("voloDrawer");
   var drawerButton = document.getElementById("voloDrawerButton");
   var drawerClose = document.getElementById("voloDrawerClose");
@@ -37,32 +34,42 @@
   var sessions = [];
   var selectedSession = window.CCC.getSelectedSession();
   var actionSession = "";
-  var messagesBySession = Object.create(null);
-  var cursorBySession = Object.create(null);
-  var typingBySession = Object.create(null);
-  var unreadBySession = Object.create(null);
   var drafts = readDrafts();
-  var pollTimer = 0;
-  var requestGeneration = 0;
-  var sending = false;
-  if (!window.VoloMusic || !window.VoloVoice || !window.VoloUsage) {
+  if (!window.VoloChat || !window.VoloMusic || !window.VoloVoice || !window.VoloUsage) {
     throw new Error("Volo feature modules must load before volo.js");
   }
+  var chat = null;
   var music = null;
   var voice = window.VoloVoice.create({
     sendMessage: function (text) { return sendMessage(text); },
     emitClawd: emitClawd,
     isMusicBusy: function () { return Boolean(music && music.isBusy()); },
-    isSending: function () { return sending; }
+    isSending: function () { return Boolean(chat && chat.isSending()); }
   });
   music = window.VoloMusic.create({
     sendMessage: function (text) { return sendMessage(text); },
     emitClawd: emitClawd,
     getSelectedSession: function () { return selectedSession; },
     isVoiceBusy: function () { return voice.isBusy(); },
-    isSending: function () { return sending; }
+    isSending: function () { return Boolean(chat && chat.isSending()); }
   });
   var usage = window.VoloUsage.create();
+  chat = window.VoloChat.create({
+    emitClawd: emitClawd,
+    getSelectedSession: function () { return selectedSession; },
+    getSessionCount: function () { return sessions.length; },
+    music: music,
+    onGatewayReply: function (payload) {
+      emitClawd("happy", payload.tools && payload.tools.length ? "Volo 用工具看过啦" : "Volo 回信啦", {
+        duration: 1200,
+        priority: 3
+      });
+      usage.load();
+    },
+    onSendingChange: resizeInput,
+    renderSessions: renderSessions,
+    setConnectionState: setConnectionState
+  });
 
   function emitClawd(state, phrase, options) {
     document.dispatchEvent(
@@ -106,44 +113,12 @@
   }
 
 
-  function formatTime(value) {
-    var date = value ? new Date(value) : new Date();
-    if (Number.isNaN(date.getTime())) {
-      date = new Date();
-    }
-    return new Intl.DateTimeFormat("zh-CN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    }).format(date);
-  }
-
-  function messageKey(message) {
-    return [message.ts || "", message.role || "", message.text || ""].join("|");
-  }
-
-  function mergeMessages(current, incoming) {
-    var map = Object.create(null);
-    (current || []).concat(incoming || []).forEach(function (message) {
-      if (message && (message.role === "user" || message.role === "assistant")) {
-        map[messageKey(message)] = message;
-      }
-    });
-    return Object.keys(map)
-      .map(function (key) {
-        return map[key];
-      })
-      .sort(function (left, right) {
-        return String(left.ts || "").localeCompare(String(right.ts || ""));
-      });
-  }
-
   function resizeInput() {
     input.style.height = "auto";
     var height = Math.min(input.scrollHeight, 120);
     input.style.height = Math.max(height, 28) + "px";
     input.style.overflowY = input.scrollHeight > 120 ? "auto" : "hidden";
-    sendButton.disabled = sending || !selectedSession || input.value.trim().length === 0;
+    sendButton.disabled = chat.isSending() || !selectedSession || input.value.trim().length === 0;
   }
 
   function setDrawerOpen(open, restoreFocus) {
@@ -177,98 +152,11 @@
     setDrawerOpen(false, true);
   };
 
-  function createUserMessage(message) {
-    var row = document.createElement("article");
-    row.className = "volo-message volo-message-user";
-    var bubble = document.createElement("div");
-    bubble.className = "volo-user-bubble";
-    var text = document.createElement("p");
-    text.textContent = message.text;
-    bubble.appendChild(text);
-    var time = document.createElement("time");
-    time.className = "volo-message-time";
-    time.textContent = formatTime(message.ts);
-    bubble.appendChild(time);
-    row.appendChild(bubble);
-    return row;
-  }
-
-  function createAssistantMessage(message) {
-    var row = document.createElement("article");
-    row.className = "volo-message volo-message-assistant";
-    var body = document.createElement("div");
-    body.className = "volo-assistant-body";
-    var content = music.contentForMessage(message);
-    if (content.text) {
-      var text = document.createElement("p");
-      text.textContent = content.text;
-      body.appendChild(text);
-    }
-    if (content.music) body.appendChild(music.createCard(content.music));
-    var footer = document.createElement("footer");
-    footer.className = "volo-assistant-footer";
-    var mark = document.createElement("button");
-    mark.className = "volo-assistant-mark volo-flower-button";
-    mark.type = "button";
-    mark.setAttribute("aria-label", "让 Volo 的小花动起来");
-    var note = document.createElement("span");
-    var metadata = message.metadata || {};
-    var carrierLabel = metadata.carrier === "gateway" ? "陪我聊聊" : "Claude Code";
-    var toolCount = Array.isArray(metadata.tools) ? metadata.tools.length : 0;
-    note.textContent =
-      carrierLabel + " · " + formatTime(message.ts) +
-      (toolCount ? " · " + toolCount + " 个工具" : "");
-    footer.append(mark, note);
-    row.append(body, footer);
-    return row;
-  }
-
-  function createTypingMessage() {
-    var row = document.createElement("article");
-    row.className = "volo-message volo-message-assistant";
-    row.setAttribute("aria-label", "正在回复");
-    var typing = document.createElement("div");
-    typing.className = "volo-typing";
-    for (var index = 0; index < 3; index += 1) {
-      typing.appendChild(document.createElement("span"));
-    }
-    row.appendChild(typing);
-    return row;
-  }
-
-  function isMessageScrollNearBottom() {
-    return messageScroll.scrollHeight - messageScroll.clientHeight - messageScroll.scrollTop < 96;
-  }
-
-  function renderMessages(shouldScroll) {
-    var messages = messagesBySession[selectedSession] || [];
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(emptyState);
-    messages.forEach(function (message) {
-      fragment.appendChild(
-        message.role === "user" ? createUserMessage(message) : createAssistantMessage(message)
-      );
-    });
-    if (typingBySession[selectedSession]) {
-      fragment.appendChild(createTypingMessage());
-    }
-    messageList.classList.toggle(
-      "has-messages",
-      messages.length > 0 || Boolean(typingBySession[selectedSession])
-    );
-    messageList.replaceChildren(fragment);
-    if (shouldScroll) {
-      requestAnimationFrame(function () {
-        messageScroll.scrollTop = messageScroll.scrollHeight;
-      });
-    }
-  }
-
   function sessionStatus(session) {
     if (session.virtual) {
       return session.status === "online" ? "记忆与工具在线" : "Volo 载体未连接";
     }
-    if (typingBySession[session.tmux_session]) {
+    if (chat.isTyping(session.tmux_session)) {
       return "思考中";
     }
     if (session.status === "online") {
@@ -311,7 +199,7 @@
       var title = document.createElement("strong");
       title.textContent = session.title || sessionId;
       var status = document.createElement("small");
-      var unread = unreadBySession[sessionId] || 0;
+      var unread = chat.unreadCount(sessionId);
       status.textContent = sessionStatus(session) + (unread ? " · " + unread + " 条未读" : "");
       copy.append(title, status);
       button.append(flower, copy);
@@ -385,80 +273,12 @@
         input.value = drafts[wanted] || "";
         updateCarrierPresentation();
         resizeInput();
-        await loadHistory(wanted);
+        await chat.loadHistory(wanted);
       }
     } catch (error) {
       setConnectionState(false, error.message);
       renderSessions();
     }
-  }
-
-  async function loadHistory(sessionId) {
-    var generation = ++requestGeneration;
-    try {
-      var payload = await window.CCC.history(sessionId, 300);
-      if (generation !== requestGeneration || selectedSession !== sessionId) {
-        return;
-      }
-      messagesBySession[sessionId] = mergeMessages([], payload.records || []);
-      cursorBySession[sessionId] =
-        messagesBySession[sessionId].length
-          ? messagesBySession[sessionId][messagesBySession[sessionId].length - 1].ts
-          : null;
-      unreadBySession[sessionId] = 0;
-      renderMessages(true);
-      renderSessions();
-      schedulePoll(250);
-    } catch (error) {
-      emitClawd("disconnected", "连接失败", { duration: 1800, priority: 4 });
-      setConnectionState(false, error.message);
-    }
-  }
-
-  async function pollSelected() {
-    var sessionId = selectedSession;
-    if (!sessionId || document.hidden) {
-      schedulePoll(1800);
-      return;
-    }
-    var generation = requestGeneration;
-    try {
-      var payload = await window.CCC.poll(sessionId, cursorBySession[sessionId], 100);
-      if (generation !== requestGeneration || selectedSession !== sessionId) {
-        return;
-      }
-      var incoming = (payload.chat && payload.chat.new_records) || [];
-      var previousLength = (messagesBySession[sessionId] || []).length;
-      var wasTyping = Boolean(typingBySession[sessionId]);
-      messagesBySession[sessionId] = mergeMessages(messagesBySession[sessionId], incoming);
-      cursorBySession[sessionId] =
-        (payload.chat && payload.chat.last_ts) || cursorBySession[sessionId] || null;
-      var isTyping = Boolean(payload.status && payload.status.is_typing);
-      typingBySession[sessionId] = isTyping;
-      var hasNew = messagesBySession[sessionId].length > previousLength;
-      var typingChanged = wasTyping !== isTyping;
-      if (hasNew || typingChanged) {
-        renderMessages(isMessageScrollNearBottom());
-        renderSessions();
-      }
-      if (hasNew && incoming.some(function (message) { return message.role === "assistant"; })) {
-        emitClawd("notification", "Volo 回信啦", {
-          duration: 1400,
-          priority: 4,
-          next: { name: "happy", duration: 900, priority: 3 }
-        });
-      }
-      setConnectionState(true, sessions.length + " 个窗口");
-    } catch (error) {
-      setConnectionState(false, error.message);
-    } finally {
-      schedulePoll(1800);
-    }
-  }
-
-  function schedulePoll(delay) {
-    window.clearTimeout(pollTimer);
-    pollTimer = window.setTimeout(pollSelected, delay);
   }
 
   async function selectSession(sessionId) {
@@ -470,20 +290,12 @@
       writeDrafts();
     }
     selectedSession = sessionId;
-    requestGeneration += 1;
     window.CCC.setSelectedSession(sessionId);
-    unreadBySession[sessionId] = 0;
     input.value = drafts[sessionId] || "";
     updateCarrierPresentation();
     resizeInput();
     renderSessions();
-    if (messagesBySession[sessionId]) {
-      renderMessages(true);
-      schedulePoll(100);
-    } else {
-      renderMessages(false);
-      await loadHistory(sessionId);
-    }
+    await chat.selectSession(sessionId);
     setDrawerOpen(false, false);
     input.focus();
   }
@@ -493,79 +305,27 @@
     var carrier = currentCarrier();
     var fromComposer = typeof explicitValue !== "string";
     var value = (fromComposer ? input.value : explicitValue).trim();
-    if (!sessionId || !value || sending) {
+    if (!sessionId || !value || chat.isSending()) {
       return false;
     }
-    sending = true;
     if (fromComposer) {
       input.value = "";
       drafts[sessionId] = "";
       writeDrafts();
     }
-
-    var optimistic = {
-      ts: new Date().toISOString(),
-      role: "user",
-      text: value,
-      client_local: true
-    };
-    messagesBySession[sessionId] = mergeMessages(messagesBySession[sessionId], [optimistic]);
-    typingBySession[sessionId] = true;
     resizeInput();
-    renderMessages(true);
-    renderSessions();
     emitClawd("beacon", carrier === "gateway" ? "去找共同记忆" : "发到 " + sessionId, {
       duration: 900,
       priority: 3
     });
-
-    try {
-      var payload = await window.CCC.sendVolo(
-        carrier,
-        carrier === "gateway" ? "" : sessionId,
-        value,
-        null
-      );
-      messagesBySession[sessionId] = (messagesBySession[sessionId] || []).filter(function (message) {
-        return !message.client_local;
-      });
-      var incoming = [payload.record, payload.assistant_record].filter(Boolean);
-      messagesBySession[sessionId] = mergeMessages(messagesBySession[sessionId], incoming);
-      if (incoming.length) {
-        cursorBySession[sessionId] = incoming[incoming.length - 1].ts || cursorBySession[sessionId];
-      }
-      typingBySession[sessionId] = carrier !== "gateway";
-      if (selectedSession === sessionId) {
-        renderMessages(true);
-      }
-      renderSessions();
-      if (carrier === "gateway") {
-        emitClawd("happy", payload.tools && payload.tools.length ? "Volo 用工具看过啦" : "Volo 回信啦", {
-          duration: 1200,
-          priority: 3
-        });
-        usage.load();
-      }
-      schedulePoll(300);
-      return true;
-    } catch (error) {
-      messagesBySession[sessionId] = (messagesBySession[sessionId] || []).filter(function (message) {
-        return !message.client_local;
-      });
-      typingBySession[sessionId] = false;
-      if (fromComposer) {
-        input.value = value;
-        drafts[sessionId] = value;
-        writeDrafts();
-      }
-      renderMessages(false);
-      setConnectionState(false, error.message);
-      emitClawd("disconnected", "发送失败", { duration: 1800, priority: 4 });
-      return false;
-    } finally {
-      sending = false;
-      resizeInput();
+    var sent = await chat.send(sessionId, carrier, value);
+    if (!sent && fromComposer) {
+      input.value = value;
+      drafts[sessionId] = value;
+      writeDrafts();
     }
+    resizeInput();
+    return sent;
   }
 
   function openCreateDialog() {
@@ -659,6 +419,7 @@
     event.preventDefault();
     sendMessage();
   });
+  chat.bind();
   voice.bind();
   music.bind();
   usage.bind();
@@ -693,16 +454,6 @@
     }
   });
 
-  messageList.addEventListener("click", function (event) {
-    var flower = event.target.closest(".volo-flower-button");
-    if (flower) {
-      flower.classList.remove("is-blooming");
-      void flower.offsetWidth;
-      flower.classList.add("is-blooming");
-      emitClawd("happy", "Volo 的小花开啦", { duration: 1000, priority: 2 });
-    }
-  });
-
   document.addEventListener("ccc:session-selected", function (event) {
     var next = event.detail && event.detail.session;
     if (next && next !== selectedSession && findSession(next)) {
@@ -713,11 +464,6 @@
   document.addEventListener("ccc:config-changed", function () {
     loadSessions();
   });
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) {
-      schedulePoll(100);
-    }
-  });
   window.addEventListener("hashchange", function () {
     if (window.location.hash !== "#volo") {
       setDrawerOpen(false, false);
@@ -725,6 +471,6 @@
   });
 
   resizeInput();
-  renderMessages(false);
+  chat.render(false);
   loadSessions();
 })();
