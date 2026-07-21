@@ -42,10 +42,12 @@ done < <(
     -print0
 )
 
-if [[ -d "$ROOT/assets" ]]; then
-  install -d -m 0755 "$STAGE/assets"
-  cp -a "$ROOT/assets/." "$STAGE/assets/"
-fi
+for public_dir in assets core features; do
+  if [[ -d "$ROOT/$public_dir" ]]; then
+    install -d -m 0755 "$STAGE/$public_dir"
+    cp -a "$ROOT/$public_dir/." "$STAGE/$public_dir/"
+  fi
+done
 
 install -d -m 0755 "$STAGE/reading-app"
 cp -a "$COREAD/." "$STAGE/reading-app/"

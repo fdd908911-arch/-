@@ -2,7 +2,7 @@
   "name": "hui-v40-frontend",
   "private": true,
   "scripts": {
-    "check": "node scripts/check-static.js",
+    "check": "node scripts/check-static.js && node scripts/check-architecture.js",
     "deploy:check": "bash scripts/deploy-hui-v40.sh --check",
     "deploy": "bash scripts/deploy-hui-v40.sh --deploy"
   }

@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260721-v69-mobile-api-base`;
+const CACHE_NAME = `${CACHE_PREFIX}20260721-v71-volo-music-split`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -33,10 +33,12 @@ const APP_SHELL = [
   "./clawd-pet.css",
   "./home.js",
   "./app.js",
-  "./ccc-api.js?v=20260721-api-base-v2",
+  "./core/ccc-runtime.js?v=20260721-core-v1",
+  "./ccc-api.js?v=20260721-api-split-v1",
   "./router.js",
   "./group.js",
-  "./volo.js",
+  "./features/volo-music.js?v=20260721-music-split-v1",
+  "./volo.js?v=20260721-volo-split-v1",
   "./memory-dashboard.js",
   "./status.js",
   "./drives-dashboard.js?v=20260721-drives-v3",
