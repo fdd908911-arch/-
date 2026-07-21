@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta
       name="description"
       content="洄·Maneo信箱开场页，记录在一起的日子并进入 Chat、Diary、Memory、Volo 状态与世界"
@@ -12,6 +15,8 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%237ea4ba'/%3E%3Cpath d='M13 30 51 14 39 49l-9-10-7 7 1-13 22-14-27 11z' fill='white'/%3E%3C/svg%3E"
     />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
     <title>洄·Maneo · 开场页</title>
     <script>
       try {
@@ -47,6 +52,7 @@
     <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
     <link rel="stylesheet" href="home-ins.css?v=20260711-home-ins-v1" />
+    <link rel="stylesheet" href="pwa.css?v=20260711-pwa-v5" />
   </head>
   <body class="home-page">
     <svg class="svg-sprite" aria-hidden="true">
@@ -92,6 +98,9 @@
       <symbol id="home-icon-check" viewBox="0 0 24 24">
         <path d="m5 12 4 4L19 6" />
       </symbol>
+      <symbol id="home-icon-install" viewBox="0 0 24 24">
+        <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M5 18.5v2h14v-2" />
+      </symbol>
     </svg>
 
     <div class="home-ambient home-ambient-one" aria-hidden="true"></div>
@@ -112,9 +121,14 @@
             <small>PRIVATE EDITION · OUR LITTLE SPACE</small>
           </span>
         </div>
-        <div class="home-theme-indicator" aria-label="当前界面配色">
-          <span class="home-theme-dot" aria-hidden="true"></span>
-          <span id="homeThemeName">雾蓝杏粉</span>
+        <div class="home-header-actions">
+          <div class="home-theme-indicator" aria-label="当前界面配色">
+            <span class="home-theme-dot" aria-hidden="true"></span>
+            <span id="homeThemeName">雾蓝杏粉</span>
+          </div>
+          <button class="pwa-install-button" id="pwaInstallButton" type="button" aria-label="安装洄·Maneo" hidden>
+            <svg aria-hidden="true"><use href="#home-icon-install"></use></svg>
+          </button>
         </div>
       </header>
 
@@ -153,7 +167,7 @@
           <a
             class="weather-card"
             href="diary.html"
-            aria-label="打开今天的 Diary 日记"
+            aria-label="打开 Volo 的日记"
             data-clawd-destination="Diary"
           >
             <div class="weather-card-glow" aria-hidden="true"></div>
@@ -174,10 +188,10 @@
                   <span id="weatherCondition">天气待记录</span>
                 </div>
               </div>
-              <blockquote id="dailyNote">今天想说的话，写在这里。</blockquote>
+              <blockquote id="dailyNote">有些页想让你看到，有些页由 ta 锁起来。</blockquote>
             </div>
 
-            <footer class="weather-footer">打开 Diary · 只保存在这台设备</footer>
+            <footer class="weather-footer">打开 Volo 的日记 · 钥匙在 ta 手里</footer>
           </a>
         </div>
 
@@ -210,10 +224,10 @@
               <span class="memory-entry-icon"><svg><use href="#home-icon-memory"></use></svg></span>
               <div>
                 <h2>Memory</h2>
-                <p>收藏我们的回忆</p>
+                <p>看见记忆怎样被想起，也怎样安静留下</p>
               </div>
             </div>
-            <footer class="memory-entry-footer">把喜欢的日子，再保存一次</footer>
+            <footer class="memory-entry-footer">FULL RECALL · QUIETLY HELD</footer>
           </a>
         </div>
       </section>
@@ -297,6 +311,7 @@
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
-    <script src="home.js?v=20260711-theme-palettes-v1"></script>
+    <script src="home.js?v=20260712-volo-diary-v1"></script>
+    <script src="pwa.js?v=20260711-pwa-v5"></script>
   </body>
 </html>

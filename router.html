@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>洄·Maneo · Volo</title>
+    <script>
+      try {
+        var savedAppearance = JSON.parse(localStorage.getItem("island-chat.preferences.v1"));
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var themeColors = { mist: "#eef2f0", zen: "#f2efe8", sage: "#f1f1e7", blush: "#ebeef1" };
+        var savedTheme =
+          (savedAppearance && (savedAppearance.theme || legacyThemes[savedAppearance.id] || savedAppearance.id)) ||
+          "mist";
+        if (["mist", "zen", "sage", "blush"].indexOf(savedTheme) === -1) savedTheme = "mist";
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute("content", themeColors[savedTheme]);
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="router.css?v=20260719-router-tg-v3" />
+  </head>
+  <body class="router-page">
+    <main class="router-shell">
+      <header class="router-header">
+        <a class="router-back" href="chat.html#hub" aria-label="返回 Chat 首页">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+        </a>
+
+        <div class="router-profile">
+          <div class="router-avatar" aria-hidden="true">
+            <span class="router-flower"></span>
+            <i class="router-presence"></i>
+          </div>
+          <div class="router-profile-copy">
+            <h1>Volo</h1>
+            <section class="router-status" id="providerHint" role="status" aria-live="polite">
+              <span class="router-status-dot" aria-hidden="true"></span>
+              <span>正在连接双核路由…</span>
+            </section>
+          </div>
+        </div>
+
+        <div class="router-provider-control">
+          <button
+            class="router-provider-trigger"
+            id="providerMenuButton"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="providerPopover"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7.5 6.5h9a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4h-9a4 4 0 0 1-4-4v-3a4 4 0 0 1 4-4Z" />
+              <path d="M9 6.5V4.75M15 6.5V4.75M8.5 11.5h.01M15.5 11.5h.01M9 15h6" />
+            </svg>
+            <span id="activeProviderLabel">双核</span>
+            <svg class="router-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+          </button>
+
+          <section class="router-provider-popover" id="providerPopover" aria-label="响应核心" hidden>
+            <div class="router-popover-heading">
+              <strong>响应核心</strong>
+              <span>切换后仍在同一条时间线里</span>
+            </div>
+            <div class="router-switch" id="providerSwitch" role="radiogroup" aria-label="选择 AI 服务">
+              <button type="button" data-provider="claude" role="radio" aria-checked="false">
+                <span class="router-provider-avatar router-provider-claude">C</span>
+                <span class="router-provider-copy">
+                  <strong>Claude Code</strong>
+                  <small class="router-provider-health">正在检测…</small>
+                </span>
+                <span class="router-provider-check" aria-hidden="true">✓</span>
+              </button>
+              <button type="button" data-provider="codex" role="radio" aria-checked="false">
+                <span class="router-provider-avatar router-provider-codex">⌁</span>
+                <span class="router-provider-copy">
+                  <strong>Codex</strong>
+                  <small class="router-provider-health">正在检测…</small>
+                </span>
+                <span class="router-provider-check" aria-hidden="true">✓</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </header>
+
+      <section class="router-timeline" id="timeline" role="log" aria-live="polite" aria-label="统一聊天时间线">
+        <div class="router-empty" id="emptyState">
+          <span class="router-empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-3.4-.7L4 20l1.5-4A7.3 7.3 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z" /></svg>
+          </span>
+          <h2>给 Volo 发条消息</h2>
+          <p>右上角可以随时切换 Claude Code 或 Codex。</p>
+        </div>
+      </section>
+
+      <footer class="router-composer-dock">
+        <form class="router-composer" id="composer">
+          <label for="message"><span class="visually-hidden">发送消息</span></label>
+          <textarea id="message" rows="1" maxlength="100000" placeholder="消息" required></textarea>
+          <button id="send" type="submit" aria-label="发送消息">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.2 3.7 3.9 10.4c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.1c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.1-2 4.5 3.3c.8.5 1.4.3 1.6-.8l2.9-13.9c.3-1.4-.5-2-1.8-1.5Z" /></svg>
+          </button>
+        </form>
+        <p class="router-keyboard-hint">Enter 发送 · Shift + Enter 换行</p>
+      </footer>
+    </main>
+
+    <script src="ccc-api.js?v=20260718-router-v1"></script>
+    <script src="router.js?v=20260719-router-tg-v3"></script>
+  </body>
+</html>

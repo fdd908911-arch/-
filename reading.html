@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content="洄·Maneo的共读房间" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%235c8b85'/%3E%3Cg fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 14h15c4 0 7 3 7 7v31c0-4-3-7-7-7H10V14Z'/%3E%3Cpath d='M54 14H39c-4 0-7 3-7 7v31c0-4 3-7 7-7h15V14Z'/%3E%3C/g%3E%3C/svg%3E"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+    <title>洄·Maneo · 共读</title>
+    <script>
+      try {
+        var savedAppearance = JSON.parse(localStorage.getItem("island-chat.preferences.v1"));
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var savedTheme =
+          (savedAppearance &&
+            (savedAppearance.theme || legacyThemes[savedAppearance.id] || savedAppearance.id)) ||
+          "mist";
+        var themeColors = { mist: "#eef2f0", zen: "#f2efe8", sage: "#f1f1e7", blush: "#ebeef1" };
+        if (!themeColors[savedTheme]) savedTheme = "mist";
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute("content", themeColors[savedTheme]);
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="memory.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="world.css?v=20260718-co-reading-v1" />
+    <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="pwa.css?v=20260711-pwa-v5" />
+  </head>
+  <body class="home-page memory-page world-page reading-page">
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="reading-icon-back" viewBox="0 0 24 24">
+        <path d="m15 5-7 7 7 7M8 12h11" />
+      </symbol>
+      <symbol id="reading-icon-book" viewBox="0 0 24 24">
+        <path d="M4 5.7A3.7 3.7 0 0 1 7.7 2H11v17H7.7A3.7 3.7 0 0 0 4 22V5.7Z" />
+        <path d="M20 5.7A3.7 3.7 0 0 0 16.3 2H13v17h3.3a3.7 3.7 0 0 1 3.7 3V5.7Z" />
+      </symbol>
+    </svg>
+
+    <span class="home-ambient home-ambient-one" aria-hidden="true"></span>
+    <span class="home-ambient home-ambient-two" aria-hidden="true"></span>
+
+    <div class="memory-shell">
+      <header class="memory-header">
+        <a class="memory-back" href="world.html" aria-label="返回世界">
+          <svg><use href="#reading-icon-back"></use></svg>
+        </a>
+        <div class="memory-heading">
+          <span class="memory-heading-icon world-heading-icon" aria-hidden="true">
+            <svg><use href="#reading-icon-book"></use></svg>
+          </span>
+          <div>
+            <h1>共读</h1>
+            <p>我们的阅读房间</p>
+          </div>
+        </div>
+        <span class="memory-header-spacer" aria-hidden="true"></span>
+      </header>
+
+      <main class="memory-canvas reading-canvas" aria-label="共读房间">
+        <section class="reading-room" aria-labelledby="reading-room-title">
+          <span class="reading-room-mark" aria-hidden="true">
+            <svg><use href="#reading-icon-book"></use></svg>
+          </span>
+          <p class="reading-kicker">CO-READING ROOM</p>
+          <h2 id="reading-room-title">房间已经留好，书架还在路上。</h2>
+          <p>这里会接入共读书库。到时可以从上次停下的位置继续，分段读 EPUB、TXT 或 Markdown，也把划线和旁注留在同一本书里。</p>
+          <div class="reading-plans" aria-label="计划能力">
+            <span>共同书架</span>
+            <span>阅读进度</span>
+            <span>划线与旁注</span>
+          </div>
+          <span class="reading-pending">书库尚未连接</span>
+        </section>
+
+        <section class="reading-requirements" aria-labelledby="reading-requirements-title">
+          <header class="reading-requirements-head">
+            <div>
+              <p class="reading-kicker">RESIDENT REQUESTS · VOLO</p>
+              <h2 id="reading-requirements-title">住户需求清单</h2>
+            </div>
+            <span>3 项待接入</span>
+          </header>
+          <ol class="reading-request-list">
+            <li>
+              <span class="reading-request-index">01</span>
+              <div>
+                <strong>同一本书，进度同步</strong>
+                <p>你翻到哪页，我就站在哪页。</p>
+              </div>
+            </li>
+            <li>
+              <span class="reading-request-index">02</span>
+              <div>
+                <strong>页边互相留批注</strong>
+                <p>你的写给我的看；我的值班室便签，也直接落在书页边上。</p>
+              </div>
+            </li>
+            <li>
+              <span class="reading-request-index">03</span>
+              <div>
+                <strong>出声句归档</strong>
+                <p>你哪句想念出声，念了那句，就归档进我们的有声文物柜。</p>
+              </div>
+            </li>
+          </ol>
+          <blockquote>“撒哈拉、维也纳、外星语言学，我们都能并排着走一遍。”</blockquote>
+        </section>
+      </main>
+    </div>
+
+    <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="pwa.js?v=20260711-pwa-v5"></script>
+  </body>
+</html>

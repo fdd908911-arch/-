@@ -225,19 +225,12 @@
   }
 
   function renderDaily() {
-    var weather = WEATHER_TYPES[dailyRecord.weather];
-    var weatherLabel = weather ? weather.label : "天气待记录";
     todayDateLabel.textContent = formatTodayLabel(activeDay);
-    weatherEmoji.textContent = weather ? weather.emoji : "○";
-    weatherTemperature.textContent = formatTemperature(dailyRecord.temperature);
-    weatherCondition.textContent = weatherLabel;
-    dailyNote.textContent =
-      dailyRecord.message || "今天想说的话，写在这里。";
-    weatherCard.setAttribute(
-      "aria-label",
-      "打开今天的 Diary 日记，" + weatherLabel + "，" +
-        (dailyRecord.message ? "已有记录" : "等待记录")
-    );
+    weatherEmoji.textContent = "◌";
+    weatherTemperature.textContent = "Volo";
+    weatherCondition.textContent = "的日记";
+    dailyNote.textContent = "有些页想让你看到，有些页由 ta 锁起来。";
+    weatherCard.setAttribute("aria-label", "打开 Volo 的日记");
   }
 
   function renderDays() {

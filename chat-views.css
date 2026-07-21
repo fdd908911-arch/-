@@ -7,6 +7,7 @@
   height: 100%;
   min-width: 0;
   min-height: 0;
+  flex: 1 1 auto;
 }
 
 .group-view {
@@ -246,7 +247,12 @@
 }
 
 .volo-drawer-section {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
   margin-top: 25px;
+  overflow: hidden;
 }
 
 .volo-drawer-section h2 {
@@ -425,7 +431,9 @@
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  touch-action: pan-y;
   scrollbar-color: rgba(20, 20, 19, 0.16) transparent;
   scrollbar-width: thin;
 }
@@ -550,6 +558,625 @@
 .volo-assistant-body {
   width: 100%;
   padding: 4px 1px;
+}
+
+.volo-music-card {
+  display: grid;
+  width: min(100%, 620px);
+  min-height: 116px;
+  margin-top: 12px;
+  padding: 12px;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid color-mix(in srgb, var(--volo-accent) 18%, var(--volo-border));
+  border-radius: 20px;
+  background: radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--volo-accent) 12%, transparent), transparent 48%), var(--volo-panel);
+  box-shadow: 0 14px 34px rgba(68, 56, 45, 0.08);
+}
+
+.volo-music-artwork {
+  position: relative;
+  display: grid;
+  width: 92px;
+  height: 92px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--volo-surface);
+  color: var(--volo-accent);
+}
+
+.volo-music-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.volo-music-artwork.is-fallback::before {
+  content: "♫";
+  font-family: Georgia, serif;
+  font-size: 40px;
+}
+
+.volo-music-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.volo-music-copy small {
+  margin-bottom: 5px;
+  color: var(--volo-accent);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.volo-music-copy strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--volo-text);
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 17px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-music-copy > span {
+  margin-top: 3px;
+  color: var(--volo-text-soft);
+  font-size: 13px;
+}
+
+.volo-message .volo-music-note {
+  margin-top: 9px;
+  color: var(--volo-text-soft);
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.volo-music-open {
+  display: inline-flex;
+  min-height: 38px;
+  padding: 0 12px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--volo-text);
+  color: var(--volo-panel);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.volo-music-open:hover {
+  opacity: 0.86;
+  transform: translateY(-1px);
+}
+
+.volo-music-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.volo-music-action,
+.volo-music-open {
+  min-width: 74px;
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.volo-music-action {
+  background: color-mix(in srgb, var(--volo-accent) 13%, var(--volo-surface));
+  color: var(--volo-text);
+}
+
+.volo-music-action:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.volo-music-play.is-playing {
+  background: var(--volo-accent);
+  color: #fff;
+}
+
+.volo-music-analyze[aria-expanded="true"] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--volo-accent) 42%, transparent);
+}
+
+.volo-music-lyrics {
+  max-height: 220px;
+  margin: 2px 4px 0;
+  padding: 12px 14px;
+  grid-column: 1 / -1;
+  overflow: auto;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--volo-surface) 88%, transparent);
+  color: var(--volo-text-soft);
+  font: 13px/1.8 Georgia, "Songti SC", STSong, serif;
+  white-space: pre-wrap;
+}
+
+.volo-music-analysis {
+  display: grid;
+  min-width: 0;
+  margin: 2px 4px 0;
+  padding: 13px 14px 14px;
+  grid-column: 1 / -1;
+  gap: 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--volo-accent) 14%, transparent);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--volo-surface) 90%, transparent);
+}
+
+.volo-music-analysis[hidden] {
+  display: none;
+}
+
+.volo-music-analysis header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.volo-music-analysis-status {
+  color: var(--volo-text);
+  font-size: 12px;
+  letter-spacing: 0.025em;
+}
+
+.volo-music-analysis.is-loading .volo-music-analysis-status::before {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--volo-accent);
+  content: "";
+  animation: volo-spectrum-pulse 1.2s ease-in-out infinite;
+}
+
+.volo-music-analysis.is-error .volo-music-analysis-status {
+  color: #b55343;
+}
+
+.volo-music-analysis-retry {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--volo-accent) 15%, var(--volo-panel));
+  color: var(--volo-text);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.volo-message .volo-music-analysis-summary {
+  color: var(--volo-text-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.volo-music-energy {
+  display: grid;
+  height: 34px;
+  grid-template-columns: repeat(6, 1fr);
+  align-items: end;
+  gap: 5px;
+}
+
+.volo-music-energy[hidden] {
+  display: none;
+}
+
+.volo-music-energy span {
+  min-height: 4px;
+  height: var(--energy);
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--volo-accent) 72%, #fff), var(--volo-accent));
+  opacity: 0.82;
+}
+
+.volo-music-spectrum {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #17131d;
+}
+
+.volo-music-spectrum[hidden] {
+  display: none;
+}
+
+@keyframes volo-spectrum-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.78); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.volo-now-playing {
+  position: relative;
+  z-index: 8;
+  display: grid;
+  width: min(744px, calc(100% - 32px));
+  min-height: 62px;
+  flex: 0 0 auto;
+  margin: 0 auto 4px;
+  padding: 8px 10px 7px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--volo-accent) 15%, var(--volo-border));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--volo-panel) 94%, var(--volo-accent-soft));
+  box-shadow: 0 10px 26px rgba(69, 55, 38, 0.09);
+}
+
+.volo-now-playing[hidden] {
+  display: none;
+}
+
+.volo-now-playing-main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.volo-now-playing-cover,
+.volo-lyrics-cover {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  overflow: hidden;
+  place-items: center;
+  background: var(--volo-surface);
+  color: var(--volo-accent);
+}
+
+.volo-now-playing-cover {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+}
+
+.volo-now-playing-cover img,
+.volo-lyrics-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.volo-now-playing-cover.is-fallback::before,
+.volo-lyrics-cover.is-fallback::before {
+  content: "♫";
+  font-family: Georgia, serif;
+}
+
+.volo-now-playing-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-now-playing-copy strong,
+.volo-now-playing-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-now-playing-copy strong {
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 14px;
+}
+
+.volo-now-playing-copy small {
+  margin-top: 3px;
+  color: var(--volo-text-soft);
+  font-size: 11px;
+}
+
+.volo-now-playing-toggle,
+.volo-lyrics-toggle {
+  border: 0;
+  border-radius: 999px;
+  background: var(--volo-text);
+  color: var(--volo-panel);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.volo-now-playing-toggle {
+  min-width: 58px;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 11px;
+}
+
+.volo-now-playing-progress {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 7px;
+  color: var(--volo-muted);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.volo-now-playing-progress time:last-child,
+.volo-lyrics-time time:last-child {
+  text-align: right;
+}
+
+.volo-now-playing input[type="range"],
+.volo-lyrics-controls input[type="range"] {
+  --music-progress: 0%;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.volo-now-playing input[type="range"]::-webkit-slider-runnable-track,
+.volo-lyrics-controls input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--volo-accent) var(--music-progress), var(--volo-border) var(--music-progress));
+}
+
+.volo-now-playing input[type="range"]::-moz-range-track,
+.volo-lyrics-controls input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--volo-accent) var(--music-progress), var(--volo-border) var(--music-progress));
+}
+
+.volo-now-playing input[type="range"]::-webkit-slider-thumb,
+.volo-lyrics-controls input[type="range"]::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  appearance: none;
+  border: 2px solid var(--volo-panel);
+  border-radius: 50%;
+  background: var(--volo-accent);
+  box-shadow: 0 1px 5px rgba(69, 55, 38, 0.22);
+}
+
+.volo-now-playing input[type="range"]::-moz-range-thumb,
+.volo-lyrics-controls input[type="range"]::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--volo-panel);
+  border-radius: 50%;
+  background: var(--volo-accent);
+  box-shadow: 0 1px 5px rgba(69, 55, 38, 0.22);
+}
+
+.volo-now-playing input[type="range"]:disabled,
+.volo-lyrics-controls input[type="range"]:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.volo-lyrics-view {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  padding: max(16px, env(safe-area-inset-top)) 22px max(18px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 18% 5%, color-mix(in srgb, var(--volo-accent) 12%, transparent), transparent 34%),
+    radial-gradient(circle at 86% 88%, color-mix(in srgb, var(--volo-accent-soft) 62%, transparent), transparent 36%),
+    var(--volo-bg);
+  color: var(--volo-text);
+  animation: volo-lyrics-in 220ms cubic-bezier(0.22, 0.78, 0.24, 1) both;
+}
+
+.volo-lyrics-view[hidden] {
+  display: none;
+}
+
+.volo-lyrics-header {
+  display: grid;
+  width: min(720px, 100%);
+  min-height: 42px;
+  margin: 0 auto;
+  grid-template-columns: 42px 1fr 42px;
+  align-items: center;
+  color: var(--volo-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.volo-lyrics-close {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--volo-border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--volo-panel) 88%, transparent);
+  color: var(--volo-text);
+  cursor: pointer;
+}
+
+.volo-lyrics-close svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.volo-lyrics-song {
+  display: flex;
+  width: min(620px, 100%);
+  margin: 10px auto 4px;
+  align-items: center;
+  gap: 14px;
+}
+
+.volo-lyrics-cover {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(69, 55, 38, 0.13);
+}
+
+.volo-lyrics-cover.is-fallback::before {
+  font-size: 30px;
+}
+
+.volo-lyrics-song > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-lyrics-song strong {
+  overflow: hidden;
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-lyrics-song small {
+  margin-top: 7px;
+  color: var(--volo-text-soft);
+  font-size: 12px;
+}
+
+.volo-lyrics-lines {
+  width: min(620px, 100%);
+  min-height: 0;
+  flex: 1;
+  margin: 12px auto 8px;
+  padding: 34vh 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 13%, #000 87%, transparent);
+  mask-image: linear-gradient(transparent, #000 13%, #000 87%, transparent);
+}
+
+.volo-lyrics-lines::-webkit-scrollbar {
+  display: none;
+}
+
+.volo-synced-line {
+  display: flex;
+  width: 100%;
+  padding: 10px 8px;
+  flex-direction: column;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--volo-text) 34%, transparent);
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: clamp(18px, 3vw, 24px);
+  font-weight: 650;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.volo-synced-line small {
+  color: color-mix(in srgb, var(--volo-text-soft) 54%, transparent);
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.volo-synced-line.is-active {
+  color: var(--volo-text);
+  transform: translateX(4px);
+}
+
+.volo-synced-line.is-active small {
+  color: var(--volo-accent);
+}
+
+.volo-lyrics-empty {
+  margin: 0;
+  color: var(--volo-muted);
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 16px;
+  text-align: center;
+}
+
+.volo-lyrics-controls {
+  width: min(620px, 100%);
+  flex: 0 0 auto;
+  margin: 0 auto;
+  padding: 12px 16px 14px;
+  border: 1px solid color-mix(in srgb, var(--volo-accent) 12%, var(--volo-border));
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--volo-panel) 90%, transparent);
+  box-shadow: 0 14px 34px rgba(69, 55, 38, 0.1);
+  backdrop-filter: blur(18px);
+}
+
+.volo-lyrics-time {
+  display: flex;
+  justify-content: space-between;
+  color: var(--volo-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.volo-lyrics-toggle {
+  display: block;
+  min-width: 76px;
+  min-height: 38px;
+  margin: 5px auto 0;
+  padding: 0 18px;
+  font-size: 12px;
+}
+
+@keyframes volo-lyrics-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .volo-assistant-footer {
@@ -695,6 +1322,60 @@
   color: var(--volo-text);
 }
 
+.volo-voice-button {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.volo-voice-button.is-recording {
+  background: color-mix(in srgb, var(--volo-accent) 16%, var(--volo-panel));
+  color: var(--volo-accent);
+  animation: volo-voice-pulse 1.15s ease-in-out infinite;
+}
+
+.volo-voice-button.is-processing {
+  background: var(--volo-hover);
+  color: var(--volo-muted);
+}
+
+.volo-music-button.is-processing {
+  background: color-mix(in srgb, var(--volo-accent) 12%, var(--volo-panel));
+  color: var(--volo-accent);
+  animation: volo-music-listen 1.4s ease-in-out infinite;
+}
+
+.volo-voice-status {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 8px 13px;
+  transform: translateX(-50%);
+  border: 1px solid var(--volo-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--volo-panel) 96%, transparent);
+  box-shadow: 0 8px 24px rgba(69, 55, 38, 0.1);
+  color: var(--volo-text-soft);
+  font-size: 12px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+
+.volo-voice-status.is-recording {
+  border-color: color-mix(in srgb, var(--volo-accent) 32%, var(--volo-border));
+  color: var(--volo-accent);
+}
+
+.volo-voice-status.is-error {
+  color: #b4534b;
+}
+
 .volo-tool-button svg,
 .volo-send-button svg {
   width: 21px;
@@ -718,6 +1399,11 @@
   white-space: nowrap;
 }
 
+
+.volo-model-pill.is-gateway {
+  background: color-mix(in srgb, var(--volo-hover) 72%, var(--accent));
+  color: var(--volo-text);
+}
 .volo-send-button {
   background: var(--volo-text);
   color: var(--volo-panel);
@@ -845,20 +1531,320 @@
   }
 }
 
+@keyframes volo-voice-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes volo-music-listen {
+  0%, 100% { transform: rotate(-4deg) scale(1); }
+  50% { transform: rotate(4deg) scale(1.08); }
+}
+
+.volo-usage-sidebar {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 9;
+  display: flex;
+  width: 320px;
+  min-height: 0;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 18px 16px 24px;
+  border-left: 1px solid var(--volo-border);
+  background: color-mix(in srgb, var(--volo-panel) 97%, var(--volo-bg));
+  box-shadow: -18px 0 42px rgba(47, 41, 34, 0.1);
+  scrollbar-width: thin;
+}
+
+.volo-usage-sidebar[hidden],
+.volo-usage-button[hidden] { display: none; }
+
+.volo-usage-header,
+.volo-usage-section-title,
+.volo-usage-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.volo-usage-header {
+  min-height: 48px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.volo-usage-header small {
+  color: var(--volo-accent);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
+.volo-usage-header h2 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 19px;
+}
+
+.volo-usage-header-actions { gap: 4px; }
+
+.volo-usage-header-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--volo-hover);
+  color: var(--volo-text-soft);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.volo-usage-header-actions button:hover { color: var(--volo-text); }
+
+.volo-usage-status {
+  margin: 12px 0 4px;
+  padding: 9px 11px;
+  border-radius: 11px;
+  background: var(--volo-surface);
+  color: var(--volo-text-soft);
+  font-size: 11px;
+}
+
+.volo-usage-status.is-error {
+  background: rgba(185, 28, 28, 0.08);
+  color: #a33232;
+}
+
+.volo-usage-section {
+  padding: 17px 0;
+  border-bottom: 1px solid var(--volo-border);
+}
+
+.volo-usage-section:last-child { border-bottom: 0; }
+
+.volo-usage-section-title {
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.volo-usage-section-title h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.volo-usage-section-title time,
+.volo-usage-section-title span {
+  color: var(--volo-muted);
+  font-size: 10px;
+}
+
+.volo-usage-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.volo-usage-cards > div {
+  display: flex;
+  min-height: 86px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px;
+  border: 1px solid var(--volo-border);
+  border-radius: 14px;
+  background: var(--volo-bg);
+}
+
+.volo-usage-cards > div.is-accent {
+  border-color: color-mix(in srgb, var(--volo-accent) 28%, var(--volo-border));
+  background: color-mix(in srgb, var(--volo-accent-soft) 52%, var(--volo-panel));
+}
+
+.volo-usage-cards span,
+.volo-usage-cards small {
+  color: var(--volo-muted);
+  font-size: 9px;
+}
+
+.volo-usage-cards strong {
+  margin: 3px 0 1px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.volo-usage-details,
+.volo-usage-totals { margin: 12px 0 0; }
+
+.volo-usage-details > div,
+.volo-usage-totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 2px;
+}
+
+.volo-usage-details dt,
+.volo-usage-totals dt {
+  color: var(--volo-text-soft);
+  font-size: 11px;
+}
+
+.volo-usage-details dd,
+.volo-usage-totals dd {
+  max-width: 60%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--volo-text);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-usage-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.volo-usage-recent > p {
+  margin: 8px 0;
+  color: var(--volo-muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.volo-usage-request {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 11px;
+  background: var(--volo-bg);
+  font-size: 10px;
+}
+
+.volo-usage-request time { color: var(--volo-muted); }
+
+.volo-usage-request span {
+  overflow: hidden;
+  color: var(--volo-text-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-usage-request strong {
+  color: var(--volo-accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 761px) {
+  .volo-main,
+  .volo-topbar-right,
+  .volo-center-button {
+    transition: margin-right 180ms ease, right 180ms ease, left 180ms ease;
+  }
+  .volo-view.is-usage-open .volo-main { margin-right: 320px; }
+  .volo-view.is-usage-open .volo-topbar-right { right: 332px; }
+  .volo-view.is-usage-open .volo-center-button { left: calc(50% - 160px); }
+}
+
 @media (max-width: 760px) {
   .workspace-view {
     height: 100vh;
-    height: 100dvh;
+    height: 100svh;
   }
 
   .volo-topbar {
     height: calc(76px + env(safe-area-inset-top));
   }
 
+  .volo-usage-sidebar {
+    width: min(330px, calc(100% - 28px));
+    padding-top: calc(12px + env(safe-area-inset-top));
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
   .volo-drawer {
     width: min(310px, calc(100% - 44px));
     padding-top: calc(12px + env(safe-area-inset-top));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .volo-music-card {
+    min-height: 92px;
+    padding: 10px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 11px;
+    border-radius: 17px;
+  }
+
+  .volo-music-artwork {
+    width: 72px;
+    height: 72px;
+    border-radius: 13px;
+  }
+
+  .volo-music-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+  }
+
+  .volo-music-action,
+  .volo-music-open {
+    min-height: 34px;
+    flex: 1 1 78px;
+  }
+
+  .volo-music-analysis {
+    margin-inline: 0;
+    padding: 12px;
+  }
+
+  .volo-now-playing {
+    width: calc(100% - 16px);
+    margin-bottom: 3px;
+  }
+
+  .volo-lyrics-view {
+    padding-inline: 14px;
+  }
+
+  .volo-lyrics-song {
+    margin-top: 6px;
+  }
+
+  .volo-lyrics-cover {
+    width: 62px;
+    height: 62px;
+    border-radius: 15px;
+  }
+
+  .volo-lyrics-lines {
+    margin-top: 6px;
+    padding-block: 30vh;
+  }
+
+  .volo-synced-line {
+    padding-inline: 4px;
+    font-size: 19px;
+  }
+
+  .volo-lyrics-controls {
+    padding: 10px 13px 11px;
+    border-radius: 18px;
+  }
+
+  .volo-music-open {
+    min-height: 34px;
+    margin-top: 2px;
+    grid-column: 1 / -1;
   }
 
   .volo-main-chat-button {
@@ -936,6 +1922,12 @@
   }
 }
 
+@media (max-width: 480px) {
+  .volo-inspiration-button {
+    display: none;
+  }
+}
+
 @media (max-width: 360px) {
   .volo-topbar-group {
     gap: 1px;
@@ -953,7 +1945,9 @@
 @media (prefers-reduced-motion: reduce) {
   .volo-message,
   .volo-typing span,
-  .volo-flower-button.is-blooming {
+  .volo-flower-button.is-blooming,
+  .volo-voice-button.is-recording,
+  .volo-music-button.is-processing {
     animation: none;
   }
 

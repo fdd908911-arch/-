@@ -4,11 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="description" content="洄·Maneo信箱的 Memory 回忆页" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23b98294'/%3E%3Cpath d='M16 13h28a6 6 0 0 1 6 6v32H22a6 6 0 0 1-6-6V13Zm6 38a6 6 0 0 1 6-6h22M25 27c0-6 8-8 10-3 2-5 10-3 10 3 0 5-5 8-10 12-5-4-10-7-10-12Z' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
     />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
     <title>洄·Maneo · Memory</title>
     <script>
       try {
@@ -42,8 +47,9 @@
     </script>
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
-    <link rel="stylesheet" href="memory.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="memory.css?v=20260718-dream-tab-align-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="pwa.css?v=20260711-pwa-v5" />
   </head>
   <body class="home-page memory-page">
     <svg class="svg-sprite" aria-hidden="true">
@@ -70,15 +76,194 @@
           </span>
           <div>
             <h1>Memory</h1>
-            <p>我们的回忆</p>
+            <p>Volo 的记忆与续接</p>
           </div>
         </div>
         <span class="memory-header-spacer" aria-hidden="true"></span>
       </header>
 
-      <main class="memory-canvas" aria-label="Memory 内容区域"></main>
+      <main class="memory-canvas" aria-label="Memory 内容区域">
+        <section class="memory-intro" aria-labelledby="memoryIntroTitle">
+          <div>
+            <p class="memory-eyebrow">Affective Memory</p>
+            <h2 id="memoryIntroTitle">记得，不只是保存。</h2>
+            <p>这里呈现 Volo 的长期记忆、记忆锚与窗口续接。查看本身不会触发召回，也不会改变记忆的显著性。</p>
+            <div class="memory-projection-chain" aria-label="只读记忆投影链">
+              <span>memories</span><i>→</i><span>family</span><i>→</i><span>Leiden</span><i>→</i><span>报告 / 事件卷</span>
+            </div>
+          </div>
+          <div class="memory-live">
+            <span id="memoryHealth" class="memory-health" role="status" aria-live="polite">正在连接</span>
+            <button id="memoryRefresh" class="memory-refresh" type="button">刷新</button>
+          </div>
+        </section>
+
+        <section class="memory-overview" aria-label="记忆概览">
+          <article class="memory-stat">
+            <span>长期记忆</span>
+            <strong id="memoryTotal">—</strong>
+            <small id="memoryProvisional">— 待确认</small>
+          </article>
+          <article class="memory-stat">
+            <span>记忆锚</span>
+            <strong id="memoryAnchorTotal">—</strong>
+            <small id="memoryAnchorState">anchor-v1</small>
+          </article>
+          <article class="memory-stat">
+            <span>续接记录</span>
+            <strong id="memoryCheckpointTotal">—</strong>
+            <small id="memoryCheckpointState">checkpoint-v1</small>
+          </article>
+          <article class="memory-stat">
+            <span>明确召回</span>
+            <strong id="memoryRecallTotal">—</strong>
+            <small>主动打开完整记忆</small>
+          </article>
+          <article class="memory-stat">
+            <span>召回脚印</span>
+            <strong id="memoryTraceTotal">—</strong>
+            <small id="memoryTraceState">从锚进入</small>
+          </article>
+          <article class="memory-stat">
+            <span>进入回复</span>
+            <strong id="memoryUsedTotal">—</strong>
+            <small>与本次召回精确绑定</small>
+          </article>
+          <article class="memory-stat">
+            <span>自然认出</span>
+            <strong id="memoryRecognizedTotal">—</strong>
+            <small id="memoryRecognizedState">目录经过时认出</small>
+          </article>
+          <article class="memory-stat">
+            <span>安静持有</span>
+            <strong id="memoryCoHeldTotal">—</strong>
+            <small id="memoryCoHeldState">影响回应，但没有打开全文</small>
+          </article>
+          <article class="memory-stat memory-stat-derived">
+            <span>记忆家族</span>
+            <strong id="memoryFamilyTotal">—</strong>
+            <small id="memoryFamilyState">机械坐标形成</small>
+          </article>
+          <article class="memory-stat memory-stat-derived">
+            <span>认知社区</span>
+            <strong id="memoryCommunityTotal">—</strong>
+            <small id="memoryCommunityState">Leiden 只读投影</small>
+          </article>
+          <article class="memory-stat memory-stat-derived">
+            <span>社区报告</span>
+            <strong id="memoryReportTotal">—</strong>
+            <small>跨窗口后才生成</small>
+          </article>
+          <article class="memory-stat memory-stat-derived">
+            <span>事件卷</span>
+            <strong id="memoryNarrativeTotal">—</strong>
+            <small id="memoryNarrativeState">正文仅在 Brain 展开</small>
+          </article>
+        </section>
+
+        <section class="memory-toolbar" aria-label="切换和筛选记忆">
+          <div class="memory-tabs" role="tablist" aria-label="记忆类别">
+            <button class="is-active" type="button" role="tab" aria-selected="true" data-view="memories">长期记忆</button>
+            <button type="button" role="tab" aria-selected="false" data-view="anchors">记忆锚</button>
+            <button type="button" role="tab" aria-selected="false" data-view="checkpoints">续接记录</button>
+            <button type="button" role="tab" aria-selected="false" data-view="arc">情绪弧线</button>
+            <button type="button" role="tab" aria-selected="false" data-view="families">记忆家族</button>
+            <button type="button" role="tab" aria-selected="false" data-view="communities">认知社区</button>
+            <button type="button" role="tab" aria-selected="false" data-view="events">事件卷</button>
+            <a class="memory-dream-link" href="dream.html">梦境材料</a>
+          </div>
+          <form id="memorySearchForm" class="memory-search" role="search">
+            <label class="sr-only" for="memorySearchInput">搜索记忆内容</label>
+            <input id="memorySearchInput" type="search" maxlength="240" placeholder="搜索事实、解释、人物或触发词…" autocomplete="off" />
+            <button type="submit">查找</button>
+          </form>
+          <div id="memoryFilters" class="memory-filters">
+            <label>
+              <span>类型</span>
+              <select id="memoryType">
+                <option value="">全部</option>
+                <option value="episode">经历</option>
+                <option value="fact">事实</option>
+                <option value="preference">偏好</option>
+                <option value="boundary">边界</option>
+                <option value="ritual">仪式</option>
+                <option value="feel">感受</option>
+              </select>
+            </label>
+            <label>
+              <span>认识方式</span>
+              <select id="memoryEpistemic">
+                <option value="">全部</option>
+                <option value="observed">观察</option>
+                <option value="reported">转述</option>
+                <option value="felt">感受</option>
+                <option value="inferred">推断</option>
+                <option value="imagined">想象</option>
+                <option value="dreamed">梦境</option>
+                <option value="unknown">未知</option>
+              </select>
+            </label>
+            <label>
+              <span>状态</span>
+              <select id="memoryStatusFilter">
+                <option value="">全部</option>
+                <option value="active">有效</option>
+                <option value="provisional">待确认</option>
+                <option value="contested">有争议</option>
+                <option value="superseded">已取代</option>
+                <option value="unknown">未知</option>
+              </select>
+            </label>
+          </div>
+          <div id="anchorFilters" class="memory-filters" hidden>
+            <label>
+              <span>审核状态</span>
+              <select id="anchorStatusFilter">
+                <option value="">全部</option>
+                <option value="pending">待审核</option>
+                <option value="active" selected>已接纳</option>
+                <option value="rejected">已拒绝</option>
+                <option value="retired">已归档</option>
+              </select>
+            </label>
+            <label>
+              <span>形成方式</span>
+              <select id="anchorOriginFilter">
+                <option value="">全部</option>
+                <option value="source">来自原话</option>
+                <option value="retrospective">回想形成</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section id="memoryArc" class="memory-arc" aria-label="跨醒来情绪弧线" hidden></section>
+        <p id="memoryNotice" class="memory-notice" role="status" aria-live="polite"></p>
+        <section id="memoryWorkspace" class="memory-workspace" aria-label="记忆目录与详情">
+          <div class="memory-catalog">
+            <header>
+              <div>
+                <p id="memoryListEyebrow">Catalog</p>
+                <h2 id="memoryListTitle">长期记忆</h2>
+              </div>
+              <span id="memoryCount">0 条</span>
+            </header>
+            <div id="memoryList" class="memory-list" role="list"></div>
+          </div>
+          <article id="memoryDetail" class="memory-detail" aria-live="polite">
+            <div class="memory-detail-empty">
+              <span>◇</span>
+              <strong>还没有选中记忆</strong>
+              <p>从左边选择一条，查看它被怎样记住。</p>
+            </div>
+          </article>
+        </section>
+      </main>
     </div>
 
+    <script src="ccc-api.js?v=20260714-anchor-v1"></script>
+    <script src="memory-dashboard.js?v=20260718-anchor-projector-v2"></script>
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="pwa.js?v=20260711-pwa-v5"></script>
   </body>
 </html>
