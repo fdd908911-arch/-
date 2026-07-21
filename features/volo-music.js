@@ -3,9 +3,11 @@
 
   function create(options) {
     options = options || {};
+    if (!window.VoloMediaStatus) {
+      throw new Error("VoloMediaStatus must load before volo-music.js");
+    }
     var musicButton = document.getElementById("voloMusicButton");
     var musicInput = document.getElementById("voloMusicInput");
-    var voiceStatus = document.getElementById("voloVoiceStatus");
     var nowPlaying = document.getElementById("voloNowPlaying");
     var nowPlayingMain = document.getElementById("voloNowPlayingMain");
     var nowPlayingCover = document.getElementById("voloNowPlayingCover");
@@ -39,7 +41,6 @@
     var selectedLyricLines = [];
     var selectedLyricIndex = -1;
     var seekPreview = null;
-    var statusTimer = 0;
     var toastTimer = 0;
     var bound = false;
 
@@ -70,16 +71,7 @@
     }
 
     function setStatus(message, state, hideAfter) {
-      window.clearTimeout(statusTimer);
-      voiceStatus.textContent = message || "";
-      voiceStatus.hidden = !message;
-      voiceStatus.className = "volo-voice-status" + (state === "error" ? " is-error" : "");
-      musicButton.classList.toggle("is-processing", state === "processing");
-      if (hideAfter) {
-        statusTimer = window.setTimeout(function () {
-          voiceStatus.hidden = true;
-        }, hideAfter);
-      }
+      window.VoloMediaStatus.set(message, state, hideAfter, "music");
     }
 
     function wait(milliseconds) {
@@ -864,7 +856,6 @@
         window.clearTimeout(state.pollTimer);
         if (state.spectrumUrl) URL.revokeObjectURL(state.spectrumUrl);
       });
-      window.clearTimeout(statusTimer);
       window.clearTimeout(toastTimer);
     }
 

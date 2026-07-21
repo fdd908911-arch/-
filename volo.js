@@ -7,8 +7,6 @@
   var DEFAULT_GATEWAY_SESSION = "volo-gateway";
   var input = document.getElementById("voloInput");
   var sendButton = document.getElementById("voloSendButton");
-  var voiceButton = document.getElementById("voloVoiceButton");
-  var voiceStatus = document.getElementById("voloVoiceStatus");
   var messageScroll = document.getElementById("voloMessageScroll");
   var messageList = document.getElementById("voloMessageList");
   var emptyState = document.getElementById("voloEmpty");
@@ -29,13 +27,6 @@
   var createError = document.getElementById("sessionCreateError");
   var actionDialog = document.getElementById("sessionActionDialog");
   var carrierPill = document.getElementById("voloCarrierPill");
-  var voloView = document.getElementById("voloView");
-  var usageButton = document.getElementById("voloUsageButton");
-  var usageSidebar = document.getElementById("voloUsageSidebar");
-  var usageClose = document.getElementById("voloUsageClose");
-  var usageRefresh = document.getElementById("voloUsageRefresh");
-  var usageStatus = document.getElementById("voloUsageStatus");
-  var usageRecent = document.getElementById("voloUsageRecent");
   var actionTitle = document.getElementById("sessionActionDialogTitle");
   var actionText = document.getElementById("sessionActionText");
   var actionError = document.getElementById("sessionActionError");
@@ -54,23 +45,24 @@
   var pollTimer = 0;
   var requestGeneration = 0;
   var sending = false;
-  var voiceRecorder = null;
-  var voiceStream = null;
-  var voiceChunks = [];
-  var voiceBusy = false;
-  var voiceReleaseRequested = false;
-  var voiceCancelled = false;
-  var voiceStatusTimer = 0;
-  var usageOpen = window.matchMedia("(min-width: 761px)").matches;
-  var usageLoading = false;
-  if (!window.VoloMusic) throw new Error("VoloMusic must load before volo.js");
-  var music = window.VoloMusic.create({
+  if (!window.VoloMusic || !window.VoloVoice || !window.VoloUsage) {
+    throw new Error("Volo feature modules must load before volo.js");
+  }
+  var music = null;
+  var voice = window.VoloVoice.create({
+    sendMessage: function (text) { return sendMessage(text); },
+    emitClawd: emitClawd,
+    isMusicBusy: function () { return Boolean(music && music.isBusy()); },
+    isSending: function () { return sending; }
+  });
+  music = window.VoloMusic.create({
     sendMessage: function (text) { return sendMessage(text); },
     emitClawd: emitClawd,
     getSelectedSession: function () { return selectedSession; },
-    isVoiceBusy: function () { return voiceBusy; },
+    isVoiceBusy: function () { return voice.isBusy(); },
     isSending: function () { return sending; }
   });
+  var usage = window.VoloUsage.create();
 
   function emitClawd(state, phrase, options) {
     document.dispatchEvent(
@@ -110,127 +102,9 @@
     carrierPill.textContent = gateway ? "Volo · 陪我聊聊" : "Volo · Claude Code";
     carrierPill.classList.toggle("is-gateway", gateway);
     input.placeholder = gateway ? "和 Volo 聊聊..." : "Reply to Volo...";
-    if (gateway) {
-      setUsageOpen(usageOpen);
-      loadUsage();
-    } else {
-      voloView.classList.remove("is-usage-open");
-      usageButton.hidden = true;
-      usageSidebar.hidden = true;
-      usageSidebar.setAttribute("aria-hidden", "true");
-      usageButton.setAttribute("aria-expanded", "false");
-    }
+    usage.updateCarrier(gateway);
   }
 
-
-  function usageNode(id) {
-    return document.getElementById(id);
-  }
-
-  function setUsageText(id, value) {
-    var node = usageNode(id);
-    if (node) node.textContent = value;
-  }
-
-  function usageNumber(value) {
-    var number = Number(value || 0);
-    return Number.isFinite(number) ? number : 0;
-  }
-
-  function formatUsageNumber(value) {
-    return new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }).format(usageNumber(value));
-  }
-
-  function formatUsageRate(value) {
-    return (Math.max(0, usageNumber(value)) * 100).toFixed(1) + "%";
-  }
-
-  function formatUsageCost(value) {
-    return "$" + usageNumber(value).toFixed(6);
-  }
-
-  function usageDate(value) {
-    var number = Number(value);
-    var date = Number.isFinite(number) ? new Date(number * 1000) : new Date(value);
-    return Number.isNaN(date.getTime()) ? null : date;
-  }
-
-  function setUsageOpen(open) {
-    var gateway = currentCarrier() === "gateway";
-    usageOpen = Boolean(open);
-    voloView.classList.toggle("is-usage-open", gateway && usageOpen);
-    usageButton.hidden = !gateway;
-    usageSidebar.hidden = !gateway || !usageOpen;
-    usageSidebar.setAttribute("aria-hidden", String(!gateway || !usageOpen));
-    usageButton.setAttribute("aria-expanded", String(gateway && usageOpen));
-    if (gateway && usageOpen) loadUsage();
-  }
-
-  function renderUsage(payload) {
-    var total = payload && payload.total ? payload.total : {};
-    var recent = payload && Array.isArray(payload.recent) ? payload.recent : [];
-    var latest = recent[0] || {};
-    var requests = usageNumber(total.requests);
-    usageStatus.classList.remove("is-error");
-    usageStatus.textContent = requests
-      ? "已记录 " + formatUsageNumber(requests) + " 次 · 仅当前 Gateway 会话"
-      : "等待第一条 Gateway 对话";
-
-    var latestDate = usageDate(latest.created_at);
-    setUsageText("voloUsageTime", latestDate ? latestDate.toLocaleString("zh-CN", { hour12: false }) : "—");
-    setUsageText("voloUsageInput", recent.length ? formatUsageNumber(latest.input_tokens) : "—");
-    setUsageText("voloUsageOutput", recent.length ? formatUsageNumber(latest.output_tokens) : "—");
-    setUsageText("voloUsageCacheRead", recent.length ? formatUsageNumber(latest.cache_read_input_tokens) : "—");
-    setUsageText("voloUsageHitRate", recent.length ? formatUsageRate(latest.cache_read_ratio) : "—");
-    setUsageText("voloUsageWrite5m", recent.length ? formatUsageNumber(latest.cache_write_5m_tokens) + " tokens" : "—");
-    setUsageText("voloUsageWrite1h", recent.length ? formatUsageNumber(latest.cache_write_1h_tokens) + " tokens" : "—");
-    setUsageText("voloUsageCreation", recent.length ? formatUsageNumber(latest.cache_creation_input_tokens) + " tokens" : "—");
-    setUsageText("voloUsageCost", recent.length ? formatUsageCost(latest.estimated_cost_usd) : "—");
-    setUsageText("voloUsageModel", latest.model || "—");
-    setUsageText("voloUsageFinish", latest.finish_reason || "—");
-    setUsageText("voloUsageRequests", formatUsageNumber(requests) + " 次请求");
-    setUsageText("voloUsageTotalIO", formatUsageNumber(total.input_tokens) + " / " + formatUsageNumber(total.output_tokens));
-    setUsageText("voloUsageTotalRead", formatUsageNumber(total.cache_read_input_tokens) + " tokens");
-    setUsageText("voloUsageTotalRate", formatUsageRate(total.cache_read_ratio));
-    setUsageText("voloUsageTotalCost", formatUsageCost(total.estimated_cost_usd));
-
-    usageRecent.replaceChildren();
-    if (!recent.length) {
-      var empty = document.createElement("p");
-      empty.textContent = "暂无记录";
-      usageRecent.appendChild(empty);
-      return;
-    }
-    recent.forEach(function (request) {
-      var row = document.createElement("article");
-      row.className = "volo-usage-request";
-      var time = document.createElement("time");
-      var date = usageDate(request.created_at);
-      time.textContent = date ? formatTime(date.toISOString()) : "—";
-      var summary = document.createElement("span");
-      summary.textContent = "入 " + formatUsageNumber(request.input_tokens) + " · 出 " + formatUsageNumber(request.output_tokens);
-      var rate = document.createElement("strong");
-      rate.textContent = formatUsageRate(request.cache_read_ratio);
-      rate.title = "缓存读取 " + formatUsageNumber(request.cache_read_input_tokens) + " tokens";
-      row.append(time, summary, rate);
-      usageRecent.appendChild(row);
-    });
-  }
-
-  async function loadUsage() {
-    if (currentCarrier() !== "gateway" || usageLoading || !window.CCC.isConfigured()) return;
-    usageLoading = true;
-    usageStatus.classList.remove("is-error");
-    usageStatus.textContent = "正在读取 Gateway 账本…";
-    try {
-      renderUsage(await window.CCC.voloUsage());
-    } catch (error) {
-      usageStatus.classList.add("is-error");
-      usageStatus.textContent = "账本暂时不可用 · " + error.message;
-    } finally {
-      usageLoading = false;
-    }
-  }
 
   function formatTime(value) {
     var date = value ? new Date(value) : new Date();
@@ -270,162 +144,6 @@
     input.style.height = Math.max(height, 28) + "px";
     input.style.overflowY = input.scrollHeight > 120 ? "auto" : "hidden";
     sendButton.disabled = sending || !selectedSession || input.value.trim().length === 0;
-  }
-
-  function setVoiceStatus(message, state, hideAfter) {
-    window.clearTimeout(voiceStatusTimer);
-    voiceStatus.textContent = message || "";
-    voiceStatus.hidden = !message;
-    voiceStatus.className = "volo-voice-status" + (state ? " is-" + state : "");
-    voiceButton.classList.toggle("is-recording", state === "recording");
-    voiceButton.classList.toggle("is-processing", state === "processing");
-    voiceButton.setAttribute("aria-pressed", String(state === "recording"));
-    voiceButton.setAttribute("aria-label", state === "recording" ? "松开发送语音" : "按住说话");
-    voiceButton.title = state === "recording" ? "松开发送" : "按住说话";
-    if (hideAfter) {
-      voiceStatusTimer = window.setTimeout(function () {
-        voiceStatus.hidden = true;
-      }, hideAfter);
-    }
-  }
-
-  function stopVoiceTracks() {
-    if (voiceStream) {
-      voiceStream.getTracks().forEach(function (track) { track.stop(); });
-    }
-    voiceStream = null;
-  }
-
-  function preferredVoiceMimeType() {
-    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return "";
-    return ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "audio/ogg;codecs=opus"].find(function (type) {
-      return MediaRecorder.isTypeSupported(type);
-    }) || "";
-  }
-
-  function voiceFilename(type) {
-    if (type.indexOf("mp4") !== -1) return "voice.m4a";
-    if (type.indexOf("ogg") !== -1) return "voice.ogg";
-    return "voice.webm";
-  }
-
-  function formatVoiceMessage(payload) {
-    var emotion = [payload.emotion, payload.tone].filter(Boolean).join(" · ");
-    var lines = ["[语音输入]", "内容：" + payload.text];
-    if (emotion) lines.push("情绪：" + emotion + (payload.confidence ? "（" + payload.confidence + "）" : ""));
-    if (payload.hint) lines.push("语气提示：" + payload.hint);
-    var relative = Object.keys(payload.relative || {}).map(function (key) {
-      return key + payload.relative[key];
-    });
-    if (relative.length) lines.push("和平时比：" + relative.join("、"));
-    if (payload.baseline_progress) {
-      lines.push("声音基线：" + payload.baseline_progress +
-        (payload.baseline_ready ? "（已建立）" : "（学习中）"));
-    }
-    return lines.join("\n");
-  }
-
-  async function uploadVoice(blob) {
-    if (blob.size < 1000) {
-      voiceBusy = false;
-      setVoiceStatus("录音太短了，再按住说一次", "error", 3200);
-      return;
-    }
-    var config = window.CCC.getConfig();
-    var form = new FormData();
-    form.append("file", blob, voiceFilename(blob.type || ""));
-    setVoiceStatus("正在听懂你的语气…", "processing");
-    voiceButton.disabled = true;
-    try {
-      var response = await fetch("/api/voice/upload?deliver=0", {
-        method: "POST",
-        headers: { "X-Auth-Token": config.token },
-        body: form,
-        cache: "no-store"
-      });
-      var payload = await response.json().catch(function () { return {}; });
-      if (!response.ok || payload.error) {
-        throw new Error(payload.error || "HTTP " + response.status);
-      }
-      setVoiceStatus("听懂了，正在送给 Volo…", "processing");
-      var sent = await sendMessage(formatVoiceMessage(payload));
-      setVoiceStatus(sent ? "已送给 Volo ♡" : "没有送出去，请重试", sent ? "" : "error", 3600);
-    } catch (error) {
-      var message = error && error.message ? error.message : "语音发送失败";
-      if (message.indexOf("401") !== -1 || message.indexOf("Unauthorized") !== -1) {
-        message = "访问 Token 不正确，请重新配置服务器";
-      }
-      setVoiceStatus(message, "error", 4200);
-      emitClawd("disconnected", "语音没有送出去", { duration: 1800, priority: 4 });
-    } finally {
-      voiceBusy = false;
-      voiceButton.disabled = false;
-      voiceButton.classList.remove("is-processing");
-    }
-  }
-
-  async function startVoiceRecording(event) {
-    if (voiceBusy || music.isBusy() || sending) return;
-    if (!window.CCC.isConfigured()) {
-      setVoiceStatus("先配置服务器地址和访问 Token", "error", 3200);
-      window.CCC.openConnectionDialog();
-      return;
-    }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
-      setVoiceStatus("当前浏览器不支持录音", "error", 3600);
-      return;
-    }
-    voiceBusy = true;
-    voiceReleaseRequested = false;
-    voiceCancelled = false;
-    voiceChunks = [];
-    if (event && event.pointerId !== undefined && voiceButton.setPointerCapture) {
-      try { voiceButton.setPointerCapture(event.pointerId); } catch (error) { void error; }
-    }
-    setVoiceStatus("正在打开麦克风…", "processing");
-    try {
-      voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      if (voiceReleaseRequested) {
-        stopVoiceTracks();
-        voiceBusy = false;
-        setVoiceStatus("麦克风已允许，请再按住说话", "", 2800);
-        return;
-      }
-      var mimeType = preferredVoiceMimeType();
-      voiceRecorder = new MediaRecorder(voiceStream, mimeType ? { mimeType: mimeType } : undefined);
-      voiceRecorder.addEventListener("dataavailable", function (dataEvent) {
-        if (dataEvent.data && dataEvent.data.size) voiceChunks.push(dataEvent.data);
-      });
-      voiceRecorder.addEventListener("stop", function () {
-        var cancelled = voiceCancelled;
-        var blob = new Blob(voiceChunks, { type: voiceRecorder.mimeType || mimeType || "audio/webm" });
-        stopVoiceTracks();
-        voiceRecorder = null;
-        voiceChunks = [];
-        if (cancelled) {
-          voiceBusy = false;
-          setVoiceStatus("已取消录音", "", 1800);
-          return;
-        }
-        uploadVoice(blob);
-      });
-      voiceRecorder.start();
-      setVoiceStatus("录音中 · 松开发送", "recording");
-      emitClawd("beacon", "Volo 在听", { duration: 1200, priority: 3 });
-    } catch (error) {
-      stopVoiceTracks();
-      voiceBusy = false;
-      setVoiceStatus("没有麦克风权限", "error", 3600);
-    }
-  }
-
-  function stopVoiceRecording(cancelled) {
-    voiceReleaseRequested = true;
-    voiceCancelled = Boolean(cancelled);
-    if (voiceRecorder && voiceRecorder.state === "recording") {
-      voiceRecorder.stop();
-      if (!cancelled) setVoiceStatus("正在处理录音…", "processing");
-    }
   }
 
   function setDrawerOpen(open, restoreFocus) {
@@ -826,7 +544,7 @@
           duration: 1200,
           priority: 3
         });
-        loadUsage();
+        usage.load();
       }
       schedulePoll(300);
       return true;
@@ -941,32 +659,9 @@
     event.preventDefault();
     sendMessage();
   });
-  voiceButton.addEventListener("pointerdown", function (event) {
-    if (event.button !== undefined && event.button !== 0) return;
-    event.preventDefault();
-    startVoiceRecording(event);
-  });
-  voiceButton.addEventListener("pointerup", function (event) {
-    event.preventDefault();
-    stopVoiceRecording(false);
-  });
-  voiceButton.addEventListener("pointercancel", function () {
-    stopVoiceRecording(true);
-  });
-  voiceButton.addEventListener("contextmenu", function (event) { event.preventDefault(); });
-  voiceButton.addEventListener("keydown", function (event) {
-    if ((event.key === " " || event.key === "Enter") && !event.repeat) {
-      event.preventDefault();
-      startVoiceRecording();
-    }
-  });
-  voiceButton.addEventListener("keyup", function (event) {
-    if (event.key === " " || event.key === "Enter") {
-      event.preventDefault();
-      stopVoiceRecording(false);
-    }
-  });
+  voice.bind();
   music.bind();
+  usage.bind();
   input.addEventListener("input", function () {
     if (selectedSession) {
       drafts[selectedSession] = input.value;
@@ -985,9 +680,6 @@
   });
   newChatButton.addEventListener("click", openCreateDialog);
   topNewChatButton.addEventListener("click", openCreateDialog);
-  usageButton.addEventListener("click", function () { setUsageOpen(!usageOpen); });
-  usageClose.addEventListener("click", function () { setUsageOpen(false); });
-  usageRefresh.addEventListener("click", loadUsage);
 
   sessionList.addEventListener("click", function (event) {
     var action = event.target.closest("[data-session-action]");

@@ -40,20 +40,28 @@ for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
 requireScriptOrder('chat.html', [
   'core/ccc-runtime.js',
   'ccc-api.js',
+  'features/volo-media-status.js',
   'features/volo-music.js',
+  'features/volo-voice.js',
+  'features/volo-usage.js',
   'volo.js',
 ]);
 
 const voloSource = source('volo.js');
 const voloLines = voloSource.split('\n').length;
-if (voloLines > 1200) errors.push(`volo.js grew beyond 1200 lines (${voloLines})`);
+if (voloLines > 850) errors.push(`volo.js grew beyond 850 lines (${voloLines})`);
 for (const forbidden of [
   'function createMusicCard',
   'function parseLrcLines',
   'function startMusicPlayback',
   'function analyzeMusic',
+  'function startVoiceRecording',
+  'function uploadVoice',
+  'function renderUsage',
+  'function loadUsage',
+  'function setUsageOpen',
 ]) {
-  if (voloSource.includes(forbidden)) errors.push(`volo.js reclaimed music concern: ${forbidden}`);
+  if (voloSource.includes(forbidden)) errors.push(`volo.js reclaimed extracted concern: ${forbidden}`);
 }
 
 const runtimeStorage = new Map([

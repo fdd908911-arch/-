@@ -31,17 +31,22 @@ split. Their order is therefore explicit and checked by
 - `core/ccc-runtime.js`: connection configuration, legacy base-URL migration,
   authentication, JSON/blob transport, session selection, and storage events.
 - `ccc-api.js`: CcCompanion endpoint facade and connection-dialog integration.
+- `features/volo-media-status.js`: coordination for the status surface shared by
+  voice recording and music analysis.
 - `features/volo-music.js`: upload analysis, music message parsing, cards,
   spectrum state, synchronized lyrics, audio playback, and player lifecycle.
-- `volo.js`: chat/session orchestration, message list, composer, voice input,
-  Gateway usage, and drawer/dialog coordination.
+- `features/volo-voice.js`: press-to-record interaction, microphone lifecycle,
+  upload, and voice-analysis message formatting.
+- `features/volo-usage.js`: Gateway usage sidebar state, loading, formatting,
+  and rendering.
+- `volo.js`: chat/session orchestration, message list, composer, and
+  drawer/dialog coordination.
 
 ## Next safe extractions
 
-1. Move voice recording and upload from `volo.js` into `features/volo-voice.js`.
-2. Move Gateway usage rendering into `features/volo-usage.js`.
-3. Move session polling and message merging into `features/volo-chat.js`.
-4. Split memory detail renderers and arc visualization out of
+1. Move session polling and message merging into `features/volo-chat.js`.
+2. Move session roster and related dialogs into a focused feature module.
+3. Split memory detail renderers and arc visualization out of
    `memory-dashboard.js`.
 
 Do not add a new build tool until the runtime boundaries are stable. When ES
