@@ -26,9 +26,18 @@
   var longPressTimer = 0;
   var longPressStart = null;
   var replies = [
-    "我在。把你现在最想做的那件事告诉我，我们从第一步慢慢来。",
-    "好，我记下来了。你想先整理想法，还是直接开始做？",
-    "可以。我们先把它拆成一个很小、现在就能完成的动作。"
+    {
+      text: "我在。把你现在最想做的那件事告诉我，我们从第一步慢慢来。",
+      thought: "他愿意来找我说话，真好。先别急着给答案，我想认真听完，再陪他把事情一点点理清楚。"
+    },
+    {
+      text: "好，我记下来了。你想先整理想法，还是直接开始做？",
+      thought: "这件事对他应该挺重要的。我想给他一点选择的空间，让接下来的节奏由他自己决定。"
+    },
+    {
+      text: "可以。我们先把它拆成一个很小、现在就能完成的动作。",
+      thought: "如果第一步足够小，就不会那么有压力。我想陪他先拿到一点确定感，再慢慢往前走。"
+    }
   ];
 
   function emitClawd(state, phrase, options) {
@@ -140,6 +149,34 @@
     body.className = "volo-assistant-body";
     appendMessageContent(body, message, false);
     row.appendChild(body);
+    if (message.thought && !message.recalled) {
+      var thought = document.createElement("div");
+      thought.className = "volo-thought";
+      var toggle = document.createElement("button");
+      toggle.className = "volo-thought-toggle";
+      toggle.type = "button";
+      toggle.dataset.messageId = message.id;
+      toggle.setAttribute("aria-expanded", String(Boolean(message.thoughtOpen)));
+      var sparkle = document.createElement("span");
+      sparkle.className = "volo-thought-sparkle";
+      sparkle.setAttribute("aria-hidden", "true");
+      sparkle.textContent = "✦";
+      var label = document.createElement("span");
+      label.textContent = "Volo 在想";
+      var arrow = document.createElement("span");
+      arrow.className = "volo-thought-arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.textContent = "⌄";
+      toggle.append(sparkle, label, arrow);
+      var panel = document.createElement("div");
+      panel.className = "volo-thought-panel";
+      panel.hidden = !message.thoughtOpen;
+      var thoughtText = document.createElement("p");
+      thoughtText.textContent = message.thought;
+      panel.appendChild(thoughtText);
+      thought.append(toggle, panel);
+      row.appendChild(thought);
+    }
     return row;
   }
 
@@ -324,13 +361,15 @@
       messages.push({
         id: nextMessageId(),
         role: "assistant",
-        text: reply,
+        text: reply.text,
+        thought: reply.thought,
+        thoughtOpen: false,
         time: time,
         recalled: false,
         replyTo: ""
       });
       renderMessages(document.body.dataset.chatView === "volo");
-      updateSidebarPreview(reply, time);
+      updateSidebarPreview(reply.text, time);
       if (document.body.dataset.chatView === "volo") {
         emitClawd("notification", "Volo 回信啦", {
           duration: 1500,
@@ -447,6 +486,21 @@
   messageList.addEventListener("pointerleave", clearLongPress);
 
   messageList.addEventListener("click", function (event) {
+    var thoughtToggle = event.target.closest(".volo-thought-toggle");
+    if (thoughtToggle) {
+      var thoughtMessage = findMessage(thoughtToggle.dataset.messageId);
+      if (!thoughtMessage) {
+        return;
+      }
+      thoughtMessage.thoughtOpen = !thoughtMessage.thoughtOpen;
+      thoughtToggle.setAttribute(
+        "aria-expanded",
+        String(thoughtMessage.thoughtOpen)
+      );
+      var thoughtPanel = thoughtToggle.nextElementSibling;
+      thoughtPanel.hidden = !thoughtMessage.thoughtOpen;
+      return;
+    }
     var quote = event.target.closest(".volo-quote-block");
     if (quote) {
       jumpToMessage(quote.dataset.targetMessageId);
