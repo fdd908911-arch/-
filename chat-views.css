@@ -1510,3 +1510,234 @@
   }
 }
 
+.volo-message-menu {
+  position: fixed;
+  z-index: 30;
+  width: 154px;
+  overflow: hidden;
+  padding: 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--volo-composer-bg) 96%, transparent);
+  box-shadow: 0 18px 48px rgba(var(--ink-rgb), 0.24);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  animation: volo-menu-in 130ms ease both;
+}
+
+.volo-message-menu[hidden] {
+  display: none;
+}
+
+.volo-message-menu button {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 11px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  text-align: left;
+}
+
+.volo-message-menu button:hover,
+.volo-message-menu button:focus-visible {
+  background: var(--surface-hover);
+  outline: none;
+}
+
+.volo-message-menu button[hidden] {
+  display: none;
+}
+
+.volo-message-menu .volo-recall-action {
+  color: var(--danger, #d66060);
+}
+
+.volo-message-menu svg,
+.volo-reply-preview svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-reply-preview {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 10px;
+  margin: 0 7px -7px;
+  padding: 8px 9px 13px;
+  border: 1px solid var(--line-strong);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  background: color-mix(in srgb, var(--volo-composer-bg) 96%, transparent);
+  color: var(--text);
+  box-shadow: 0 -8px 26px rgba(var(--ink-rgb), 0.08);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+.volo-reply-preview[hidden] {
+  display: none;
+}
+
+.volo-reply-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--volo-blue-soft);
+  color: var(--volo-blue);
+}
+
+.volo-reply-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 9px;
+  border-left: 2px solid var(--volo-blue);
+}
+
+.volo-reply-copy strong {
+  color: var(--volo-blue);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.volo-reply-copy small {
+  overflow: hidden;
+  color: var(--text-soft);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#voloReplyCancel {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+}
+
+#voloReplyCancel:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.volo-quote-block {
+  display: flex;
+  width: 100%;
+  min-width: 145px;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 7px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(var(--accent-rgb), 0.1);
+  box-shadow: inset 3px 0 0 var(--volo-blue);
+  color: inherit;
+  text-align: left;
+}
+
+.volo-user-bubble .volo-quote-block {
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.72);
+}
+
+.volo-quote-block strong {
+  color: var(--volo-blue);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.volo-user-bubble .volo-quote-block strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.volo-quote-block small {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 10.5px;
+  line-height: 1.35;
+  opacity: 0.76;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.volo-message {
+  touch-action: pan-y;
+}
+
+.volo-user-bubble.volo-recalled-bubble {
+  border-color: var(--line-strong);
+  background: color-mix(in srgb, var(--volo-composer-bg) 82%, transparent);
+  box-shadow: none;
+  color: var(--muted);
+}
+
+.volo-recalled-bubble > p {
+  font-style: italic;
+}
+
+.volo-message.is-highlighted > div {
+  animation: volo-message-highlight 1.05s ease;
+}
+
+@keyframes volo-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes volo-message-highlight {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  38% {
+    filter: brightness(1.16);
+    box-shadow:
+      0 0 0 4px rgba(var(--accent-rgb), 0.18),
+      0 7px 20px rgba(var(--ink-rgb), 0.13);
+  }
+}
+
+@media (max-width: 680px) {
+  .volo-message-menu {
+    width: 148px;
+  }
+
+  .volo-reply-preview {
+    margin-inline: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volo-message-menu,
+  .volo-message.is-highlighted > div {
+    animation: none;
+  }
+}
+
