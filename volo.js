@@ -148,7 +148,6 @@
     var body = document.createElement("div");
     body.className = "volo-assistant-body";
     appendMessageContent(body, message, false);
-    row.appendChild(body);
     if (message.thought && !message.recalled) {
       var thought = document.createElement("div");
       thought.className = "volo-thought";
@@ -177,6 +176,7 @@
       thought.append(toggle, panel);
       row.appendChild(thought);
     }
+    row.appendChild(body);
     return row;
   }
 
