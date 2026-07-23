@@ -963,3 +963,550 @@
   }
 }
 
+/* Volo: familiar one-to-one Telegram-style conversation */
+.volo-view {
+  --volo-blue: var(--blue-strong, #2f91cc);
+  --volo-blue-soft: rgba(var(--accent-rgb), 0.12);
+  --volo-header-bg: var(--header-bg, rgba(18, 29, 38, 0.96));
+  --volo-chat-bg: var(--chat-base, #52717f);
+  --volo-incoming: var(--incoming-bubble, rgba(26, 43, 54, 0.9));
+  --volo-outgoing-start: var(--outgoing-start, #2f91cc);
+  --volo-outgoing-end: var(--outgoing-end, #2479ae);
+  --volo-composer-bg: var(--composer-bg, rgba(15, 29, 38, 0.92));
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  background: var(--volo-chat-bg);
+  color: var(--text);
+}
+
+.volo-chat-header {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  height: 72px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--volo-header-bg);
+  box-shadow: 0 8px 28px rgba(var(--ink-rgb), 0.09);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.volo-header-button {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-soft);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.volo-header-button:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.volo-header-button:active {
+  transform: scale(0.93);
+}
+
+.volo-header-button svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+}
+
+.volo-chat-person {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.volo-chat-person:hover {
+  background: var(--surface-hover);
+}
+
+.volo-avatar {
+  position: relative;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: visible;
+  border-radius: 50%;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.3)),
+    var(--volo-blue-soft);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.14);
+}
+
+.volo-avatar img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.volo-avatar i {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--volo-header-bg);
+  border-radius: 50%;
+  background: var(--success, #4fbd76);
+  box-shadow: 0 0 0 2px rgba(var(--success-rgb), 0.08);
+}
+
+.volo-person-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.volo-person-copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 690;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-person-copy small {
+  color: var(--volo-blue);
+  font-size: 10.5px;
+}
+
+.volo-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.volo-main {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.volo-wallpaper {
+  position: absolute;
+  z-index: -2;
+  inset: -18px;
+  background-color: var(--volo-chat-bg);
+  background-image: var(--wallpaper-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(var(--wallpaper-blur));
+  transform: scale(1.03);
+}
+
+.volo-wallpaper::after {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 24% 22%, rgba(255, 255, 255, 0.3) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 72% 76%, rgba(var(--ink-rgb), 0.055) 0 1px, transparent 1.5px);
+  background-size: 48px 48px, 64px 64px;
+  content: "";
+  opacity: 0.2;
+}
+
+.volo-wallpaper-overlay {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--overlay-color);
+  opacity: var(--wallpaper-dim);
+  pointer-events: none;
+}
+
+.volo-message-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-color: rgba(var(--ink-rgb), 0.2) transparent;
+  scrollbar-width: thin;
+}
+
+.volo-message-list {
+  display: flex;
+  width: min(820px, calc(100% - 40px));
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 7px;
+  margin: 0 auto;
+  padding: 30px 0 22px;
+}
+
+.volo-empty {
+  display: flex;
+  min-height: 0;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 0;
+  text-align: left;
+}
+
+.volo-date-pill {
+  align-self: center;
+  margin: 0 0 14px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  background: var(--date-bg);
+  box-shadow: 0 4px 15px rgba(var(--ink-rgb), 0.08);
+  color: var(--date-text);
+  font-size: 10px;
+  font-weight: 650;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.volo-empty-bubble,
+.volo-assistant-body,
+.volo-user-bubble {
+  position: relative;
+  max-width: min(72%, 590px);
+  padding: 9px 11px 7px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 6px 17px rgba(var(--ink-rgb), 0.12);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+
+.volo-empty-bubble,
+.volo-assistant-body {
+  border-bottom-left-radius: 5px;
+  background: var(--volo-incoming);
+  color: var(--incoming-text);
+}
+
+.volo-user-bubble {
+  border-color: rgba(var(--accent-rgb), 0.17);
+  border-bottom-right-radius: 5px;
+  background: linear-gradient(145deg, var(--volo-outgoing-start), var(--volo-outgoing-end));
+  color: var(--outgoing-text);
+}
+
+.volo-empty-bubble p,
+.volo-message p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.volo-empty-bubble time {
+  display: block;
+  margin-top: 2px;
+  color: rgba(var(--ink-rgb), 0.5);
+  font-size: 8.5px;
+  line-height: 1;
+  text-align: right;
+}
+
+.volo-message-list.has-messages .volo-empty {
+  display: none;
+}
+
+.volo-message {
+  display: flex;
+  width: 100%;
+  animation: volo-message-in 180ms ease both;
+}
+
+.volo-message-user {
+  justify-content: flex-end;
+}
+
+.volo-message-assistant {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.volo-message-meta {
+  display: flex;
+  min-width: 42px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 2px;
+  color: rgba(var(--ink-rgb), 0.5);
+  font-size: 8.5px;
+  line-height: 1;
+  user-select: none;
+}
+
+.volo-user-bubble .volo-message-meta {
+  color: color-mix(in srgb, var(--outgoing-text) 70%, transparent);
+}
+
+.volo-message-checks {
+  color: #c7edff;
+  font-size: 9px;
+  letter-spacing: -0.18em;
+}
+
+.volo-typing.volo-assistant-body {
+  display: inline-flex;
+  width: auto;
+  min-width: 52px;
+  min-height: 40px;
+  align-items: center;
+  gap: 4px;
+  padding: 13px 15px;
+}
+
+.volo-typing span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: volo-typing 1.1s ease-in-out infinite;
+}
+
+.volo-composer-zone {
+  position: relative;
+  z-index: 4;
+  width: min(860px, calc(100% - 32px));
+  flex: 0 0 auto;
+  margin: 0 auto;
+  padding: 8px 0 max(12px, env(safe-area-inset-bottom));
+}
+
+.volo-composer {
+  display: flex;
+  min-height: 54px;
+  align-items: flex-end;
+  gap: 4px;
+  overflow: visible;
+  padding: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  background: var(--volo-composer-bg);
+  box-shadow: 0 12px 36px rgba(var(--ink-rgb), 0.16);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+.volo-input-label {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+
+.volo-composer textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  max-height: 118px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 10px 7px 8px;
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.5;
+  scrollbar-width: thin;
+}
+
+.volo-composer textarea::placeholder {
+  color: var(--muted);
+}
+
+.volo-composer-button,
+.volo-send-button {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.volo-composer-button:hover {
+  background: var(--surface-hover);
+  color: var(--text-soft);
+}
+
+.volo-composer-button svg,
+.volo-send-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-send-button {
+  background: linear-gradient(145deg, var(--button-start), var(--button-end));
+  box-shadow: 0 7px 16px rgba(var(--accent-rgb), 0.24);
+  color: white;
+}
+
+.volo-send-button:disabled {
+  background: var(--surface-hover);
+  box-shadow: none;
+  color: var(--muted);
+  opacity: 0.86;
+}
+
+.volo-send-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.volo-send-button:not(:disabled):active {
+  transform: scale(0.93);
+}
+
+.volo-send-button svg {
+  width: 18px;
+  height: 18px;
+  transform: translateX(1px);
+}
+
+.volo-emoji-panel {
+  position: absolute;
+  right: 48px;
+  bottom: calc(100% + 4px);
+  display: grid;
+  grid-template-columns: repeat(4, 42px);
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--volo-composer-bg);
+  box-shadow: 0 18px 50px rgba(var(--ink-rgb), 0.18);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+.volo-emoji-panel[hidden] {
+  display: none;
+}
+
+.volo-emoji-panel button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 20px;
+}
+
+.volo-emoji-panel button:hover {
+  background: var(--surface-hover);
+}
+
+@media (max-width: 680px) {
+  .volo-chat-header {
+    height: calc(64px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 7px 0 5px;
+    gap: 3px;
+  }
+
+  .volo-header-button {
+    width: 38px;
+    height: 38px;
+  }
+
+  .volo-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .volo-avatar img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .volo-header-actions .volo-header-button:first-child {
+    display: none;
+  }
+
+  .volo-message-list {
+    width: calc(100% - 20px);
+    padding: 20px 0 16px;
+  }
+
+  .volo-empty-bubble,
+  .volo-assistant-body,
+  .volo-user-bubble {
+    max-width: 84%;
+  }
+
+  .volo-composer-zone {
+    width: calc(100% - 14px);
+    padding-bottom: max(7px, env(safe-area-inset-bottom));
+  }
+
+  .volo-composer {
+    min-height: 50px;
+    border-radius: 18px;
+  }
+
+  .volo-composer-button,
+  .volo-send-button {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 370px) {
+  .volo-header-actions .volo-header-button:nth-child(2) {
+    display: none;
+  }
+
+  .volo-person-copy strong {
+    font-size: 13.5px;
+  }
+}
+
