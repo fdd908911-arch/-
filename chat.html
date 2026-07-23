@@ -105,6 +105,10 @@
       <symbol id="icon-back" viewBox="0 0 24 24">
         <path d="m14.5 5-7 7 7 7" />
       </symbol>
+      <symbol id="icon-reply" viewBox="0 0 24 24">
+        <path d="m10 8-5 4 5 4" />
+        <path d="M6 12h7.5c3.5 0 5.5 1.8 5.5 5" />
+      </symbol>
       <symbol id="icon-history" viewBox="0 0 24 24">
         <path d="M4 8V4m0 0h4M4 4l3.2 3.2A8 8 0 1 1 4.5 13" />
         <path d="M12 8v4l2.7 1.8" />
@@ -248,6 +252,17 @@
             <div class="volo-wallpaper" aria-hidden="true"></div>
             <div class="volo-wallpaper-overlay" aria-hidden="true"></div>
 
+            <div class="volo-message-menu" id="voloMessageMenu" role="menu" hidden>
+              <button type="button" role="menuitem" data-message-action="reply">
+                <svg><use href="#icon-reply"></use></svg>
+                <span>引用回复</span>
+              </button>
+              <button class="volo-recall-action" type="button" role="menuitem" data-message-action="recall">
+                <svg><use href="#icon-reset"></use></svg>
+                <span>撤回</span>
+              </button>
+            </div>
+
             <div class="volo-message-scroll" id="voloMessageScroll">
               <div class="volo-message-list" id="voloMessageList" role="log" aria-live="polite" aria-label="Volo 消息">
                 <section class="volo-empty" id="voloEmpty">
@@ -261,6 +276,19 @@
             </div>
 
             <div class="volo-composer-zone">
+              <div class="volo-reply-preview" id="voloReplyPreview" hidden>
+                <span class="volo-reply-icon" aria-hidden="true">
+                  <svg><use href="#icon-reply"></use></svg>
+                </span>
+                <span class="volo-reply-copy">
+                  <strong id="voloReplyAuthor">Volo</strong>
+                  <small id="voloReplyText"></small>
+                </span>
+                <button id="voloReplyCancel" type="button" aria-label="取消引用">
+                  <svg><use href="#icon-close"></use></svg>
+                </button>
+              </div>
+
               <div class="volo-emoji-panel" id="voloEmojiPanel" hidden>
                 <button type="button">😊</button>
                 <button type="button">🥰</button>
