@@ -1750,7 +1750,7 @@
   max-width: min(72%, 520px);
   align-items: flex-start;
   flex-direction: column;
-  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .volo-thought-toggle {
