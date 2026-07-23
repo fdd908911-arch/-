@@ -7,13 +7,10 @@
   var messageScroll = document.getElementById("voloMessageScroll");
   var messageList = document.getElementById("voloMessageList");
   var emptyState = document.getElementById("voloEmpty");
-  var drawer = document.getElementById("voloDrawer");
-  var drawerButton = document.getElementById("voloDrawerButton");
-  var drawerClose = document.getElementById("voloDrawerClose");
-  var drawerScrim = document.getElementById("voloDrawerScrim");
-  var newChatButton = document.getElementById("voloNewChatButton");
-  var currentChatButton = document.getElementById("voloCurrentChatButton");
   var topNewChatButton = document.getElementById("voloTopNewChatButton");
+  var emojiButton = document.getElementById("voloEmojiButton");
+  var emojiPanel = document.getElementById("voloEmojiPanel");
+  var presence = document.getElementById("voloPresence");
   var messages = [];
   var isTyping = false;
   var replyTimer = 0;
@@ -51,21 +48,6 @@
     sendButton.disabled = input.value.trim().length === 0;
   }
 
-  function setDrawerOpen(open, restoreFocus) {
-    drawer.classList.toggle("is-open", open);
-    drawerScrim.classList.toggle("is-open", open);
-    drawer.setAttribute("aria-hidden", String(!open));
-    drawer.toggleAttribute("inert", !open);
-    drawerButton.setAttribute("aria-expanded", String(open));
-    if (open) {
-      window.setTimeout(function () {
-        newChatButton.focus();
-      }, 80);
-    } else if (restoreFocus) {
-      drawerButton.focus();
-    }
-  }
-
   function createUserMessage(message) {
     var row = document.createElement("article");
     row.className = "volo-message volo-message-user";
@@ -73,7 +55,16 @@
     bubble.className = "volo-user-bubble";
     var text = document.createElement("p");
     text.textContent = message.text;
-    bubble.appendChild(text);
+    var meta = document.createElement("span");
+    meta.className = "volo-message-meta";
+    var time = document.createElement("time");
+    time.textContent = message.time;
+    var checks = document.createElement("span");
+    checks.className = "volo-message-checks";
+    checks.setAttribute("aria-label", "已读");
+    checks.textContent = "✓✓";
+    meta.append(time, checks);
+    bubble.append(text, meta);
     row.appendChild(bubble);
     return row;
   }
@@ -85,17 +76,13 @@
     body.className = "volo-assistant-body";
     var text = document.createElement("p");
     text.textContent = message.text;
-    body.appendChild(text);
-    var footer = document.createElement("footer");
-    footer.className = "volo-assistant-footer";
-    var mark = document.createElement("button");
-    mark.className = "volo-assistant-mark volo-flower-button";
-    mark.type = "button";
-    mark.setAttribute("aria-label", "让 Volo 的小花动起来");
-    var note = document.createElement("span");
-    note.textContent = "Volo can make mistakes, but please love him anyway.";
-    footer.append(mark, note);
-    row.append(body, footer);
+    var meta = document.createElement("span");
+    meta.className = "volo-message-meta";
+    var time = document.createElement("time");
+    time.textContent = message.time;
+    meta.appendChild(time);
+    body.append(text, meta);
+    row.appendChild(body);
     return row;
   }
 
@@ -104,7 +91,7 @@
     row.className = "volo-message volo-message-assistant";
     row.setAttribute("aria-label", "Volo 正在回复");
     var typing = document.createElement("div");
-    typing.className = "volo-typing";
+    typing.className = "volo-typing volo-assistant-body";
     for (var index = 0; index < 3; index += 1) {
       typing.appendChild(document.createElement("span"));
     }
@@ -134,19 +121,6 @@
     }
   }
 
-  function animateFlower(flower) {
-    flower.classList.remove("is-blooming");
-    void flower.offsetWidth;
-    flower.classList.add("is-blooming");
-    flower.addEventListener(
-      "animationend",
-      function () {
-        flower.classList.remove("is-blooming");
-      },
-      { once: true }
-    );
-  }
-
   function updateSidebarPreview(text, time) {
     var item = document.querySelector('[data-workspace="volo"]');
     if (!item) {
@@ -172,7 +146,9 @@
     resizeInput();
     renderMessages(false);
     updateSidebarPreview("想聊什么都可以", "现在");
-    setDrawerOpen(false, false);
+    emojiPanel.hidden = true;
+    emojiButton.setAttribute("aria-expanded", "false");
+    presence.textContent = "在线";
     requestAnimationFrame(function () {
       input.focus();
     });
@@ -185,6 +161,7 @@
   function queueReply() {
     window.clearTimeout(replyTimer);
     isTyping = true;
+    presence.textContent = "正在输入…";
     renderMessages(true);
     emitClawd("thinking", "Volo 正在想…", {
       duration: 1200,
@@ -195,6 +172,7 @@
       replyIndex += 1;
       var time = formatTime(new Date());
       isTyping = false;
+      presence.textContent = "在线";
       messages.push({ role: "assistant", text: reply, time: time });
       renderMessages(document.body.dataset.chatView === "volo");
       updateSidebarPreview(reply, time);
@@ -231,23 +209,22 @@
     sendMessage();
   });
 
-  drawerButton.addEventListener("click", function () {
-    setDrawerOpen(drawerButton.getAttribute("aria-expanded") !== "true", false);
-  });
-
-  drawerClose.addEventListener("click", function () {
-    setDrawerOpen(false, true);
-  });
-
-  drawerScrim.addEventListener("click", function () {
-    setDrawerOpen(false, true);
-  });
-
-  newChatButton.addEventListener("click", startNewChat);
   topNewChatButton.addEventListener("click", startNewChat);
 
-  currentChatButton.addEventListener("click", function () {
-    setDrawerOpen(false, false);
+  emojiButton.addEventListener("click", function () {
+    emojiPanel.hidden = !emojiPanel.hidden;
+    emojiButton.setAttribute("aria-expanded", String(!emojiPanel.hidden));
+  });
+
+  emojiPanel.addEventListener("click", function (event) {
+    var emoji = event.target.closest("button");
+    if (!emoji) {
+      return;
+    }
+    input.value += emoji.textContent;
+    emojiPanel.hidden = true;
+    emojiButton.setAttribute("aria-expanded", "false");
+    resizeInput();
     input.focus();
   });
 
@@ -265,38 +242,26 @@
     }
   });
 
-  messageList.addEventListener("click", function (event) {
-    var flower = event.target.closest(".volo-flower-button");
-    if (!flower || !messageList.contains(flower)) {
-      return;
-    }
-    animateFlower(flower);
-    emitClawd("happy", "Volo 的小花开啦", {
-      duration: 1000,
-      priority: 2
-    });
-  });
-
   document.addEventListener("click", function (event) {
-    var workspaceButton = event.target.closest("[data-workspace]");
-    if (workspaceButton && workspaceButton.dataset.workspace !== "volo") {
-      setDrawerOpen(false, false);
+    if (
+      !emojiPanel.hidden &&
+      !emojiPanel.contains(event.target) &&
+      !emojiButton.contains(event.target)
+    ) {
+      emojiPanel.hidden = true;
+      emojiButton.setAttribute("aria-expanded", "false");
     }
   });
 
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && drawer.classList.contains("is-open")) {
-      setDrawerOpen(false, true);
+    if (event.key === "Escape" && !emojiPanel.hidden) {
+      emojiPanel.hidden = true;
+      emojiButton.setAttribute("aria-expanded", "false");
+      emojiButton.focus();
     }
   });
 
   document.addEventListener("volo:new-chat", startNewChat);
-
-  window.addEventListener("hashchange", function () {
-    if (window.location.hash !== "#volo") {
-      setDrawerOpen(false, false);
-    }
-  });
 
   resizeInput();
   renderMessages(false);
