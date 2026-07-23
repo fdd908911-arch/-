@@ -97,7 +97,11 @@
       container.appendChild(quote);
     }
     var text = document.createElement("p");
-    text.textContent = message.recalled ? "你撤回了一条消息" : message.text;
+    text.textContent = message.recalled
+      ? message.role === "user"
+        ? "你撤回了一条消息"
+        : "Volo 撤回了一条消息"
+      : message.text;
     var meta = document.createElement("span");
     meta.className = "volo-message-meta";
     var time = document.createElement("time");
@@ -206,7 +210,7 @@
     }
     selectedMessageId = messageId;
     var recallAction = messageMenu.querySelector('[data-message-action="recall"]');
-    recallAction.hidden = message.role !== "user";
+    recallAction.hidden = false;
     messageMenu.hidden = false;
     messageMenu.style.left = "0px";
     messageMenu.style.top = "0px";
@@ -223,7 +227,7 @@
 
   function recallMessage(messageId) {
     var message = findMessage(messageId);
-    if (!message || message.role !== "user" || message.recalled) {
+    if (!message || message.recalled) {
       return;
     }
     message.recalled = true;
@@ -232,7 +236,10 @@
     }
     closeMessageMenu();
     renderMessages(false);
-    updateSidebarPreview("你撤回了一条消息", message.time);
+    updateSidebarPreview(
+      message.role === "user" ? "你撤回了一条消息" : "Volo 撤回了一条消息",
+      message.time
+    );
     emitClawd("happy", "消息已撤回", {
       duration: 900,
       priority: 2
