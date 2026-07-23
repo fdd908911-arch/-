@@ -15,29 +15,10 @@
     <title>洄·Maneo信箱 · 对话</title>
     <script>
       try {
-        var savedAppearance = JSON.parse(
-          localStorage.getItem("island-chat.preferences.v1")
-        );
-        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
-        var themeColors = {
-          mist: "#eef2f0",
-          zen: "#f2efe8",
-          sage: "#f1f1e7",
-          blush: "#ebeef1"
-        };
-        var savedTheme =
-          (savedAppearance &&
-            (savedAppearance.theme ||
-              legacyThemes[savedAppearance.id] ||
-              savedAppearance.id)) ||
-          "mist";
-        if (!themeColors[savedTheme]) {
-          savedTheme = "mist";
-        }
-        document.documentElement.dataset.theme = savedTheme;
+        document.documentElement.dataset.theme = "mist";
         document.getElementById("themeColorMeta").setAttribute(
           "content",
-          themeColors[savedTheme]
+          "#eef2f0"
         );
       } catch (error) {
         document.documentElement.dataset.theme = "mist";
@@ -171,9 +152,9 @@
                 <p>选择想进入的页面</p>
               </span>
             </div>
-            <button class="chat-hub-appearance" id="hubAppearanceButton" type="button" aria-label="打开外观与背景设置">
+            <button class="chat-hub-appearance" id="hubAppearanceButton" type="button" aria-label="上传聊天背景">
               <svg><use href="#icon-settings"></use></svg>
-              <span>外观</span>
+              <span>背景</span>
             </button>
           </header>
 
@@ -236,8 +217,8 @@
             </button>
 
             <nav class="volo-header-actions" aria-label="聊天工具">
-              <button class="volo-header-button" type="button" aria-label="搜索聊天记录" data-toast="聊天搜索稍后接入">
-                <svg><use href="#icon-search"></use></svg>
+              <button class="volo-header-button" id="voloBackgroundButton" type="button" aria-label="上传聊天背景">
+                <svg><use href="#icon-image"></use></svg>
               </button>
               <button class="volo-header-button" type="button" aria-label="语音通话" data-toast="语音通话稍后接入">
                 <svg><use href="#icon-phone"></use></svg>
@@ -342,7 +323,7 @@
               </button>
               <button class="background-header-button" id="headerBackgroundButton" type="button">
                 <svg><use href="#icon-image"></use></svg>
-                <span>配色</span>
+                <span>背景</span>
               </button>
               <button class="icon-button" type="button" aria-label="群聊信息" data-toast="群聊信息将在下一步接入">
                 <svg><use href="#icon-info"></use></svg>
@@ -413,8 +394,8 @@
         <header class="dialog-header">
           <div>
             <span class="eyebrow">个性化</span>
-            <h2 id="backgroundDialogTitle">配色与聊天背景</h2>
-            <p>点击配色立即切换，或使用你自己的照片。</p>
+            <h2 id="backgroundDialogTitle">聊天背景</h2>
+            <p>上传一张喜欢的照片，作为聊天背景。</p>
           </div>
           <button class="icon-button dialog-close" id="backgroundCloseButton" type="button" aria-label="关闭">
             <svg><use href="#icon-close"></use></svg>
@@ -422,50 +403,17 @@
         </header>
 
         <div class="dialog-content">
-          <section aria-labelledby="presetTitle">
-            <div class="section-title-row">
-              <h3 id="presetTitle">莫兰迪配色主题</h3>
-              <span>4 套 · 点击即换</span>
-            </div>
-            <div class="wallpaper-grid" id="wallpaperGrid">
-              <button class="wallpaper-option selected" type="button" data-wallpaper="mist">
-                <span class="preset-swatch preset-mist"></span>
-                <span>雾蓝杏粉</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="zen">
-                <span class="preset-swatch preset-zen"></span>
-                <span>禅意米棕</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="sage">
-                <span class="preset-swatch preset-sage"></span>
-                <span>灰绿鹅黄</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="blush">
-                <span class="preset-swatch preset-blush"></span>
-                <span>烟粉雾蓝</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option custom-wallpaper-option" id="customWallpaperOption" type="button" data-wallpaper="custom" hidden>
-                <span class="preset-swatch" id="customWallpaperSwatch"></span>
-                <span>我的图片</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-            </div>
-          </section>
-
           <section class="upload-section" aria-labelledby="uploadTitle">
             <div class="section-title-row">
-              <h3 id="uploadTitle">上传图片</h3>
+              <h3 id="uploadTitle">上传照片</h3>
               <span>最大 10 MB</span>
             </div>
             <label class="upload-dropzone" id="uploadDropzone" for="backgroundFile">
               <input id="backgroundFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+              <span class="upload-preview" id="backgroundCurrentPreview" aria-hidden="true"></span>
               <span class="upload-icon"><svg><use href="#icon-upload"></use></svg></span>
               <span class="upload-copy">
-                <strong>选择图片或拖放到这里</strong>
+                <strong>选择照片或拖放到这里</strong>
                 <small>支持 JPG、PNG、WebP 和 GIF</small>
               </span>
               <span class="upload-action">浏览文件</span>
