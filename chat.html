@@ -15,29 +15,10 @@
     <title>洄·Maneo信箱 · 对话</title>
     <script>
       try {
-        var savedAppearance = JSON.parse(
-          localStorage.getItem("island-chat.preferences.v1")
-        );
-        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
-        var themeColors = {
-          mist: "#eef2f0",
-          zen: "#f2efe8",
-          sage: "#f1f1e7",
-          blush: "#ebeef1"
-        };
-        var savedTheme =
-          (savedAppearance &&
-            (savedAppearance.theme ||
-              legacyThemes[savedAppearance.id] ||
-              savedAppearance.id)) ||
-          "mist";
-        if (!themeColors[savedTheme]) {
-          savedTheme = "mist";
-        }
-        document.documentElement.dataset.theme = savedTheme;
+        document.documentElement.dataset.theme = "mist";
         document.getElementById("themeColorMeta").setAttribute(
           "content",
-          themeColors[savedTheme]
+          "#eef2f0"
         );
       } catch (error) {
         document.documentElement.dataset.theme = "mist";
@@ -105,6 +86,10 @@
       <symbol id="icon-back" viewBox="0 0 24 24">
         <path d="m14.5 5-7 7 7 7" />
       </symbol>
+      <symbol id="icon-reply" viewBox="0 0 24 24">
+        <path d="m10 8-5 4 5 4" />
+        <path d="M6 12h7.5c3.5 0 5.5 1.8 5.5 5" />
+      </symbol>
       <symbol id="icon-history" viewBox="0 0 24 24">
         <path d="M4 8V4m0 0h4M4 4l3.2 3.2A8 8 0 1 1 4.5 13" />
         <path d="M12 8v4l2.7 1.8" />
@@ -167,9 +152,9 @@
                 <p>选择想进入的页面</p>
               </span>
             </div>
-            <button class="chat-hub-appearance" id="hubAppearanceButton" type="button" aria-label="打开外观与背景设置">
+            <button class="chat-hub-appearance" id="hubAppearanceButton" type="button" aria-label="上传聊天背景">
               <svg><use href="#icon-settings"></use></svg>
-              <span>外观</span>
+              <span>背景</span>
             </button>
           </header>
 
@@ -214,109 +199,102 @@
           </main>
         </section>
 
-        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="Volo" hidden>
-          <button
-            class="volo-drawer-scrim"
-            id="voloDrawerScrim"
-            type="button"
-            aria-label="关闭 Volo 侧边栏"
-          ></button>
+        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="与 Volo 的聊天" hidden>
+          <header class="volo-chat-header">
+            <a class="volo-header-button" href="#hub" data-workspace="hub" aria-label="返回 Chat 首页">
+              <svg><use href="#icon-back"></use></svg>
+            </a>
 
-          <aside class="volo-drawer" id="voloDrawer" aria-label="Volo 对话" aria-hidden="true" inert>
-            <header class="volo-drawer-header">
-              <div class="volo-drawer-brand">
-                <span class="volo-drawer-flower" aria-hidden="true"></span>
-                <span>
-                  <strong>Volo</strong>
-                  <small>Conversations</small>
-                </span>
-              </div>
-              <button class="volo-drawer-close" id="voloDrawerClose" type="button" aria-label="关闭 Volo 侧边栏">
-                <svg><use href="#icon-close"></use></svg>
-              </button>
-            </header>
-
-            <button class="volo-new-chat-button" id="voloNewChatButton" type="button">
-              <span><svg><use href="#icon-plus"></use></svg></span>
-              <strong>New chat</strong>
+            <button class="volo-chat-person" type="button" data-toast="Volo 现在在线">
+              <span class="volo-avatar" aria-hidden="true">
+                <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
+                <i></i>
+              </span>
+              <span class="volo-person-copy">
+                <strong>Volo</strong>
+                <small id="voloPresence">在线</small>
+              </span>
             </button>
 
-            <section class="volo-drawer-section" aria-labelledby="voloChatsTitle">
-              <h2 id="voloChatsTitle">Chats</h2>
-              <button class="volo-current-chat" id="voloCurrentChatButton" type="button" aria-current="page">
-                <span class="volo-current-chat-flower" aria-hidden="true"></span>
-                <span>
-                  <strong>Volo</strong>
-                  <small>Current conversation</small>
-                </span>
+            <nav class="volo-header-actions" aria-label="聊天工具">
+              <button class="volo-header-button" id="voloBackgroundButton" type="button" aria-label="上传聊天背景">
+                <svg><use href="#icon-image"></use></svg>
               </button>
-            </section>
-
-          </aside>
-
-          <header class="volo-topbar">
-            <nav class="volo-topbar-group volo-topbar-left" aria-label="Volo 左侧工具">
-              <a class="volo-topbar-button volo-hub-back-button" href="#hub" data-workspace="hub" aria-label="返回 Chat 首页" title="Back to Chat">
-                <svg><use href="#icon-back"></use></svg>
-              </a>
-              <button
-                class="volo-topbar-button volo-menu-button"
-                id="voloDrawerButton"
-                type="button"
-                aria-label="打开 Volo 会话"
-                aria-controls="voloDrawer"
-                aria-expanded="false"
-                title="Volo chats"
-              >
-                <svg><use href="#icon-history"></use></svg>
+              <button class="volo-header-button" type="button" aria-label="语音通话" data-toast="语音通话稍后接入">
+                <svg><use href="#icon-phone"></use></svg>
               </button>
-            </nav>
-
-            <button class="volo-center-button" type="button" aria-label="Volo 状态" data-toast="Volo 在这里">
-              <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
-            </button>
-
-            <nav class="volo-topbar-group volo-topbar-right" aria-label="Volo 右侧工具">
-              <button class="volo-topbar-button" id="voloTopNewChatButton" type="button" aria-label="新建 Volo 对话" title="New chat">
+              <button class="volo-header-button" id="voloTopNewChatButton" type="button" aria-label="清空并开始新对话">
                 <svg><use href="#icon-edit"></use></svg>
               </button>
             </nav>
           </header>
 
           <main class="volo-main">
+            <div class="volo-wallpaper" aria-hidden="true"></div>
+            <div class="volo-wallpaper-overlay" aria-hidden="true"></div>
+
+            <div class="volo-message-menu" id="voloMessageMenu" role="menu" hidden>
+              <button type="button" role="menuitem" data-message-action="reply">
+                <svg><use href="#icon-reply"></use></svg>
+                <span>引用回复</span>
+              </button>
+              <button class="volo-recall-action" type="button" role="menuitem" data-message-action="recall">
+                <svg><use href="#icon-reset"></use></svg>
+                <span>撤回</span>
+              </button>
+            </div>
+
             <div class="volo-message-scroll" id="voloMessageScroll">
               <div class="volo-message-list" id="voloMessageList" role="log" aria-live="polite" aria-label="Volo 消息">
                 <section class="volo-empty" id="voloEmpty">
-                  <button
-                    class="volo-welcome-flower volo-flower-button"
-                    type="button"
-                    aria-label="让 Volo 的小花动起来"
-                  ></button>
-                  <h1>今天想聊些什么？</h1>
+                  <span class="volo-date-pill">今天</span>
+                  <div class="volo-empty-bubble">
+                    <p>嗨，我在这里。今天想聊些什么？</p>
+                    <time>现在</time>
+                  </div>
                 </section>
               </div>
             </div>
 
             <div class="volo-composer-zone">
+              <div class="volo-reply-preview" id="voloReplyPreview" hidden>
+                <span class="volo-reply-icon" aria-hidden="true">
+                  <svg><use href="#icon-reply"></use></svg>
+                </span>
+                <span class="volo-reply-copy">
+                  <strong id="voloReplyAuthor">Volo</strong>
+                  <small id="voloReplyText"></small>
+                </span>
+                <button id="voloReplyCancel" type="button" aria-label="取消引用">
+                  <svg><use href="#icon-close"></use></svg>
+                </button>
+              </div>
+
+              <div class="volo-emoji-panel" id="voloEmojiPanel" hidden>
+                <button type="button">😊</button>
+                <button type="button">🥰</button>
+                <button type="button">😂</button>
+                <button type="button">👍</button>
+                <button type="button">✨</button>
+                <button type="button">🌊</button>
+                <button type="button">☕</button>
+                <button type="button">🌷</button>
+              </div>
+
               <form class="volo-composer" id="voloComposer">
+                <button class="volo-composer-button" type="button" aria-label="添加附件" data-toast="附件功能稍后接入">
+                  <svg><use href="#icon-paperclip"></use></svg>
+                </button>
                 <label class="volo-input-label" for="voloInput">
                   <span class="visually-hidden">发送给 Volo</span>
-                  <textarea id="voloInput" rows="1" maxlength="2000" placeholder="Reply to Volo..."></textarea>
+                  <textarea id="voloInput" rows="1" maxlength="2000" placeholder="输入消息…"></textarea>
                 </label>
-                <div class="volo-toolbar">
-                  <button class="volo-tool-button" type="button" aria-label="更多选项" data-toast="更多选项稍后接入">
-                    <svg><use href="#icon-plus"></use></svg>
-                  </button>
-                  <button class="volo-model-pill" type="button" data-toast="当前是 Volo">Volo</button>
-                  <div class="volo-toolbar-actions">
-                    <button class="volo-tool-button" type="button" aria-label="灵感" data-toast="灵感工具稍后接入">
-                      <svg><use href="#icon-sparkles"></use></svg>
-                    </button>
-                    <button class="volo-send-button" id="voloSendButton" type="submit" aria-label="发送给 Volo" disabled>
-                      <svg><use href="#icon-send"></use></svg>
-                    </button>
-                  </div>
-                </div>
+                <button class="volo-composer-button" id="voloEmojiButton" type="button" aria-label="选择表情" aria-expanded="false">
+                  <svg><use href="#icon-smile"></use></svg>
+                </button>
+                <button class="volo-send-button" id="voloSendButton" type="submit" aria-label="发送给 Volo" disabled>
+                  <svg><use href="#icon-send"></use></svg>
+                </button>
               </form>
             </div>
           </main>
@@ -345,7 +323,7 @@
               </button>
               <button class="background-header-button" id="headerBackgroundButton" type="button">
                 <svg><use href="#icon-image"></use></svg>
-                <span>配色</span>
+                <span>背景</span>
               </button>
               <button class="icon-button" type="button" aria-label="群聊信息" data-toast="群聊信息将在下一步接入">
                 <svg><use href="#icon-info"></use></svg>
@@ -416,8 +394,8 @@
         <header class="dialog-header">
           <div>
             <span class="eyebrow">个性化</span>
-            <h2 id="backgroundDialogTitle">配色与聊天背景</h2>
-            <p>点击配色立即切换，或使用你自己的照片。</p>
+            <h2 id="backgroundDialogTitle">聊天背景</h2>
+            <p>上传一张喜欢的照片，作为聊天背景。</p>
           </div>
           <button class="icon-button dialog-close" id="backgroundCloseButton" type="button" aria-label="关闭">
             <svg><use href="#icon-close"></use></svg>
@@ -425,50 +403,17 @@
         </header>
 
         <div class="dialog-content">
-          <section aria-labelledby="presetTitle">
-            <div class="section-title-row">
-              <h3 id="presetTitle">莫兰迪配色主题</h3>
-              <span>4 套 · 点击即换</span>
-            </div>
-            <div class="wallpaper-grid" id="wallpaperGrid">
-              <button class="wallpaper-option selected" type="button" data-wallpaper="mist">
-                <span class="preset-swatch preset-mist"></span>
-                <span>雾蓝杏粉</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="zen">
-                <span class="preset-swatch preset-zen"></span>
-                <span>禅意米棕</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="sage">
-                <span class="preset-swatch preset-sage"></span>
-                <span>灰绿鹅黄</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option" type="button" data-wallpaper="blush">
-                <span class="preset-swatch preset-blush"></span>
-                <span>烟粉雾蓝</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-              <button class="wallpaper-option custom-wallpaper-option" id="customWallpaperOption" type="button" data-wallpaper="custom" hidden>
-                <span class="preset-swatch" id="customWallpaperSwatch"></span>
-                <span>我的图片</span>
-                <span class="selection-check"><svg><use href="#icon-check"></use></svg></span>
-              </button>
-            </div>
-          </section>
-
           <section class="upload-section" aria-labelledby="uploadTitle">
             <div class="section-title-row">
-              <h3 id="uploadTitle">上传图片</h3>
+              <h3 id="uploadTitle">上传照片</h3>
               <span>最大 10 MB</span>
             </div>
             <label class="upload-dropzone" id="uploadDropzone" for="backgroundFile">
               <input id="backgroundFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+              <span class="upload-preview" id="backgroundCurrentPreview" aria-hidden="true"></span>
               <span class="upload-icon"><svg><use href="#icon-upload"></use></svg></span>
               <span class="upload-copy">
-                <strong>选择图片或拖放到这里</strong>
+                <strong>选择照片或拖放到这里</strong>
                 <small>支持 JPG、PNG、WebP 和 GIF</small>
               </span>
               <span class="upload-action">浏览文件</span>
@@ -531,3 +476,4 @@
     <script src="volo.js?v=20260711-chat-hub-v1"></script>
   </body>
 </html>
+
