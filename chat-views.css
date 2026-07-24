@@ -2884,6 +2884,15 @@ body.volo-together-open .clawd-pet-root {
   color: #4d748a;
 }
 
+.volo-settings-row-icon.is-terminal {
+  background: rgba(var(--route-terminal-rgb), 0.13);
+  color: var(--route-terminal);
+}
+
+.volo-settings-row[href] {
+  text-decoration: none;
+}
+
 .volo-settings-row > span:nth-child(2) {
   flex: 1;
 }

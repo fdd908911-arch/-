@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260724-v81-voice-input`;
+const CACHE_NAME = `${CACHE_PREFIX}20260724-v82-terminal-restore`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -21,7 +21,7 @@ const APP_SHELL = [
   "./home.css",
   "./home-ins.css",
   "./chat-navigation.css",
-  "./chat-views.css",
+  "./chat-views.css?v=20260724-terminal-restore-v1",
   "./chat-hub.css",
   "./router.css",
   "./ccc-sessions.css",
@@ -52,7 +52,8 @@ const APP_SHELL = [
   "./status.js",
   "./drives-dashboard.js?v=20260721-drives-v3",
   "./world.js",
-  "./terminal.js",
+  "./terminal.js?v=20260724-terminal-restore-v1",
+  "./volo-settings.js?v=20260724-terminal-entry-v1",
   "./diary.js",
   "./clawd-pet.js",
   "./pwa.css",

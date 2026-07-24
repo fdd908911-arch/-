@@ -332,6 +332,41 @@ try {
       assert(apiResponses.includes("/hui-api/chat/poll"), test.name + ": polling did not start");
       assert(apiResponses.includes("/hui-api/v1/thinking"), test.name + ": thinking history was not loaded");
 
+      await page.evaluate(() => document.getElementById("voloSettingsButton").click());
+      await page.waitForFunction(() => !document.getElementById("voloSettingsSheet").hidden);
+      const terminalSettingsLabel = await page.evaluate(() =>
+        document.getElementById("voloTerminalLink").textContent.replace(/\s+/g, " ").trim()
+      );
+      await page.evaluate(() => document.getElementById("voloTerminalLink").click());
+      await page.waitForFunction(() => document.body.dataset.chatView === "terminal");
+      await page.waitForFunction(() => document.getElementById("terminalSessionSelect").options.length > 0);
+      await page.waitForFunction(() => document.getElementById("terminalConnectionState").classList.contains("online"));
+      const terminalProbe = await page.evaluate(() => {
+        const terminal = document.getElementById("terminalView");
+        const composer = document.getElementById("terminalComposer");
+        return {
+          options: document.getElementById("terminalSessionSelect").options.length,
+          selected: document.getElementById("terminalSessionSelect").value,
+          state: document.getElementById("terminalConnectionState").textContent.trim(),
+          outputChars: document.getElementById("terminalOutput").textContent.length,
+          keyButtons: document.querySelectorAll("[data-terminal-key]").length,
+          composerVisible: composer.getBoundingClientRect().height > 0,
+          viewVisible: !terminal.hidden,
+          settingsHidden: document.getElementById("voloSettingsSheet").hidden,
+          bodyWidth: document.body.scrollWidth,
+          viewportWidth: innerWidth
+        };
+      });
+      assert.match(terminalSettingsLabel, /终端.*打开/, test.name + ": terminal settings entry missing");
+      assert(terminalProbe.options > 0 && terminalProbe.selected, test.name + ": terminal sessions missing");
+      assert.match(terminalProbe.state, /在线/, test.name + ": terminal did not connect");
+      assert(terminalProbe.outputChars > 0, test.name + ": terminal output missing");
+      assert.equal(terminalProbe.keyButtons, 6, test.name + ": terminal key row incomplete");
+      assert(terminalProbe.composerVisible && terminalProbe.viewVisible, test.name + ": terminal controls hidden");
+      assert.equal(terminalProbe.settingsHidden, true, test.name + ": settings stayed open over terminal");
+      assert(terminalProbe.bodyWidth <= terminalProbe.viewportWidth + 1, test.name + ": terminal horizontal overflow");
+      assert(apiResponses.includes("/hui-api/tmux/capture"), test.name + ": terminal output was not loaded");
+
       await page.goto(origin + "/hui-v40/volo-status.html", { waitUntil: "networkidle" });
       await page.waitForFunction(() => {
         const dashboard = document.getElementById("drivesDashboard");
@@ -353,13 +388,14 @@ try {
 
       const workerCache = await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
-        return (await caches.keys()).find((key) => key.includes("v81-voice-input")) || "";
+        return (await caches.keys()).find((key) => key.includes("v82-terminal-restore")) || "";
       });
       assert(workerCache, test.name + ": service-worker cache missing");
       process.stderr.write("Browser check passed: " + JSON.stringify({
         case: test.name,
         sessions: probes.sessions,
         thoughtCards: thoughtProbe.count,
+        terminalSessions: terminalProbe.options,
         drivesDimensions: status.dimensions,
         workerCache,
         errors: errors.length,

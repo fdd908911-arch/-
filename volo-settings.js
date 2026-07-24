@@ -13,6 +13,7 @@
   var headerAvatar = document.getElementById("voloHeaderAvatar");
   var carrierBadge = document.getElementById("voloCarrierBadge");
   var backgroundButton = document.getElementById("voloBackgroundButton");
+  var terminalLink = document.getElementById("voloTerminalLink");
   var newChatButton = document.getElementById("voloTopNewChatButton");
   var input = document.getElementById("voloInput");
   var error = document.getElementById("voloSettingsError");
@@ -150,6 +151,7 @@
   });
 
   backgroundButton.addEventListener("click", closeSettings);
+  terminalLink.addEventListener("click", closeSettings);
   newChatButton.addEventListener("click", closeSettings);
 
   document.addEventListener("keydown", function (event) {

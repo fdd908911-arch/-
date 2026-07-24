@@ -50,6 +50,7 @@ requireScriptOrder('chat.html', [
   'features/volo-voice.js',
   'features/volo-usage.js',
   'volo.js',
+  'terminal.js',
 ]);
 
 const voloSource = source('volo.js');
