@@ -361,7 +361,7 @@ try {
       assert(terminalProbe.options > 0 && terminalProbe.selected, test.name + ": terminal sessions missing");
       assert.match(terminalProbe.state, /在线/, test.name + ": terminal did not connect");
       assert(terminalProbe.outputChars > 0, test.name + ": terminal output missing");
-      assert.equal(terminalProbe.keyButtons, 6, test.name + ": terminal key row incomplete");
+      assert.equal(terminalProbe.keyButtons, 7, test.name + ": terminal key row incomplete");
       assert(terminalProbe.composerVisible && terminalProbe.viewVisible, test.name + ": terminal controls hidden");
       assert.equal(terminalProbe.settingsHidden, true, test.name + ": settings stayed open over terminal");
       assert(terminalProbe.bodyWidth <= terminalProbe.viewportWidth + 1, test.name + ": terminal horizontal overflow");
