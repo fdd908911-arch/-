@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260721-v76-volo-surface-split`;
+const CACHE_NAME = `${CACHE_PREFIX}20260724-v77-volo-test3-history`;
 const APP_SHELL = [
   "./",
   "./index.html",

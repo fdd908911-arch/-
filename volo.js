@@ -401,6 +401,24 @@
   }
 
   function startNewChat() {
+    if (remoteEnabled) {
+      window.clearTimeout(replyTimer);
+      window.clearTimeout(remotePollTimer);
+      isTyping = false;
+      input.value = "";
+      resizeInput();
+      emojiPanel.hidden = true;
+      emojiButton.setAttribute("aria-expanded", "false");
+      closeMessageMenu();
+      clearReply();
+      presence.textContent = "正在恢复历史…";
+      emitClawd("thinking", "正在恢复 test3 的历史…", {
+        duration: 1200,
+        priority: 3
+      });
+      initializeRemote();
+      return;
+    }
     window.clearTimeout(replyTimer);
     window.clearTimeout(remotePollTimer);
     replyTimer = 0;
@@ -504,6 +522,8 @@
       } else {
         var preferred = window.CCC.getSelectedSession();
         var selected = sessions.find(function (session) {
+          return session.tmux_session === "cc-test3";
+        }) || sessions.find(function (session) {
           return session.tmux_session === preferred;
         }) || sessions.find(function (session) {
           return session.tmux_session === "volo";
