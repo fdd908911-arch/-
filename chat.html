@@ -26,7 +26,9 @@
     </script>
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="chat-navigation.css?v=20260711-flower-brand-v1" />
-    <link rel="stylesheet" href="chat-views.css?v=20260711-chat-nav-v1" />
+    <link rel="stylesheet" href="chat-backend-base.css?v=20260724-backend-v1" />
+    <link rel="stylesheet" href="chat-views.css?v=20260724-telegram-backend-v1" />
+    <link rel="stylesheet" href="ccc-sessions.css?v=20260724-session-history-v1" />
     <link rel="stylesheet" href="chat-hub.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
   </head>
@@ -190,12 +192,53 @@
         </section>
 
         <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="与 Volo 的聊天">
+          <button
+            class="volo-drawer-scrim"
+            id="voloDrawerScrim"
+            type="button"
+            aria-label="关闭 Volo 侧边栏"
+          ></button>
+
+          <aside class="volo-drawer" id="voloDrawer" aria-label="Volo 对话" aria-hidden="true" inert>
+            <header class="volo-drawer-header">
+              <div class="volo-drawer-brand">
+                <span class="volo-drawer-flower" aria-hidden="true"></span>
+                <span>
+                  <strong>Volo</strong>
+                  <small>Conversations</small>
+                </span>
+              </div>
+              <button class="volo-drawer-close" id="voloDrawerClose" type="button" aria-label="关闭 Volo 侧边栏">
+                <svg><use href="#icon-close"></use></svg>
+              </button>
+            </header>
+
+            <button class="volo-new-chat-button" id="voloNewChatButton" type="button">
+              <span><svg><use href="#icon-plus"></use></svg></span>
+              <strong>New chat</strong>
+            </button>
+
+            <section class="volo-drawer-section" aria-labelledby="voloChatsTitle">
+              <h2 id="voloChatsTitle">Chats</h2>
+              <div class="volo-session-list" id="voloSessionList">
+                <p class="volo-session-empty">连接服务器后显示窗口</p>
+              </div>
+            </section>
+
+            <footer class="volo-drawer-footer">
+              <a class="volo-connection-button" id="voloConnectionLink" href="connect.html">
+                <span class="connection-dot" id="voloConnectionDot"></span>
+                <span><strong>服务器连接</strong><small id="voloConnectionLabel">未配置</small></span>
+              </a>
+            </footer>
+          </aside>
+
           <header class="volo-chat-header">
             <a class="volo-header-button" href="index.html" aria-label="返回开场页">
               <svg><use href="#icon-back"></use></svg>
             </a>
 
-            <button class="volo-chat-person" type="button" data-toast="Volo 现在在线">
+            <button class="volo-chat-person" id="voloChatPerson" type="button" aria-label="打开当前窗口历史">
               <span class="volo-avatar" id="voloHeaderAvatar" aria-hidden="true">
                 <img id="voloHeaderAvatarImage" src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
                 <i></i>
@@ -208,6 +251,12 @@
             </button>
 
             <nav class="volo-header-actions" aria-label="聊天工具">
+              <button class="volo-header-button" id="voloDrawerButton" type="button" aria-label="打开历史窗口" aria-controls="voloDrawer" aria-expanded="false" title="历史窗口">
+                <svg><use href="#icon-history"></use></svg>
+              </button>
+              <button class="volo-header-button volo-usage-button" id="voloUsageButton" type="button" aria-label="打开 Gateway 账本" aria-controls="voloUsageSidebar" aria-expanded="false" title="Gateway 账本" hidden>
+                <svg><use href="#icon-info"></use></svg>
+              </button>
               <button class="volo-header-button volo-together-entry" id="voloTogetherButton" type="button" aria-label="和 Volo 一起听">
                 <svg><use href="#icon-music"></use></svg>
                 <span>一起听</span>
@@ -248,20 +297,28 @@
               </div>
             </div>
 
-            <div class="volo-composer-zone">
-              <div class="volo-reply-preview" id="voloReplyPreview" hidden>
-                <span class="volo-reply-icon" aria-hidden="true">
-                  <svg><use href="#icon-reply"></use></svg>
+            <section class="volo-now-playing" id="voloNowPlaying" aria-label="正在播放" hidden>
+              <button class="volo-now-playing-main" id="voloNowPlayingMain" type="button" aria-label="打开同步歌词">
+                <span class="volo-now-playing-cover" id="voloNowPlayingCover" aria-hidden="true"></span>
+                <span class="volo-now-playing-copy">
+                  <strong id="voloNowPlayingTitle">未播放</strong>
+                  <small id="voloNowPlayingArtist">—</small>
                 </span>
-                <span class="volo-reply-copy">
-                  <strong id="voloReplyAuthor">Volo</strong>
-                  <small id="voloReplyText"></small>
-                </span>
-                <button id="voloReplyCancel" type="button" aria-label="取消引用">
-                  <svg><use href="#icon-close"></use></svg>
-                </button>
+              </button>
+              <button class="volo-now-playing-toggle" id="voloNowPlayingToggle" type="button" aria-label="播放">播放</button>
+              <div class="volo-now-playing-progress">
+                <time id="voloNowPlayingCurrent">0:00</time>
+                <input id="voloNowPlayingSeek" type="range" min="0" max="1000" value="0" aria-label="歌曲进度" />
+                <time id="voloNowPlayingDuration">0:00</time>
               </div>
+            </section>
 
+            <div class="volo-composer-zone">
+              <p class="volo-voice-status" id="voloVoiceStatus" role="status" aria-live="polite" hidden></p>
+              <div class="volo-live-session-bar">
+                <button class="volo-model-pill" id="voloCarrierPill" type="button" aria-live="polite">Volo · Claude Code</button>
+                <span>在历史里切换窗口</span>
+              </div>
               <div class="volo-emoji-panel" id="voloEmojiPanel" hidden>
                 <button type="button">😊</button>
                 <button type="button">🥰</button>
@@ -272,9 +329,9 @@
                 <button type="button">☕</button>
                 <button type="button">🌷</button>
               </div>
-
               <form class="volo-composer" id="voloComposer">
-                <button class="volo-composer-button" type="button" aria-label="添加附件" data-toast="附件功能稍后接入">
+                <input id="voloMusicInput" type="file" accept="audio/mpeg,audio/wav,audio/flac,audio/ogg,audio/mp4,audio/webm,.mp3,.wav,.flac,.ogg,.m4a,.mp4,.webm" hidden />
+                <button class="volo-composer-button volo-music-button" id="voloMusicButton" type="button" aria-label="给 Volo 听一首歌" title="给 Volo 听一首歌">
                   <svg><use href="#icon-paperclip"></use></svg>
                 </button>
                 <label class="volo-input-label" for="voloInput">
@@ -284,12 +341,90 @@
                 <button class="volo-composer-button" id="voloEmojiButton" type="button" aria-label="选择表情" aria-expanded="false">
                   <svg><use href="#icon-smile"></use></svg>
                 </button>
+                <button class="volo-composer-button volo-voice-button" id="voloVoiceButton" type="button" aria-label="按住说话" aria-pressed="false" title="按住说话">
+                  <svg><use href="#icon-microphone"></use></svg>
+                </button>
                 <button class="volo-send-button" id="voloSendButton" type="submit" aria-label="发送给 Volo" disabled>
                   <svg><use href="#icon-send"></use></svg>
                 </button>
               </form>
             </div>
           </main>
+
+          <section class="volo-lyrics-view" id="voloLyricsView" role="dialog" aria-modal="true" aria-label="同步歌词" aria-hidden="true" hidden>
+            <header class="volo-lyrics-header">
+              <button class="volo-lyrics-close" id="voloLyricsClose" type="button" aria-label="关闭同步歌词">
+                <svg><use href="#icon-chevron-down"></use></svg>
+              </button>
+              <span>NOW PLAYING</span>
+              <span class="volo-lyrics-header-space" aria-hidden="true"></span>
+            </header>
+            <div class="volo-lyrics-song">
+              <span class="volo-lyrics-cover" id="voloLyricsCover" aria-hidden="true"></span>
+              <span>
+                <strong id="voloLyricsTitle">未播放</strong>
+                <small id="voloLyricsArtist">—</small>
+              </span>
+            </div>
+            <div class="volo-lyrics-lines" id="voloLyricsLines" role="log" aria-live="off">
+              <p class="volo-lyrics-empty">正在读取歌词…</p>
+            </div>
+            <footer class="volo-lyrics-controls">
+              <div class="volo-lyrics-time">
+                <time id="voloLyricsCurrent">0:00</time>
+                <time id="voloLyricsDuration">0:00</time>
+              </div>
+              <input id="voloLyricsSeek" type="range" min="0" max="1000" value="0" aria-label="歌词页歌曲进度" />
+              <button class="volo-lyrics-toggle" id="voloLyricsToggle" type="button" aria-label="播放">播放</button>
+            </footer>
+          </section>
+
+          <aside class="volo-usage-sidebar" id="voloUsageSidebar" aria-label="Gateway 用量账本" aria-hidden="true" hidden>
+            <header class="volo-usage-header">
+              <div>
+                <small>LIVE LEDGER</small>
+                <h2>Gateway 账本</h2>
+              </div>
+              <div class="volo-usage-header-actions">
+                <button id="voloUsageRefresh" type="button" aria-label="刷新账本" title="刷新">↻</button>
+                <button id="voloUsageClose" type="button" aria-label="关闭账本" title="关闭">×</button>
+              </div>
+            </header>
+            <p class="volo-usage-status" id="voloUsageStatus">等待第一条 Gateway 对话</p>
+            <section class="volo-usage-section" aria-labelledby="voloUsageLatestTitle">
+              <div class="volo-usage-section-title">
+                <h3 id="voloUsageLatestTitle">最近一次</h3>
+                <time id="voloUsageTime">—</time>
+              </div>
+              <div class="volo-usage-cards">
+                <div><span>输入</span><strong id="voloUsageInput">—</strong><small>tokens</small></div>
+                <div><span>输出</span><strong id="voloUsageOutput">—</strong><small>tokens</small></div>
+                <div><span>缓存读取</span><strong id="voloUsageCacheRead">—</strong><small>tokens</small></div>
+                <div class="is-accent"><span>缓存命中率</span><strong id="voloUsageHitRate">—</strong><small>read / prompt</small></div>
+              </div>
+              <dl class="volo-usage-details">
+                <div><dt>缓存写入 · 5m</dt><dd id="voloUsageWrite5m">—</dd></div>
+                <div><dt>缓存写入 · 1h</dt><dd id="voloUsageWrite1h">—</dd></div>
+                <div><dt>缓存创建</dt><dd id="voloUsageCreation">—</dd></div>
+                <div><dt>预估费用</dt><dd id="voloUsageCost">—</dd></div>
+                <div><dt>模型</dt><dd id="voloUsageModel">—</dd></div>
+                <div><dt>结束状态</dt><dd id="voloUsageFinish">—</dd></div>
+              </dl>
+            </section>
+            <section class="volo-usage-section">
+              <div class="volo-usage-section-title"><h3>累计</h3><span id="voloUsageRequests">0 次请求</span></div>
+              <dl class="volo-usage-totals">
+                <div><dt>输入 / 输出</dt><dd id="voloUsageTotalIO">—</dd></div>
+                <div><dt>缓存读取</dt><dd id="voloUsageTotalRead">—</dd></div>
+                <div><dt>总命中率</dt><dd id="voloUsageTotalRate">—</dd></div>
+                <div><dt>预估总费用</dt><dd id="voloUsageTotalCost">—</dd></div>
+              </dl>
+            </section>
+            <section class="volo-usage-section volo-usage-recent-section">
+              <div class="volo-usage-section-title"><h3>最近请求</h3><span>最多 20 条</span></div>
+              <div class="volo-usage-recent" id="voloUsageRecent"><p>暂无记录</p></div>
+            </section>
+          </aside>
 
           <section class="volo-together-sheet" id="voloTogetherSheet" aria-labelledby="voloTogetherTitle" aria-modal="true" role="dialog" hidden>
             <button class="volo-together-backdrop" id="voloTogetherBackdrop" type="button" aria-label="关闭一起听"></button>
@@ -403,11 +538,11 @@
                   </button>
                   <span>
                     <small>LYRICS</small>
-                    <strong id="voloLyricsTitle">歌词</strong>
+                    <strong id="voloTogetherLyricsTitle">歌词</strong>
                   </span>
                   <label for="voloLyricsInput">导入</label>
                 </header>
-                <main class="volo-lyrics-lines" id="voloLyricsLines">
+                <main class="volo-lyrics-lines" id="voloTogetherLyricsLines">
                   <div class="volo-lyrics-empty" id="voloLyricsEmpty">
                     <span>♪</span>
                     <strong>还没有歌词</strong>
@@ -696,6 +831,61 @@
       </section>
     </div>
 
+    <dialog class="ccc-dialog" id="connectionDialog" aria-labelledby="connectionDialogTitle">
+      <form class="ccc-dialog-card" id="connectionForm">
+        <header>
+          <div><span>Connection</span><h2 id="connectionDialogTitle">连接 Cc 后端</h2></div>
+          <button type="button" data-close-dialog="connectionDialog" aria-label="关闭"><svg><use href="#icon-close"></use></svg></button>
+        </header>
+        <div class="ccc-dialog-body">
+          <label><span>服务器地址</span><input id="connectionBaseUrl" type="url" inputmode="url" placeholder="https://cc.example.com" required /></label>
+          <label><span>访问 Token</span><input id="connectionToken" type="password" autocomplete="current-password" placeholder="X-Auth-Token" required /></label>
+          <p class="ccc-form-error" id="connectionError" role="alert" hidden></p>
+        </div>
+        <footer>
+          <button type="button" class="text-button" data-close-dialog="connectionDialog">取消</button>
+          <button type="submit" class="primary-button">保存并连接</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="ccc-dialog" id="sessionCreateDialog" aria-labelledby="sessionCreateDialogTitle">
+      <form class="ccc-dialog-card" id="sessionCreateForm">
+        <header>
+          <div><span>New window</span><h2 id="sessionCreateDialogTitle">新建 Claude 窗口</h2></div>
+          <button type="button" data-close-dialog="sessionCreateDialog" aria-label="关闭"><svg><use href="#icon-close"></use></svg></button>
+        </header>
+        <div class="ccc-dialog-body">
+          <label><span>显示名称</span><input id="sessionTitleInput" maxlength="120" placeholder="创新窗口" required /></label>
+          <label><span>tmux session</span><input id="sessionNameInput" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" placeholder="cc-innovation" required /></label>
+          <label><span>项目目录</span><input id="sessionProjectInput" placeholder="/home/ubuntu/projects/competition" required /></label>
+          <p class="ccc-form-error" id="sessionCreateError" role="alert" hidden></p>
+        </div>
+        <footer>
+          <button type="button" class="text-button" data-close-dialog="sessionCreateDialog">取消</button>
+          <button type="submit" class="primary-button">创建窗口</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="ccc-dialog" id="sessionActionDialog" aria-labelledby="sessionActionDialogTitle">
+      <form class="ccc-dialog-card" id="sessionActionForm">
+        <header>
+          <div><span>Window</span><h2 id="sessionActionDialogTitle">窗口操作</h2></div>
+          <button type="button" data-close-dialog="sessionActionDialog" aria-label="关闭"><svg><use href="#icon-close"></use></svg></button>
+        </header>
+        <div class="ccc-dialog-body">
+          <p id="sessionActionText"></p>
+          <p class="ccc-form-error" id="sessionActionError" role="alert" hidden></p>
+        </div>
+        <footer>
+          <button type="button" class="text-button" id="sessionCompactButton">压缩上下文</button>
+          <button type="button" class="text-button danger" id="sessionCloseButton">停止窗口</button>
+        </footer>
+      </form>
+    </dialog>
+
+
     <dialog class="background-dialog" id="backgroundDialog" aria-labelledby="backgroundDialogTitle">
       <form class="background-card" id="backgroundForm" method="dialog">
         <header class="dialog-header">
@@ -782,9 +972,19 @@
     <script src="app.js?v=20260711-theme-palettes-v1"></script>
     <script src="core/ccc-runtime.js?v=20260721-core-v1"></script>
     <script src="ccc-api.js?v=20260721-api-split-v1"></script>
-    <script src="volo.js?v=20260724-test3-history-v1"></script>
-    <script src="volo-together.js?v=20260724-together-listen-v1"></script>
-    <script src="volo-settings.js?v=20260724-chat-settings-v1"></script>
+    <script src="features/volo-media-status.js?v=20260721-media-status-v1"></script>
+    <script src="features/volo-music.js?v=20260721-music-split-v2"></script>
+    <script src="features/volo-chat.js?v=20260721-chat-split-v1"></script>
+    <script src="features/volo-composer.js?v=20260721-composer-split-v1"></script>
+    <script src="features/volo-sessions.js?v=20260724-session-history-v1"></script>
+    <script src="features/volo-drawer.js?v=20260721-drawer-split-v1"></script>
+    <script src="features/volo-carrier.js?v=20260724-carrier-bridge-v1"></script>
+    <script src="features/volo-voice.js?v=20260721-voice-split-v1"></script>
+    <script src="features/volo-usage.js?v=20260721-usage-split-v1"></script>
+    <script src="volo.js?v=20260724-backend-restored-v1"></script>
+    <script src="volo-ui-bridge.js?v=20260724-session-ui-v1"></script>
+    <script src="volo-together.js?v=20260724-together-listen-v2"></script>
+    <script src="volo-settings.js?v=20260724-chat-settings-v2"></script>
     <script src="volo-call.js?v=20260724-voice-call-v1"></script>
   </body>
 </html>

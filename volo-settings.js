@@ -157,6 +157,16 @@
       closeSettings();
     }
   });
+  document.addEventListener("volo:carrier-selected", function (event) {
+    var carrier = event.detail && event.detail.carrier === "api" ? "api" : "claude";
+    if (settings.carrier === carrier) {
+      applyCarrier(false);
+      return;
+    }
+    settings.carrier = carrier;
+    saveSettings();
+    applyCarrier(false);
+  });
 
   applyAvatar();
   applyCarrier(false);

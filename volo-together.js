@@ -26,8 +26,8 @@
   var vinylButton = document.getElementById("voloVinylButton");
   var lyricsPanel = document.getElementById("voloLyricsPanel");
   var lyricsBack = document.getElementById("voloLyricsBack");
-  var lyricsTitle = document.getElementById("voloLyricsTitle");
-  var lyricsLines = document.getElementById("voloLyricsLines");
+  var lyricsTitle = document.getElementById("voloTogetherLyricsTitle");
+  var lyricsLines = document.getElementById("voloTogetherLyricsLines");
   var lyricsEmpty = document.getElementById("voloLyricsEmpty");
   var lyricsInput = document.getElementById("voloLyricsInput");
   var error = document.getElementById("voloTogetherError");

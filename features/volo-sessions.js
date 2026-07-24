@@ -185,6 +185,23 @@
       actionDialog.showModal();
     }
 
+    async function selectCarrier(carrier) {
+      var current = findSession(selectedSession());
+      var target = null;
+      if (carrier === "gateway") {
+        target = findSession(gatewaySessionId());
+      } else {
+        target = current && !current.virtual
+          ? current
+          : findSession("cc-test3") || findSession("volo") || sessions.find(function (session) {
+              return !session.virtual;
+            });
+      }
+      if (target && typeof options.onSelect === "function") {
+        await options.onSelect(target.tmux_session);
+      }
+    }
+
     function bind() {
       if (bound) return;
       bound = true;
@@ -266,6 +283,7 @@
       isGatewaySession: isGatewaySession,
       load: load,
       render: render,
+      selectCarrier: selectCarrier,
       setConnectionState: setConnectionState
     };
   }

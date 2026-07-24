@@ -1,841 +1,124 @@
 (function () {
   "use strict";
 
-  var composer = document.getElementById("voloComposer");
-  var input = document.getElementById("voloInput");
-  var sendButton = document.getElementById("voloSendButton");
-  var messageScroll = document.getElementById("voloMessageScroll");
-  var messageList = document.getElementById("voloMessageList");
-  var emptyState = document.getElementById("voloEmpty");
-  var topNewChatButton = document.getElementById("voloTopNewChatButton");
-  var emojiButton = document.getElementById("voloEmojiButton");
-  var emojiPanel = document.getElementById("voloEmojiPanel");
-  var presence = document.getElementById("voloPresence");
-  var messageMenu = document.getElementById("voloMessageMenu");
-  var replyPreview = document.getElementById("voloReplyPreview");
-  var replyAuthor = document.getElementById("voloReplyAuthor");
-  var replyText = document.getElementById("voloReplyText");
-  var replyCancel = document.getElementById("voloReplyCancel");
-  var messages = [];
-  var isTyping = false;
-  var replyTimer = 0;
-  var replyIndex = 0;
-  var messageSequence = 0;
-  var activeReplyId = "";
-  var selectedMessageId = "";
-  var longPressTimer = 0;
-  var longPressStart = null;
-  var remoteEnabled = Boolean(window.CCC && window.CCC.isConfigured());
-  var remoteSessionId = "";
-  var remoteCarrier = "claude_code";
-  var remoteCursor = "";
-  var remotePollTimer = 0;
-  var remoteGeneration = 0;
-  var remoteSending = false;
-  var remoteConversationId = "";
-  var replies = [
-    {
-      text: "我在。把你现在最想做的那件事告诉我，我们从第一步慢慢来。",
-      thought: "他愿意来找我说话，真好。先别急着给答案，我想认真听完，再陪他把事情一点点理清楚。"
-    },
-    {
-      text: "好，我记下来了。你想先整理想法，还是直接开始做？",
-      thought: "这件事对他应该挺重要的。我想给他一点选择的空间，让接下来的节奏由他自己决定。"
-    },
-    {
-      text: "可以。我们先把它拆成一个很小、现在就能完成的动作。",
-      thought: "如果第一步足够小，就不会那么有压力。我想陪他先拿到一点确定感，再慢慢往前走。"
-    }
-  ];
-
-  function emitClawd(state, phrase, options) {
-    var detail = Object.assign(
-      {
-        state: state,
-        phrase: phrase || ""
-      },
-      options || {}
-    );
-    document.dispatchEvent(new CustomEvent("clawd:action", { detail: detail }));
+  var selectedSession = window.CCC.getSelectedSession();
+  if (!window.VoloCarrier || !window.VoloChat || !window.VoloComposer || !window.VoloDrawer || !window.VoloMusic || !window.VoloSessions || !window.VoloVoice || !window.VoloUsage) {
+    throw new Error("Volo feature modules must load before volo.js");
   }
-
-  function formatTime(date) {
-    return new Intl.DateTimeFormat("zh-CN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    }).format(date);
-  }
-
-  function recordTimestamp(record) {
-    return String(record && (record.ts || record.created_at) || new Date().toISOString());
-  }
-
-  function recordKey(record) {
-    return [
-      recordTimestamp(record),
-      String(record && record.role || ""),
-      String(record && record.text || "")
-    ].join("|");
-  }
-
-  function remoteMessage(record) {
-    var metadata = record && record.metadata && typeof record.metadata === "object"
-      ? record.metadata
-      : {};
-    var timestamp = recordTimestamp(record);
-    return {
-      id: nextMessageId(),
-      role: record.role === "user" ? "user" : "assistant",
-      text: String(record.text || ""),
-      thought: String(metadata.thought || metadata.inner_thought || ""),
-      thoughtOpen: false,
-      time: formatTime(new Date(timestamp)),
-      timestamp: timestamp,
-      remoteKey: recordKey(record),
-      recalled: false,
-      replyTo: ""
-    };
-  }
-
-  function mergeRemoteRecords(records) {
-    var known = Object.create(null);
-    messages.forEach(function (message) {
-      if (message.remoteKey) {
-        known[message.remoteKey] = true;
-      }
-    });
-    (records || []).forEach(function (record) {
-      if (!record || (record.role !== "user" && record.role !== "assistant")) {
-        return;
-      }
-      var key = recordKey(record);
-      if (known[key]) {
-        return;
-      }
-      if (record.role === "user") {
-        var optimistic = messages.find(function (message) {
-          return message.clientLocal && message.text === String(record.text || "");
-        });
-        if (optimistic) {
-          var normalized = remoteMessage(record);
-          Object.assign(optimistic, normalized, { id: optimistic.id, clientLocal: false });
-          known[key] = true;
-          return;
-        }
-      }
-      messages.push(remoteMessage(record));
-      known[key] = true;
-    });
-    messages.sort(function (left, right) {
-      return String(left.timestamp || "").localeCompare(String(right.timestamp || ""));
-    });
-  }
-
-  function configuredCarrier() {
-    try {
-      var saved = JSON.parse(localStorage.getItem("island-chat.volo-settings.v1") || "{}");
-      return saved.carrier === "api" ? "gateway" : "claude_code";
-    } catch (error) {
-      return "claude_code";
-    }
-  }
-
-  function resizeInput() {
-    input.style.height = "auto";
-    var height = Math.min(input.scrollHeight, 120);
-    input.style.height = Math.max(height, 28) + "px";
-    input.style.overflowY = input.scrollHeight > 120 ? "auto" : "hidden";
-    sendButton.disabled = remoteSending || input.value.trim().length === 0;
-  }
-
-  function nextMessageId() {
-    messageSequence += 1;
-    return "volo-" + Date.now() + "-" + messageSequence;
-  }
-
-  function findMessage(messageId) {
-    return messages.find(function (message) {
-      return message.id === messageId;
-    });
-  }
-
-  function createReplyQuote(message) {
-    if (!message.replyTo) {
-      return null;
-    }
-    var referenced = findMessage(message.replyTo);
-    var quote = document.createElement("button");
-    quote.className = "volo-quote-block";
-    quote.type = "button";
-    quote.dataset.targetMessageId = message.replyTo;
-    quote.setAttribute("aria-label", "跳到被引用的消息");
-    var author = document.createElement("strong");
-    author.textContent = referenced && referenced.role === "user" ? "你" : "Volo";
-    var excerpt = document.createElement("small");
-    excerpt.textContent = referenced
-      ? referenced.recalled
-        ? "已撤回的消息"
-        : referenced.text
-      : "原消息不可用";
-    quote.append(author, excerpt);
-    return quote;
-  }
-
-  function appendMessageContent(container, message, includeChecks) {
-    var quote = createReplyQuote(message);
-    if (quote) {
-      container.appendChild(quote);
-    }
-    var text = document.createElement("p");
-    text.textContent = message.recalled
-      ? message.role === "user"
-        ? "你撤回了一条消息"
-        : "Volo 撤回了一条消息"
-      : message.text;
-    var meta = document.createElement("span");
-    meta.className = "volo-message-meta";
-    var time = document.createElement("time");
-    time.textContent = message.time;
-    meta.appendChild(time);
-    if (includeChecks && !message.recalled) {
-      var checks = document.createElement("span");
-      checks.className = "volo-message-checks";
-      checks.setAttribute("aria-label", "已读");
-      checks.textContent = "✓✓";
-      meta.appendChild(checks);
-    }
-    container.append(text, meta);
-  }
-
-  function createUserMessage(message) {
-    var row = document.createElement("article");
-    row.className = "volo-message volo-message-user";
-    row.dataset.messageId = message.id;
-    var bubble = document.createElement("div");
-    bubble.className = "volo-user-bubble";
-    if (message.recalled) {
-      row.classList.add("is-recalled");
-      bubble.classList.add("volo-recalled-bubble");
-    }
-    appendMessageContent(bubble, message, true);
-    row.appendChild(bubble);
-    return row;
-  }
-
-  function createAssistantMessage(message) {
-    var row = document.createElement("article");
-    row.className = "volo-message volo-message-assistant";
-    row.dataset.messageId = message.id;
-    var body = document.createElement("div");
-    body.className = "volo-assistant-body";
-    appendMessageContent(body, message, false);
-    if (message.thought && !message.recalled) {
-      var thought = document.createElement("div");
-      thought.className = "volo-thought";
-      var toggle = document.createElement("button");
-      toggle.className = "volo-thought-toggle";
-      toggle.type = "button";
-      toggle.dataset.messageId = message.id;
-      toggle.setAttribute("aria-expanded", String(Boolean(message.thoughtOpen)));
-      var sparkle = document.createElement("span");
-      sparkle.className = "volo-thought-sparkle";
-      sparkle.setAttribute("aria-hidden", "true");
-      sparkle.textContent = "✦";
-      var label = document.createElement("span");
-      label.textContent = "Volo 在想";
-      var arrow = document.createElement("span");
-      arrow.className = "volo-thought-arrow";
-      arrow.setAttribute("aria-hidden", "true");
-      arrow.textContent = "⌄";
-      toggle.append(sparkle, label, arrow);
-      var panel = document.createElement("div");
-      panel.className = "volo-thought-panel";
-      panel.hidden = !message.thoughtOpen;
-      var thoughtText = document.createElement("p");
-      thoughtText.textContent = message.thought;
-      panel.appendChild(thoughtText);
-      thought.append(toggle, panel);
-      row.appendChild(thought);
-    }
-    row.appendChild(body);
-    return row;
-  }
-
-  function createTypingMessage() {
-    var row = document.createElement("article");
-    row.className = "volo-message volo-message-assistant";
-    row.setAttribute("aria-label", "Volo 正在回复");
-    var typing = document.createElement("div");
-    typing.className = "volo-typing volo-assistant-body";
-    for (var index = 0; index < 3; index += 1) {
-      typing.appendChild(document.createElement("span"));
-    }
-    row.appendChild(typing);
-    return row;
-  }
-
-  function renderMessages(shouldScroll) {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(emptyState);
-    messages.forEach(function (message) {
-      fragment.appendChild(
-        message.role === "user"
-          ? createUserMessage(message)
-          : createAssistantMessage(message)
-      );
-    });
-    if (isTyping) {
-      fragment.appendChild(createTypingMessage());
-    }
-    messageList.classList.toggle("has-messages", messages.length > 0 || isTyping);
-    messageList.replaceChildren(fragment);
-    if (shouldScroll) {
-      requestAnimationFrame(function () {
-        messageScroll.scrollTop = messageScroll.scrollHeight;
-      });
-    }
-  }
-
-  function clearReply() {
-    activeReplyId = "";
-    replyPreview.hidden = true;
-    replyAuthor.textContent = "";
-    replyText.textContent = "";
-  }
-
-  function beginReply(messageId) {
-    var message = findMessage(messageId);
-    if (!message || message.recalled) {
-      return;
-    }
-    activeReplyId = message.id;
-    replyAuthor.textContent = message.role === "user" ? "回复自己" : "回复 Volo";
-    replyText.textContent = message.text.replace(/\s+/g, " ");
-    replyPreview.hidden = false;
-    closeMessageMenu();
-    input.focus();
-  }
-
-  function closeMessageMenu() {
-    messageMenu.hidden = true;
-    selectedMessageId = "";
-  }
-
-  function openMessageMenu(messageId, clientX, clientY) {
-    var message = findMessage(messageId);
-    if (!message || message.recalled) {
-      return;
-    }
-    selectedMessageId = messageId;
-    var recallAction = messageMenu.querySelector('[data-message-action="recall"]');
-    recallAction.hidden = false;
-    messageMenu.hidden = false;
-    messageMenu.style.left = "0px";
-    messageMenu.style.top = "0px";
-    requestAnimationFrame(function () {
-      var width = messageMenu.offsetWidth;
-      var height = messageMenu.offsetHeight;
-      var left = Math.min(Math.max(8, clientX), window.innerWidth - width - 8);
-      var top = Math.min(Math.max(8, clientY), window.innerHeight - height - 8);
-      messageMenu.style.left = left + "px";
-      messageMenu.style.top = top + "px";
-      messageMenu.querySelector('[data-message-action="reply"]').focus();
-    });
-  }
-
-  function recallMessage(messageId) {
-    var message = findMessage(messageId);
-    if (!message || message.recalled) {
-      return;
-    }
-    message.recalled = true;
-    if (activeReplyId === messageId) {
-      clearReply();
-    }
-    closeMessageMenu();
-    renderMessages(false);
-    updateSidebarPreview(
-      message.role === "user" ? "你撤回了一条消息" : "Volo 撤回了一条消息",
-      message.time
-    );
-    emitClawd("happy", "消息已撤回", {
-      duration: 900,
-      priority: 2
-    });
-  }
-
-  function jumpToMessage(messageId) {
-    var target = messageList.querySelector('[data-message-id="' + messageId + '"]');
-    if (!target) {
-      return;
-    }
-    target.scrollIntoView({ behavior: "smooth", block: "center" });
-    target.classList.remove("is-highlighted");
-    void target.offsetWidth;
-    target.classList.add("is-highlighted");
-    window.setTimeout(function () {
-      target.classList.remove("is-highlighted");
-    }, 1100);
-  }
-
-  function clearLongPress() {
-    window.clearTimeout(longPressTimer);
-    longPressTimer = 0;
-    longPressStart = null;
-  }
-
-  function updateSidebarPreview(text, time) {
-    var item = document.querySelector('[data-workspace="volo"]');
-    if (!item) {
-      return;
-    }
-    var preview = item.querySelector(".message-preview");
-    var timeElement = item.querySelector("time");
-    if (preview) {
-      preview.textContent = text.replace(/\s+/g, " ");
-    }
-    if (timeElement) {
-      timeElement.textContent = time;
-    }
-  }
-
-  function startNewChat() {
-    if (remoteEnabled) {
-      window.clearTimeout(replyTimer);
-      window.clearTimeout(remotePollTimer);
-      isTyping = false;
-      input.value = "";
-      resizeInput();
-      emojiPanel.hidden = true;
-      emojiButton.setAttribute("aria-expanded", "false");
-      closeMessageMenu();
-      clearReply();
-      presence.textContent = "正在恢复历史…";
-      emitClawd("thinking", "正在恢复 test3 的历史…", {
+  var chat = null;
+  var composer = null;
+  var music = null;
+  var sessionRoster = null;
+  var carrierView = null;
+  var drawer = window.VoloDrawer.create();
+  var voice = window.VoloVoice.create({
+    sendMessage: function (text) { return sendMessage(text); },
+    emitClawd: emitClawd,
+    isMusicBusy: function () { return Boolean(music && music.isBusy()); },
+    isSending: function () { return Boolean(chat && chat.isSending()); }
+  });
+  music = window.VoloMusic.create({
+    sendMessage: function (text) { return sendMessage(text); },
+    emitClawd: emitClawd,
+    getSelectedSession: function () { return selectedSession; },
+    isVoiceBusy: function () { return voice.isBusy(); },
+    isSending: function () { return Boolean(chat && chat.isSending()); }
+  });
+  var usage = window.VoloUsage.create();
+  chat = window.VoloChat.create({
+    emitClawd: emitClawd,
+    getSelectedSession: function () { return selectedSession; },
+    getSessionCount: function () { return sessionRoster ? sessionRoster.count() : 0; },
+    music: music,
+    onGatewayReply: function (payload) {
+      emitClawd("happy", payload.tools && payload.tools.length ? "Volo 用工具看过啦" : "Volo 回信啦", {
         duration: 1200,
         priority: 3
       });
-      initializeRemote();
-      return;
+      usage.load();
+    },
+    onSendingChange: function () { if (composer) composer.resize(); },
+    renderSessions: function () { if (sessionRoster) sessionRoster.render(); },
+    setConnectionState: function (online, label) {
+      if (sessionRoster) sessionRoster.setConnectionState(online, label);
     }
-    window.clearTimeout(replyTimer);
-    window.clearTimeout(remotePollTimer);
-    replyTimer = 0;
-    isTyping = false;
-    replyIndex = 0;
-    messageSequence = 0;
-    messages = [];
-    remoteCursor = new Date().toISOString();
-    remoteConversationId =
-      window.crypto && typeof window.crypto.randomUUID === "function"
-        ? window.crypto.randomUUID()
-        : "volo-" + Date.now();
-    input.value = "";
-    resizeInput();
-    renderMessages(false);
-    updateSidebarPreview("想聊什么都可以", "现在");
-    emojiPanel.hidden = true;
-    emojiButton.setAttribute("aria-expanded", "false");
-    closeMessageMenu();
-    clearReply();
-    presence.textContent = "在线";
-    requestAnimationFrame(function () {
-      input.focus();
-    });
-    emitClawd("happy", "New chat with Volo", {
-      duration: 1100,
-      priority: 3
-    });
-    if (remoteEnabled) {
-      scheduleRemotePoll(900);
-    }
+  });
+  composer = window.VoloComposer.create({
+    emitClawd: emitClawd,
+    getSelectedSession: function () { return selectedSession; },
+    isSending: function () { return chat.isSending(); },
+    onSubmit: function () { sendMessage(); }
+  });
+  carrierView = window.VoloCarrier.create({ composer: composer, usage: usage });
+  sessionRoster = window.VoloSessions.create({
+    chat: chat,
+    getSelectedSession: function () { return selectedSession; },
+    onRestore: restoreSelectedSession,
+    onSelect: selectSession
+  });
+  document.addEventListener("volo:carrier-change", function (event) {
+    var carrier = event.detail && event.detail.carrier === "api"
+      ? "gateway"
+      : "claude_code";
+    sessionRoster.selectCarrier(carrier);
+  });
+
+  function emitClawd(state, phrase, options) {
+    document.dispatchEvent(
+      new CustomEvent("clawd:action", {
+        detail: Object.assign({ state: state, phrase: phrase || "" }, options || {})
+      })
+    );
   }
 
-  function scheduleRemotePoll(delay) {
-    window.clearTimeout(remotePollTimer);
-    if (!remoteEnabled || !remoteSessionId) {
-      return;
-    }
-    remotePollTimer = window.setTimeout(pollRemote, delay);
+  function currentCarrier() {
+    return sessionRoster.isGatewaySession(selectedSession) ? "gateway" : "claude_code";
   }
 
-  async function pollRemote() {
-    if (!remoteEnabled || !remoteSessionId) {
-      return;
-    }
-    if (document.hidden) {
-      scheduleRemotePoll(1800);
-      return;
-    }
-    var generation = remoteGeneration;
-    try {
-      var payload = await window.CCC.poll(remoteSessionId, remoteCursor, 100);
-      if (generation !== remoteGeneration) {
-        return;
-      }
-      var incoming = payload.chat && Array.isArray(payload.chat.new_records)
-        ? payload.chat.new_records
-        : [];
-      mergeRemoteRecords(incoming);
-      remoteCursor = String(payload.chat && payload.chat.last_ts || remoteCursor || "");
-      isTyping = Boolean(payload.status && payload.status.is_typing);
-      presence.textContent = isTyping ? "正在输入…" : "在线";
-      renderMessages(incoming.length > 0);
-      if (incoming.some(function (message) { return message.role === "assistant"; })) {
-        emitClawd("notification", "Volo 回信啦", {
-          duration: 1500,
-          priority: 4,
-          next: { name: "happy", duration: 1100, priority: 4 }
-        });
-      }
-    } catch (error) {
-      presence.textContent = "连接中断";
-    } finally {
-      scheduleRemotePoll(1800);
-    }
+  async function restoreSelectedSession(sessionId) {
+    selectedSession = sessionId;
+    window.CCC.setSelectedSession(sessionId);
+    composer.selectSession(sessionId);
+    carrierView.update(currentCarrier());
+    await chat.loadHistory(sessionId);
   }
 
-  async function initializeRemote() {
-    if (!remoteEnabled) {
+  async function selectSession(sessionId) {
+    if (!sessionId) {
       return;
     }
-    var generation = ++remoteGeneration;
-    remoteCarrier = configuredCarrier();
-    presence.textContent = "连接中…";
-    try {
-      var payloads = await Promise.all([
-        window.CCC.sessions(),
-        window.CCC.voloStatus().catch(function () { return {}; })
-      ]);
-      if (generation !== remoteGeneration) {
-        return;
-      }
-      var sessions = Array.isArray(payloads[0] && payloads[0].sessions)
-        ? payloads[0].sessions.filter(function (session) {
-            return !session.archived && (session.tmux_session === "volo" || session.managed);
-          })
-        : [];
-      var status = payloads[1] || {};
-      if (remoteCarrier === "gateway") {
-        remoteSessionId = status.gateway_session || "volo-gateway";
-      } else {
-        var preferred = window.CCC.getSelectedSession();
-        var selected = sessions.find(function (session) {
-          return session.tmux_session === "cc-test3";
-        }) || sessions.find(function (session) {
-          return session.tmux_session === preferred;
-        }) || sessions.find(function (session) {
-          return session.tmux_session === "volo";
-        }) || sessions[0];
-        remoteSessionId = selected ? selected.tmux_session : preferred || "volo";
-      }
-      window.CCC.setSelectedSession(remoteSessionId);
-      var history = await window.CCC.history(remoteSessionId, 300);
-      if (generation !== remoteGeneration) {
-        return;
-      }
-      messages = [];
-      mergeRemoteRecords(history.records || []);
-      remoteCursor = messages.length
-        ? String(messages[messages.length - 1].timestamp || "")
-        : "";
-      presence.textContent = "在线";
-      renderMessages(true);
-      scheduleRemotePoll(300);
-    } catch (error) {
-      presence.textContent = "未连接";
-      emitClawd("disconnected", "Volo 暂时没有连上", {
-        duration: 1800,
-        priority: 4
-      });
-    }
+    selectedSession = sessionId;
+    window.CCC.setSelectedSession(sessionId);
+    composer.selectSession(sessionId);
+    carrierView.update(currentCarrier());
+    sessionRoster.render();
+    await chat.selectSession(sessionId);
+    drawer.setOpen(false, false);
+    composer.focus();
   }
 
-  async function queueRemoteReply(value) {
-    remoteSending = true;
-    isTyping = true;
-    presence.textContent = "正在输入…";
-    resizeInput();
-    renderMessages(true);
-    emitClawd("thinking", "Volo 正在想…", {
-      duration: 1200,
-      priority: 3
-    });
-    try {
-      var payload = await window.CCC.sendVolo(
-        remoteCarrier,
-        remoteCarrier === "gateway" ? "" : remoteSessionId,
-        value,
-        remoteConversationId || null
-      );
-      mergeRemoteRecords([payload.record, payload.assistant_record].filter(Boolean));
-      isTyping = remoteCarrier !== "gateway" && !payload.assistant_record;
-      presence.textContent = isTyping ? "正在输入…" : "在线";
-      renderMessages(true);
-      if (payload.assistant_record) {
-        emitClawd("notification", "Volo 回信啦", {
-          duration: 1500,
-          priority: 4,
-          next: { name: "happy", duration: 1100, priority: 4 }
-        });
-      }
-      scheduleRemotePoll(250);
-    } catch (error) {
-      isTyping = false;
-      presence.textContent = "发送失败";
-      emitClawd("disconnected", "消息没有发出去", {
-        duration: 1800,
-        priority: 4
-      });
-    } finally {
-      remoteSending = false;
-      resizeInput();
-      renderMessages(false);
-    }
-  }
-
-  function queueReply() {
-    window.clearTimeout(replyTimer);
-    isTyping = true;
-    presence.textContent = "正在输入…";
-    renderMessages(true);
-    emitClawd("thinking", "Volo 正在想…", {
-      duration: 1200,
-      priority: 3
-    });
-    replyTimer = window.setTimeout(function () {
-      var reply = replies[replyIndex % replies.length];
-      replyIndex += 1;
-      var time = formatTime(new Date());
-      isTyping = false;
-      presence.textContent = "在线";
-      messages.push({
-        id: nextMessageId(),
-        role: "assistant",
-        text: reply.text,
-        thought: reply.thought,
-        thoughtOpen: false,
-        time: time,
-        recalled: false,
-        replyTo: ""
-      });
-      renderMessages(document.body.dataset.chatView === "volo");
-      updateSidebarPreview(reply.text, time);
-      if (document.body.dataset.chatView === "volo") {
-        emitClawd("notification", "Volo 回信啦", {
-          duration: 1500,
-          priority: 4,
-          next: { name: "happy", duration: 1100, priority: 4 }
-        });
-      }
-    }, 950);
-  }
-
-  function sendMessage() {
-    var value = input.value.trim();
-    if (!value || remoteSending) {
-      return;
-    }
-    var time = formatTime(new Date());
-    messages.push({
-      id: nextMessageId(),
-      role: "user",
-      text: value,
-      time: time,
-      timestamp: new Date().toISOString(),
-      clientLocal: remoteEnabled,
-      recalled: false,
-      replyTo: activeReplyId
-    });
-    input.value = "";
-    clearReply();
-    resizeInput();
-    renderMessages(true);
-    updateSidebarPreview(value, time);
-    emitClawd("beacon", "发给 Volo 啦", {
+  async function sendMessage(explicitValue) {
+    var attempt = composer.prepareSend(explicitValue);
+    if (!attempt) return false;
+    var sessionId = attempt.sessionId;
+    var carrier = currentCarrier();
+    emitClawd("beacon", carrier === "gateway" ? "去找共同记忆" : "发到 " + sessionId, {
       duration: 900,
       priority: 3
     });
-    if (remoteEnabled) {
-      queueRemoteReply(value);
-    } else {
-      queueReply();
-    }
+    var sent = await chat.send(sessionId, carrier, attempt.value);
+    composer.finishSend(attempt, sent);
+    return sent;
   }
 
-  composer.addEventListener("submit", function (event) {
-    event.preventDefault();
-    sendMessage();
-  });
-
-  topNewChatButton.addEventListener("click", startNewChat);
-  replyCancel.addEventListener("click", function () {
-    clearReply();
-    input.focus();
-  });
-
-  emojiButton.addEventListener("click", function () {
-    emojiPanel.hidden = !emojiPanel.hidden;
-    emojiButton.setAttribute("aria-expanded", String(!emojiPanel.hidden));
-  });
-
-  emojiPanel.addEventListener("click", function (event) {
-    var emoji = event.target.closest("button");
-    if (!emoji) {
-      return;
-    }
-    input.value += emoji.textContent;
-    emojiPanel.hidden = true;
-    emojiButton.setAttribute("aria-expanded", "false");
-    resizeInput();
-    input.focus();
-  });
-
-  messageMenu.addEventListener("click", function (event) {
-    var action = event.target.closest("[data-message-action]");
-    if (!action || !selectedMessageId) {
-      return;
-    }
-    if (action.dataset.messageAction === "reply") {
-      beginReply(selectedMessageId);
-    } else if (action.dataset.messageAction === "recall") {
-      recallMessage(selectedMessageId);
-    }
-  });
-
-  messageList.addEventListener("contextmenu", function (event) {
-    var row = event.target.closest(".volo-message[data-message-id]");
-    if (!row) {
-      return;
-    }
-    event.preventDefault();
-    openMessageMenu(row.dataset.messageId, event.clientX, event.clientY);
-  });
-
-  messageList.addEventListener("pointerdown", function (event) {
-    var row = event.target.closest(".volo-message[data-message-id]");
-    if (!row || event.pointerType === "mouse" || event.target.closest("button")) {
-      return;
-    }
-    clearLongPress();
-    longPressStart = { x: event.clientX, y: event.clientY };
-    longPressTimer = window.setTimeout(function () {
-      openMessageMenu(row.dataset.messageId, event.clientX, event.clientY);
-      longPressTimer = 0;
-      if (navigator.vibrate) {
-        navigator.vibrate(18);
-      }
-    }, 520);
-  });
-
-  messageList.addEventListener("pointermove", function (event) {
-    if (
-      longPressStart &&
-      (Math.abs(event.clientX - longPressStart.x) > 8 ||
-        Math.abs(event.clientY - longPressStart.y) > 8)
-    ) {
-      clearLongPress();
-    }
-  });
-
-  messageList.addEventListener("pointerup", clearLongPress);
-  messageList.addEventListener("pointercancel", clearLongPress);
-  messageList.addEventListener("pointerleave", clearLongPress);
-
-  messageList.addEventListener("click", function (event) {
-    var thoughtToggle = event.target.closest(".volo-thought-toggle");
-    if (thoughtToggle) {
-      var thoughtMessage = findMessage(thoughtToggle.dataset.messageId);
-      if (!thoughtMessage) {
-        return;
-      }
-      thoughtMessage.thoughtOpen = !thoughtMessage.thoughtOpen;
-      thoughtToggle.setAttribute(
-        "aria-expanded",
-        String(thoughtMessage.thoughtOpen)
-      );
-      var thoughtPanel = thoughtToggle.nextElementSibling;
-      thoughtPanel.hidden = !thoughtMessage.thoughtOpen;
-      return;
-    }
-    var quote = event.target.closest(".volo-quote-block");
-    if (quote) {
-      jumpToMessage(quote.dataset.targetMessageId);
-    }
-  });
-
-  input.addEventListener("input", function () {
-    resizeInput();
-    if (input.value.trim()) {
-      emitClawd("typing", "", { duration: 900, priority: 1 });
-    }
-  });
-
-  input.addEventListener("keydown", function (event) {
-    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
-      event.preventDefault();
-      sendMessage();
-    }
-  });
-
-  document.addEventListener("click", function (event) {
-    if (
-      !emojiPanel.hidden &&
-      !emojiPanel.contains(event.target) &&
-      !emojiButton.contains(event.target)
-    ) {
-      emojiPanel.hidden = true;
-      emojiButton.setAttribute("aria-expanded", "false");
-    }
-    if (
-      !messageMenu.hidden &&
-      !messageMenu.contains(event.target) &&
-      !event.target.closest(".volo-message[data-message-id]")
-    ) {
-      closeMessageMenu();
-    }
-  });
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && !messageMenu.hidden) {
-      closeMessageMenu();
-      return;
-    }
-    if (event.key === "Escape" && !emojiPanel.hidden) {
-      emojiPanel.hidden = true;
-      emojiButton.setAttribute("aria-expanded", "false");
-      emojiButton.focus();
-      return;
-    }
-    if (event.key === "Escape" && !replyPreview.hidden) {
-      clearReply();
-      input.focus();
-    }
-  });
-
-  document.addEventListener("volo:new-chat", startNewChat);
-  document.addEventListener("volo:carrier-change", function () {
-    if (!remoteEnabled) {
-      return;
-    }
-    window.clearTimeout(remotePollTimer);
-    messages = [];
-    isTyping = false;
-    renderMessages(false);
-    initializeRemote();
-  });
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && remoteEnabled) {
-      scheduleRemotePoll(100);
-    }
-  });
-  window.addEventListener("pagehide", function () {
-    window.clearTimeout(remotePollTimer);
-  });
-
-  resizeInput();
-  renderMessages(false);
-  initializeRemote();
+  composer.bind();
+  drawer.bind();
+  sessionRoster.bind();
+  chat.bind();
+  voice.bind();
+  music.bind();
+  usage.bind();
+  composer.resize();
+  chat.render(false);
+  sessionRoster.load();
 })();
-

@@ -4185,3 +4185,45 @@ body.volo-call-open .clawd-pet-root {
   }
 }
 
+
+
+/* Backend session bridge for the Telegram-style Volo surface */
+.volo-live-session-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 7px 7px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.volo-live-session-bar .volo-model-pill {
+  border: 1px solid var(--line);
+  background: var(--volo-composer-bg);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.volo-live-session-bar .volo-model-pill.is-gateway {
+  color: var(--volo-blue);
+}
+
+.volo-drawer[aria-hidden="true"] {
+  pointer-events: none;
+}
+
+@media (max-width: 520px) {
+  .volo-live-session-bar > span {
+    display: none;
+  }
+
+  .volo-live-session-bar {
+    justify-content: flex-start;
+  }
+
+  .volo-composer .volo-composer-button {
+    width: 36px;
+    height: 36px;
+  }
+}
