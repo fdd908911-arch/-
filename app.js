@@ -20,10 +20,7 @@
   };
 
   var workspaces = {
-    hub: { name: "Chat", view: "hub" },
-    volo: { name: "Volo", view: "volo" },
-    group: { name: "群聊", view: "group", chatId: "design" },
-    terminal: { name: "终端", view: "terminal" }
+    volo: { name: "Volo", view: "volo" }
   };
 
   var chats = {
@@ -82,7 +79,7 @@
   var toastText = document.getElementById("toastText");
   var themeColorMeta = document.getElementById("themeColorMeta");
 
-  var activeViewId = "hub";
+  var activeViewId = "volo";
   var activeChatId = "design";
   var toastTimer = null;
   var appliedSettings = readSettings();
@@ -348,7 +345,7 @@
 
   function readWorkspaceFromHash() {
     var hashValue = window.location.hash.replace(/^#/, "").toLocaleLowerCase();
-    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "hub";
+    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "volo";
   }
 
   function updateWorkspaceHash(viewId) {
