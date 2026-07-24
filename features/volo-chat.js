@@ -10,6 +10,9 @@
     var cursorBySession = Object.create(null);
     var typingBySession = Object.create(null);
     var unreadBySession = Object.create(null);
+    var thinkingByTurn = Object.create(null);
+    var thoughtOpenByKey = Object.create(null);
+    var thinkingPrimed = false;
     var pollTimer = 0;
     var requestGeneration = 0;
     var sending = false;
@@ -39,6 +42,17 @@
       if (typeof options.onSendingChange === "function") options.onSendingChange(sending);
     }
 
+    function emitAssistantMessages(records, sessionId) {
+      (records || []).forEach(function (message) {
+        if (!message || message.role !== "assistant") return;
+        document.dispatchEvent(
+          new CustomEvent("volo:assistant-message", {
+            detail: { message: message, sessionId: sessionId }
+          })
+        );
+      });
+    }
+
     function formatTime(value) {
       var date = value ? new Date(value) : new Date();
       if (Number.isNaN(date.getTime())) date = new Date();
@@ -65,6 +79,103 @@
         .sort(function (left, right) {
           return String(left.ts || "").localeCompare(String(right.ts || ""));
         });
+    }
+
+    function indexThinkingRecords(records) {
+      var changed = false;
+      (records || []).forEach(function (record) {
+        var turnId = String(record && record.turn_id || "").trim();
+        var thinking = typeof (record && record.thinking) === "string"
+          ? record.thinking.trim()
+          : "";
+        if (turnId && thinking && thinkingByTurn[turnId] !== thinking) {
+          thinkingByTurn[turnId] = thinking;
+          changed = true;
+        }
+      });
+      return changed;
+    }
+
+    async function ensureThinkingIndex() {
+      if (thinkingPrimed || typeof window.CCC.thinking !== "function") return;
+      try {
+        var payload = await window.CCC.thinking("", 500);
+        indexThinkingRecords(payload.records || []);
+        thinkingPrimed = true;
+      } catch (error) {
+        // Thinking cards are optional; chat history must remain usable if this endpoint is unavailable.
+      }
+    }
+
+    function messageThought(message) {
+      var metadata = message.metadata || {};
+      var inline = message.thought || metadata.thought || metadata.thinking;
+      if (typeof inline === "string" && inline.trim()) return inline.trim();
+      var turnId = String(message.turn_id || "").trim();
+      return turnId ? (thinkingByTurn[turnId] || "") : "";
+    }
+
+    function createThought(message) {
+      var thinking = messageThought(message);
+      if (!thinking) return null;
+      var key = String(message.turn_id || messageKey(message));
+      var thought = document.createElement("div");
+      thought.className = "volo-thought";
+      var toggle = document.createElement("button");
+      toggle.className = "volo-thought-toggle";
+      toggle.type = "button";
+      toggle.dataset.thoughtKey = key;
+      toggle.setAttribute("aria-expanded", String(Boolean(thoughtOpenByKey[key])));
+      var sparkle = document.createElement("span");
+      sparkle.className = "volo-thought-sparkle";
+      sparkle.setAttribute("aria-hidden", "true");
+      sparkle.textContent = "✦";
+      var label = document.createElement("span");
+      label.textContent = "Volo 在想";
+      var arrow = document.createElement("span");
+      arrow.className = "volo-thought-arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.textContent = "⌄";
+      toggle.append(sparkle, label, arrow);
+      var panel = document.createElement("div");
+      panel.className = "volo-thought-panel";
+      panel.hidden = !thoughtOpenByKey[key];
+      var text = document.createElement("p");
+      text.textContent = thinking;
+      panel.appendChild(text);
+      thought.append(toggle, panel);
+      return thought;
+    }
+
+    function refreshThinkingForMessages(messages, sessionId, generation, attempt) {
+      if (typeof window.CCC.thinking !== "function") return;
+      var turnIds = [];
+      (messages || []).forEach(function (message) {
+        var turnId = String(message && message.turn_id || "").trim();
+        if (
+          message && message.role === "assistant" && turnId &&
+          !thinkingByTurn[turnId] && turnIds.indexOf(turnId) === -1
+        ) {
+          turnIds.push(turnId);
+        }
+      });
+      if (!turnIds.length) return;
+      Promise.all(turnIds.map(function (turnId) {
+        return window.CCC.thinking(turnId, 10).catch(function () { return { records: [] }; });
+      })).then(function (payloads) {
+        if (generation !== requestGeneration || selectedSession() !== sessionId) return;
+        var changed = false;
+        payloads.forEach(function (payload) {
+          if (indexThinkingRecords(payload.records || [])) changed = true;
+        });
+        if (changed) render(isNearBottom());
+        var missing = turnIds.filter(function (turnId) { return !thinkingByTurn[turnId]; });
+        if (missing.length && attempt < 2) {
+          window.setTimeout(function () {
+            refreshThinkingForMessages(messages, sessionId, generation, attempt + 1);
+          }, attempt === 0 ? 1200 : 2600);
+        }
+      });
     }
 
     function createUserMessage(message) {
@@ -97,17 +208,15 @@
       if (content.music) body.appendChild(options.music.createCard(content.music));
       var footer = document.createElement("footer");
       footer.className = "volo-assistant-footer";
-      var mark = document.createElement("button");
-      mark.className = "volo-assistant-mark volo-flower-button";
-      mark.type = "button";
-      mark.setAttribute("aria-label", "让 Volo 的小花动起来");
       var note = document.createElement("span");
       var metadata = message.metadata || {};
-      var carrierLabel = metadata.carrier === "gateway" ? "陪我聊聊" : "Claude Code";
+      var carrierLabel = metadata.carrier === "gateway" ? "陪我聊聊" : "当前窗口";
       var toolCount = Array.isArray(metadata.tools) ? metadata.tools.length : 0;
       note.textContent = carrierLabel + " · " + formatTime(message.ts) +
         (toolCount ? " · " + toolCount + " 个工具" : "");
-      footer.append(mark, note);
+      footer.appendChild(note);
+      var thought = createThought(message);
+      if (thought) row.appendChild(thought);
       row.append(body, footer);
       return row;
     }
@@ -155,7 +264,11 @@
     async function loadHistory(sessionId) {
       var generation = ++requestGeneration;
       try {
-        var payload = await window.CCC.history(sessionId, 300);
+        var results = await Promise.all([
+          window.CCC.history(sessionId, 300),
+          ensureThinkingIndex()
+        ]);
+        var payload = results[0];
         if (generation !== requestGeneration || selectedSession() !== sessionId) return;
         messagesBySession[sessionId] = mergeMessages([], payload.records || []);
         cursorBySession[sessionId] = messagesBySession[sessionId].length
@@ -182,6 +295,13 @@
         var payload = await window.CCC.poll(sessionId, cursorBySession[sessionId], 100);
         if (generation !== requestGeneration || selectedSession() !== sessionId) return;
         var incoming = (payload.chat && payload.chat.new_records) || [];
+        var existingKeys = Object.create(null);
+        (messagesBySession[sessionId] || []).forEach(function (message) {
+          existingKeys[messageKey(message)] = true;
+        });
+        var newAssistantMessages = incoming.filter(function (message) {
+          return message && message.role === "assistant" && !existingKeys[messageKey(message)];
+        });
         var previousLength = (messagesBySession[sessionId] || []).length;
         var wasTyping = Boolean(typingBySession[sessionId]);
         messagesBySession[sessionId] = mergeMessages(messagesBySession[sessionId], incoming);
@@ -194,7 +314,9 @@
           render(isNearBottom());
           renderSessions();
         }
-        if (hasNew && incoming.some(function (message) { return message.role === "assistant"; })) {
+        if (newAssistantMessages.length) {
+          emitAssistantMessages(newAssistantMessages, sessionId);
+          refreshThinkingForMessages(incoming, sessionId, generation, 0);
           emitClawd("notification", "Volo 回信啦", {
             duration: 1400,
             priority: 4,
@@ -260,6 +382,7 @@
         typingBySession[sessionId] = carrier !== "gateway";
         if (selectedSession() === sessionId) render(true);
         renderSessions();
+        emitAssistantMessages(incoming, sessionId);
         if (carrier === "gateway" && typeof options.onGatewayReply === "function") {
           options.onGatewayReply(payload);
         }
@@ -285,12 +408,13 @@
       if (bound) return;
       bound = true;
       messageList.addEventListener("click", function (event) {
-        var flower = event.target.closest(".volo-flower-button");
-        if (!flower) return;
-        flower.classList.remove("is-blooming");
-        void flower.offsetWidth;
-        flower.classList.add("is-blooming");
-        emitClawd("happy", "Volo 的小花开啦", { duration: 1000, priority: 2 });
+        var toggle = event.target.closest(".volo-thought-toggle");
+        if (!toggle) return;
+        var key = toggle.dataset.thoughtKey || "";
+        thoughtOpenByKey[key] = !thoughtOpenByKey[key];
+        toggle.setAttribute("aria-expanded", String(thoughtOpenByKey[key]));
+        var panel = toggle.nextElementSibling;
+        if (panel) panel.hidden = !thoughtOpenByKey[key];
       });
       document.addEventListener("visibilitychange", function () {
         if (!document.hidden) schedulePoll(100);

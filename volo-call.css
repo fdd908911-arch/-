@@ -1,0 +1,430 @@
+.volo-call-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  color: #f7fbf9;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(225, 143, 109, 0.32), transparent 28rem),
+    linear-gradient(165deg, #18342f 0%, #102823 52%, #091916 100%);
+  overflow: hidden;
+}
+
+.volo-call-screen[hidden],
+.volo-call-info[hidden],
+.volo-call-controls[hidden],
+.volo-outgoing-controls[hidden],
+.volo-incoming-controls[hidden],
+.volo-decline-reasons[hidden] {
+  display: none;
+}
+
+.volo-call-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0 1px, transparent 1.5px);
+  background-size: 26px 26px;
+  mask-image: linear-gradient(to bottom, #000, transparent 72%);
+}
+
+body.volo-call-open {
+  overflow: hidden;
+}
+
+.volo-call-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  align-items: center;
+  min-height: calc(4rem + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 1rem 0;
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: rgba(247, 251, 249, 0.72);
+}
+
+.volo-call-header button,
+.volo-call-info > button {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
+  font-size: 1.35rem;
+}
+
+.volo-call-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: calc(100dvh - 5rem - env(safe-area-inset-top));
+  padding: clamp(2rem, 7vh, 5rem) 1.25rem calc(2rem + env(safe-area-inset-bottom));
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.volo-call-avatar {
+  display: grid;
+  width: clamp(7.5rem, 30vw, 10.5rem);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 38%;
+  background: linear-gradient(145deg, #f3a47c, #c96e54);
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28), 0 0 0 0 rgba(244, 169, 132, 0.25);
+  color: #fff8f1;
+  font-family: Georgia, serif;
+  font-size: 3.8rem;
+  transition: box-shadow 240ms ease, transform 240ms ease;
+}
+
+.volo-call-avatar.has-photo {
+  color: transparent;
+}
+
+.volo-call-screen.is-listening .volo-call-avatar,
+.volo-call-screen.is-speaking .volo-call-avatar {
+  transform: scale(1.025);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28), 0 0 0 1.2rem rgba(244, 169, 132, 0.09);
+}
+
+.volo-call-screen.is-lingering .volo-call-avatar {
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28), 0 0 0 1.4rem rgba(244, 169, 132, 0.08);
+}
+
+.volo-call-screen.is-ringing .volo-call-avatar,
+.volo-call-screen.is-outgoing-ringing .volo-call-avatar {
+  animation: volo-incoming-ring 1.45s ease-in-out infinite;
+}
+
+@keyframes volo-incoming-ring {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28), 0 0 0 0 rgba(244, 169, 132, 0.2);
+  }
+  50% {
+    transform: scale(1.035);
+    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28), 0 0 0 1.45rem rgba(244, 169, 132, 0.08);
+  }
+}
+
+.volo-call-main h2 {
+  margin: 1.55rem 0 0.3rem;
+  font: 500 clamp(1.65rem, 6vw, 2.2rem)/1.1 Georgia, serif;
+  letter-spacing: 0.03em;
+}
+
+.volo-call-status,
+.volo-call-quality {
+  margin: 0;
+  color: rgba(247, 251, 249, 0.75);
+}
+
+.volo-call-status {
+  min-height: 1.4em;
+  font-size: 0.9rem;
+}
+
+.volo-call-quality {
+  margin-top: 0.55rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(111, 212, 169, 0.12);
+  color: #a8e5ca;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.volo-call-transcript {
+  display: grid;
+  width: min(35rem, 100%);
+  min-height: 5.2rem;
+  margin: clamp(1.5rem, 5vh, 3rem) auto 1.25rem;
+  padding: 1rem 1.15rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.15rem;
+  background: rgba(3, 17, 14, 0.26);
+  backdrop-filter: blur(12px);
+}
+
+.volo-call-transcript p {
+  margin: 0;
+  white-space: pre-line;
+  color: rgba(247, 251, 249, 0.9);
+  font-size: clamp(0.86rem, 3.5vw, 1rem);
+  line-height: 1.65;
+}
+
+.volo-call-controls {
+  display: flex;
+  width: min(22rem, 100%);
+  margin-top: auto;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.volo-call-controls button {
+  display: flex;
+  min-width: 4.2rem;
+  border: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  color: rgba(247, 251, 249, 0.84);
+  background: none;
+}
+
+.volo-call-controls button > span {
+  display: grid;
+  width: 3.75rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.35rem;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.volo-call-controls button:active > span {
+  transform: scale(0.94);
+}
+
+.volo-call-controls button[aria-pressed="true"] > span {
+  color: #18342f;
+  background: #f7fbf9;
+}
+
+.volo-call-controls .volo-call-end > span {
+  width: 4.6rem;
+  color: white;
+  background: #dd5e58;
+  font-size: 2rem;
+}
+
+.volo-call-controls small {
+  font-size: 0.7rem;
+}
+
+.volo-outgoing-controls {
+  display: flex;
+  width: min(19rem, 100%);
+  margin-top: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.volo-outgoing-controls button {
+  display: flex;
+  min-width: 5rem;
+  border: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(247, 251, 249, 0.9);
+  background: none;
+}
+
+.volo-outgoing-controls button > span {
+  display: grid;
+  width: 4.4rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 999px;
+  color: white;
+  background: #dd5e58;
+  font-size: 1.85rem;
+  transition: transform 160ms ease;
+}
+
+.volo-outgoing-controls button:active > span {
+  transform: scale(0.94);
+}
+
+.volo-outgoing-controls small {
+  font-size: 0.73rem;
+}
+
+.volo-incoming-controls {
+  display: flex;
+  width: min(19rem, 100%);
+  margin-top: auto;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.volo-incoming-controls button {
+  display: flex;
+  min-width: 5rem;
+  border: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(247, 251, 249, 0.9);
+  background: none;
+}
+
+.volo-incoming-controls button > span {
+  display: grid;
+  width: 4.4rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 999px;
+  color: white;
+  font-size: 1.85rem;
+  transition: transform 160ms ease;
+}
+
+.volo-incoming-controls button:active > span {
+  transform: scale(0.94);
+}
+
+.volo-call-decline > span {
+  background: #dd5e58;
+}
+
+.volo-call-answer > span {
+  background: #43a86f;
+  transform: rotate(-24deg);
+}
+
+.volo-incoming-controls small {
+  font-size: 0.73rem;
+}
+
+.volo-decline-reasons {
+  width: min(24rem, 100%);
+  margin-top: auto;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 1.2rem;
+  background: rgba(3, 17, 14, 0.35);
+  backdrop-filter: blur(14px);
+}
+
+.volo-decline-reasons > p {
+  margin: 0 0 0.9rem;
+  color: rgba(247, 251, 249, 0.82);
+  font-size: 0.86rem;
+}
+
+.volo-decline-chips {
+  display: flex;
+  gap: 0.55rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.volo-decline-chips button,
+.volo-decline-custom button,
+.volo-decline-back {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(247, 251, 249, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.volo-decline-chips button {
+  padding: 0.62rem 0.85rem;
+  font-size: 0.76rem;
+}
+
+.volo-decline-custom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.volo-decline-custom input {
+  min-width: 0;
+  padding: 0.68rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  outline: none;
+  color: #f7fbf9;
+  background: rgba(0, 0, 0, 0.2);
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.volo-decline-custom input:focus {
+  border-color: rgba(168, 229, 202, 0.6);
+}
+
+.volo-decline-custom button {
+  padding: 0 0.9rem;
+}
+
+.volo-decline-back {
+  margin-top: 0.7rem;
+  padding: 0.5rem 0.85rem;
+  border-color: transparent;
+  color: rgba(247, 251, 249, 0.6);
+  background: transparent;
+  font-size: 0.72rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volo-call-screen.is-ringing .volo-call-avatar,
+  .volo-call-screen.is-outgoing-ringing .volo-call-avatar {
+    animation: none;
+  }
+}
+
+.volo-call-info {
+  position: absolute;
+  z-index: 3;
+  inset: auto 1rem calc(1rem + env(safe-area-inset-bottom));
+  max-width: 30rem;
+  margin: auto;
+  padding: 1.2rem 1.35rem 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.2rem;
+  background: rgba(8, 27, 23, 0.94);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.35);
+}
+
+.volo-call-info > button {
+  float: right;
+}
+
+.volo-call-info h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+}
+
+.volo-call-info p {
+  margin: 0;
+  color: rgba(247, 251, 249, 0.72);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+@media (max-height: 660px) {
+  .volo-call-main {
+    padding-top: 1rem;
+  }
+
+  .volo-call-avatar {
+    width: 6rem;
+  }
+
+  .volo-call-main h2 {
+    margin-top: 0.85rem;
+  }
+
+  .volo-call-transcript {
+    min-height: 4rem;
+    margin: 0.9rem auto;
+  }
+}

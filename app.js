@@ -10,39 +10,17 @@
 
   var PRESETS = {
     mist:
-      "radial-gradient(ellipse at 14% 42%, rgba(173, 196, 212, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 78% 12%, rgba(219, 202, 181, 0.9) 0%, transparent 43%), radial-gradient(ellipse at 82% 72%, rgba(223, 214, 216, 0.95) 0%, transparent 46%), radial-gradient(ellipse at 24% 92%, rgba(193, 210, 193, 0.88) 0%, transparent 42%), linear-gradient(135deg, #edf1ed 0%, #e9e5e2 100%)",
-    zen:
-      "radial-gradient(ellipse at 22% 18%, rgba(226, 215, 200, 0.9) 0%, transparent 42%), radial-gradient(ellipse at 84% 30%, rgba(201, 184, 174, 0.58) 0%, transparent 45%), radial-gradient(ellipse at 32% 88%, rgba(184, 171, 163, 0.5) 0%, transparent 38%), radial-gradient(ellipse at 76% 82%, rgba(207, 195, 208, 0.48) 0%, transparent 42%), linear-gradient(145deg, #f4f1ea 0%, #e9e3d9 100%)",
-    sage:
-      "radial-gradient(ellipse at 18% 36%, rgba(148, 159, 151, 0.92) 0%, transparent 44%), radial-gradient(ellipse at 82% 48%, rgba(235, 226, 170, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 56% 8%, rgba(200, 213, 197, 0.92) 0%, transparent 40%), radial-gradient(ellipse at 44% 92%, rgba(238, 233, 208, 0.96) 0%, transparent 45%), linear-gradient(140deg, #e6e9dc 0%, #eee9d0 100%)",
-    blush:
-      "radial-gradient(ellipse at 20% 12%, rgba(111, 138, 167, 0.94) 0%, transparent 45%), radial-gradient(ellipse at 38% 54%, rgba(215, 179, 190, 0.98) 0%, transparent 48%), radial-gradient(ellipse at 82% 20%, rgba(229, 207, 199, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 82% 82%, rgba(168, 181, 192, 0.95) 0%, transparent 45%), linear-gradient(145deg, #e8dfe2 0%, #dce3e6 100%)"
+      "radial-gradient(ellipse at 14% 42%, rgba(173, 196, 212, 0.96) 0%, transparent 46%), radial-gradient(ellipse at 78% 12%, rgba(219, 202, 181, 0.9) 0%, transparent 43%), radial-gradient(ellipse at 82% 72%, rgba(223, 214, 216, 0.95) 0%, transparent 46%), radial-gradient(ellipse at 24% 92%, rgba(193, 210, 193, 0.88) 0%, transparent 42%), linear-gradient(135deg, #edf1ed 0%, #e9e5e2 100%)"
   };
 
-  var LEGACY_PRESET_IDS = {
-    coast: "zen",
-    dusk: "sage",
-    paper: "blush"
-  };
+  var LEGACY_PRESET_IDS = {};
 
   var THEME_COLORS = {
-    mist: "#eef2f0",
-    zen: "#f2efe8",
-    sage: "#f1f1e7",
-    blush: "#ebeef1"
-  };
-
-  var THEME_NAMES = {
-    mist: "雾蓝杏粉",
-    zen: "禅意米棕",
-    sage: "灰绿鹅黄",
-    blush: "烟粉雾蓝"
+    mist: "#eef2f0"
   };
 
   var workspaces = {
-    hub: { name: "Chat", view: "hub" },
     volo: { name: "Volo", view: "volo" },
-    group: { name: "群聊", view: "group", chatId: "design" },
     terminal: { name: "终端", view: "terminal" }
   };
 
@@ -93,8 +71,7 @@
   var backgroundFile = document.getElementById("backgroundFile");
   var uploadDropzone = document.getElementById("uploadDropzone");
   var uploadError = document.getElementById("uploadError");
-  var customWallpaperOption = document.getElementById("customWallpaperOption");
-  var customWallpaperSwatch = document.getElementById("customWallpaperSwatch");
+  var backgroundCurrentPreview = document.getElementById("backgroundCurrentPreview");
   var dimRange = document.getElementById("dimRange");
   var blurRange = document.getElementById("blurRange");
   var dimOutput = document.getElementById("dimOutput");
@@ -103,7 +80,7 @@
   var toastText = document.getElementById("toastText");
   var themeColorMeta = document.getElementById("themeColorMeta");
 
-  var activeViewId = "hub";
+  var activeViewId = "volo";
   var activeChatId = "design";
   var toastTimer = null;
   var appliedSettings = readSettings();
@@ -125,13 +102,10 @@
   }
 
   function copySettings(settings) {
-    var presetId = normalizePresetId(settings.id);
-    var themeId = normalizePresetId(
-      settings.theme || (presetId !== "custom" ? presetId : "mist")
-    );
+    var presetId = settings.id === "custom" ? "custom" : "mist";
     return {
       id: presetId,
-      theme: Object.prototype.hasOwnProperty.call(PRESETS, themeId) ? themeId : "mist",
+      theme: "mist",
       dim: Number(settings.dim),
       blur: Number(settings.blur)
     };
@@ -166,12 +140,9 @@
         return copySettings(DEFAULT_SETTINGS);
       }
       var presetId = normalizePresetId(parsed.id);
-      var themeId = normalizePresetId(
-        parsed.theme || (presetId !== "custom" ? presetId : "mist")
-      );
       var migratedSettings = {
-        id: presetId,
-        theme: Object.prototype.hasOwnProperty.call(PRESETS, themeId) ? themeId : "mist",
+        id: presetId === "custom" ? "custom" : "mist",
+        theme: "mist",
         dim: readStoredNumber(parsed.dim, DEFAULT_SETTINGS.dim, 0, 48),
         blur: readStoredNumber(parsed.blur, DEFAULT_SETTINGS.blur, 0, 12)
       };
@@ -375,7 +346,7 @@
 
   function readWorkspaceFromHash() {
     var hashValue = window.location.hash.replace(/^#/, "").toLocaleLowerCase();
-    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "hub";
+    return Object.prototype.hasOwnProperty.call(workspaces, hashValue) ? hashValue : "volo";
   }
 
   function updateWorkspaceHash(viewId) {
@@ -451,61 +422,11 @@
     if (!backgroundImage) {
       backgroundImage = PRESETS.mist;
     }
-    root.dataset.theme = settings.theme;
-    themeColorMeta.setAttribute("content", THEME_COLORS[settings.theme] || THEME_COLORS.mist);
+    root.dataset.theme = "mist";
+    themeColorMeta.setAttribute("content", THEME_COLORS.mist);
     root.style.setProperty("--wallpaper-image", backgroundImage);
     root.style.setProperty("--wallpaper-dim", String(settings.dim / 100));
     root.style.setProperty("--wallpaper-blur", String(settings.blur) + "px");
-    updateQuickThemeSwitcher(settings.theme);
-  }
-
-  function updateQuickThemeSwitcher(themeId) {
-    void themeId;
-    document.querySelectorAll("[data-quick-theme]").forEach(function (button) {
-      var isActive = button.dataset.quickTheme === themeId;
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
-    });
-  }
-
-  function commitThemeImmediately(themeId, preserveCustomWallpaper) {
-    if (!Object.prototype.hasOwnProperty.call(PRESETS, themeId)) {
-      return;
-    }
-
-    var sourceSettings = backgroundDialog.open ? draftSettings : appliedSettings;
-    var nextSettings = copySettings(sourceSettings);
-    nextSettings.theme = themeId;
-    if (!(preserveCustomWallpaper && appliedSettings.id === "custom")) {
-      nextSettings.id = themeId;
-    }
-
-    if (nextSettings.id !== "custom" && draftUrl && draftUrl !== customUrl) {
-      URL.revokeObjectURL(draftUrl);
-    }
-
-    appliedSettings = copySettings(nextSettings);
-    draftSettings = copySettings(nextSettings);
-    draftBlob = null;
-    draftUrl = null;
-    writeSettings(appliedSettings);
-    applyWallpaper(appliedSettings, customUrl);
-    updateRangeOutputs();
-    updateWallpaperOptions();
-
-    if (backgroundDialog.open) {
-      closeBackgroundDialog(true);
-    }
-    showToast("已切换为“" + THEME_NAMES[themeId] + "”");
-    emitClawd("wizard", "换上新配色啦", {
-      duration: 1900,
-      priority: 3,
-      next: {
-        name: "eureka",
-        duration: 1200,
-        priority: 3
-      }
-    });
   }
 
   function updateRangeOutputs() {
@@ -532,16 +453,10 @@
   }
 
   function refreshCustomOption(imageUrl) {
-    if (imageUrl) {
-      customWallpaperOption.hidden = false;
-      customWallpaperSwatch.style.backgroundImage =
-        'linear-gradient(rgba(5, 14, 20, 0.08), rgba(5, 14, 20, 0.08)), url("' +
-        imageUrl.replace(/"/g, "%22") +
-        '")';
-    } else {
-      customWallpaperOption.hidden = true;
-      customWallpaperSwatch.style.backgroundImage = "";
-    }
+    backgroundCurrentPreview.style.backgroundImage = imageUrl
+      ? 'url("' + imageUrl.replace(/"/g, "%22") + '")'
+      : "";
+    uploadDropzone.classList.toggle("has-image", Boolean(imageUrl));
   }
 
   function clearUploadError() {
@@ -564,7 +479,9 @@
     draftUrl = customUrl;
     clearUploadError();
     backgroundFile.value = "";
-    uploadDropzone.querySelector(".upload-copy strong").textContent = "选择图片或拖放到这里";
+    uploadDropzone.querySelector(".upload-copy strong").textContent = draftUrl
+      ? "当前照片 · 点击更换"
+      : "选择照片或拖放到这里";
     updateRangeOutputs();
     refreshCustomOption(draftUrl);
     updateWallpaperOptions();
@@ -919,17 +836,6 @@
       priority: 3
     });
   });
-  var quickThemeOptions = document.querySelector(".quick-theme-options");
-  if (quickThemeOptions) {
-    quickThemeOptions.addEventListener("click", function (event) {
-      var button = event.target.closest("[data-quick-theme]");
-      if (!button) {
-        return;
-      }
-      commitThemeImmediately(button.dataset.quickTheme, true);
-    });
-  }
-
   document.querySelectorAll("[data-toast]").forEach(function (button) {
     button.addEventListener("click", function () {
       showToast(button.dataset.toast);
@@ -938,6 +844,7 @@
 
   document.getElementById("headerBackgroundButton").addEventListener("click", openBackgroundDialog);
   document.getElementById("hubAppearanceButton").addEventListener("click", openBackgroundDialog);
+  document.getElementById("voloBackgroundButton").addEventListener("click", openBackgroundDialog);
   document.getElementById("backgroundCloseButton").addEventListener("click", function () {
     closeBackgroundDialog(false);
   });
@@ -956,24 +863,6 @@
     if (event.target === backgroundDialog) {
       closeBackgroundDialog(false);
     }
-  });
-
-  document.getElementById("wallpaperGrid").addEventListener("click", function (event) {
-    var option = event.target.closest(".wallpaper-option");
-    if (!option) {
-      return;
-    }
-    var wallpaperId = option.dataset.wallpaper;
-    if (wallpaperId === "custom" && !draftUrl) {
-      return;
-    }
-    if (wallpaperId !== "custom") {
-      commitThemeImmediately(wallpaperId, false);
-      return;
-    }
-    draftSettings.id = wallpaperId;
-    updateWallpaperOptions();
-    applyWallpaper(draftSettings, draftUrl);
   });
 
   dimRange.addEventListener("input", function () {
@@ -1040,3 +929,4 @@
   applyWallpaper(appliedSettings, null);
   initializeWallpaper();
 })();
+

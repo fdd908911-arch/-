@@ -86,9 +86,6 @@
         button.className = "volo-current-chat";
         button.dataset.session = sessionId;
         button.setAttribute("aria-current", sessionId === current ? "page" : "false");
-        var flower = document.createElement("span");
-        flower.className = "volo-current-chat-flower";
-        flower.setAttribute("aria-hidden", "true");
         var copy = document.createElement("span");
         var title = document.createElement("strong");
         title.textContent = session.title || sessionId;
@@ -96,7 +93,7 @@
         var unread = options.chat.unreadCount(sessionId);
         status.textContent = sessionStatus(session) + (unread ? " · " + unread + " 条未读" : "");
         copy.append(title, status);
-        button.append(flower, copy);
+        button.appendChild(copy);
         var menu = document.createElement("button");
         menu.type = "button";
         menu.className = "volo-session-menu";
@@ -185,6 +182,23 @@
       actionDialog.showModal();
     }
 
+    async function selectCarrier(carrier) {
+      var current = findSession(selectedSession());
+      var target = null;
+      if (carrier === "gateway") {
+        target = findSession(gatewaySessionId());
+      } else {
+        target = current && !current.virtual
+          ? current
+          : findSession("cc-test3") || findSession("volo") || sessions.find(function (session) {
+              return !session.virtual;
+            });
+      }
+      if (target && typeof options.onSelect === "function") {
+        await options.onSelect(target.tmux_session);
+      }
+    }
+
     function bind() {
       if (bound) return;
       bound = true;
@@ -266,6 +280,7 @@
       isGatewaySession: isGatewaySession,
       load: load,
       render: render,
+      selectCarrier: selectCarrier,
       setConnectionState: setConnectionState
     };
   }

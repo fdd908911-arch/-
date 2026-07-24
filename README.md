@@ -17,14 +17,14 @@
 - Diary 可按日期记录天气、温度和 2000 字正文，支持手写、宋体、简洁三种本地字体并自动保存
 - Memory 独立页面已建立，目前保留为空白内容区
 - 桌面端与移动端响应式布局
-- 4 套参考莫兰迪色制作的全局配色主题
-- 主题会同步改变界面、按钮、消息气泡、默认聊天背景，以及 Memory、Volo 状态、世界等栏目色
-- 上传 JPG、PNG、WebP 或 GIF 作为背景
+- Chat 外观设置只保留照片背景，不再提供预设配色主题
+- 上传 JPG、PNG、WebP 或 GIF 作为背景，Volo 页可从顶部直接更换
+- Volo 的 user 消息采用轻透明水玻璃气泡，可透出背景照片
 - 背景遮罩与模糊程度调节
 - 自定义背景通过 IndexedDB 保存在当前浏览器，不上传服务器
 - 会话切换、搜索、消息发送、表情插入和模拟回复
 - 首页、Chat、Diary、Memory、Volo 状态与世界页共用 Clawd Tank 像素螃蟹，内置 30 种动作，可拖动、点击轮播并分别记住位置
-- 螃蟹会根据输入、等待回复、收到消息、搜索、换主题、上传背景、离线与闲置自动切换动作
+- 螃蟹会根据输入、等待回复、收到消息、搜索、上传背景、离线与闲置自动切换动作
 - 键盘操作：Enter 发送、Shift + Enter 换行、Ctrl/Cmd + K 搜索
 
 ## 运行
@@ -93,3 +93,4 @@ GitHub Pages 配置或仓库文件。
 ## 第三方素材
 
 像素螃蟹动画来自 [marciogranzotto/clawd-tank](https://github.com/marciogranzotto/clawd-tank)，按 MIT License 使用。许可和署名详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+

@@ -56,6 +56,12 @@
     onRestore: restoreSelectedSession,
     onSelect: selectSession
   });
+  document.addEventListener("volo:carrier-change", function (event) {
+    var carrier = event.detail && event.detail.carrier === "api"
+      ? "gateway"
+      : "claude_code";
+    sessionRoster.selectCarrier(carrier);
+  });
 
   function emitClawd(state, phrase, options) {
     document.dispatchEvent(
@@ -104,6 +110,14 @@
     composer.finishSend(attempt, sent);
     return sent;
   }
+
+  window.VoloCallBridge = {
+    getSelectedSession: function () { return selectedSession; },
+    getCarrier: function () { return currentCarrier(); },
+    isSending: function () { return Boolean(chat && chat.isSending()); },
+    selectSession: function (sessionId) { return selectSession(sessionId); },
+    sendMessage: function (text) { return sendMessage(text); }
+  };
 
   composer.bind();
   drawer.bind();
