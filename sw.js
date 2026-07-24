@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260724-v80-volo-thinking`;
+const CACHE_NAME = `${CACHE_PREFIX}20260724-v81-voice-input`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -37,16 +37,17 @@ const APP_SHELL = [
   "./ccc-api.js?v=20260724-thinking-v1",
   "./router.js",
   "./group.js",
-  "./features/volo-media-status.js?v=20260721-media-status-v1",
+  "./features/volo-media-status.js?v=20260724-voice-input-v1",
   "./features/volo-music.js?v=20260721-music-split-v2",
   "./features/volo-chat.js?v=20260724-thinking-v1",
   "./features/volo-composer.js?v=20260721-composer-split-v1",
   "./features/volo-sessions.js?v=20260724-session-clean-v1",
   "./features/volo-drawer.js?v=20260721-drawer-split-v1",
   "./features/volo-carrier.js?v=20260724-carrier-clean-v1",
-  "./features/volo-voice.js?v=20260721-voice-split-v1",
+  "./features/volo-voice.js?v=20260724-voice-input-v1",
   "./features/volo-usage.js?v=20260721-usage-split-v1",
   "./volo.js?v=20260721-volo-split-v6",
+  "./volo-ui-bridge.js?v=20260724-no-emoji-v1",
   "./memory-dashboard.js",
   "./status.js",
   "./drives-dashboard.js?v=20260721-drives-v3",

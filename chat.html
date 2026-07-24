@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="chat-navigation.css?v=20260711-flower-brand-v1" />
     <link rel="stylesheet" href="chat-backend-base.css?v=20260724-backend-v1" />
-    <link rel="stylesheet" href="chat-views.css?v=20260724-telegram-backend-v1" />
+    <link rel="stylesheet" href="chat-views.css?v=20260724-voice-input-v1" />
     <link rel="stylesheet" href="ccc-sessions.css?v=20260724-session-history-v1" />
     <link rel="stylesheet" href="chat-hub.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
@@ -259,9 +259,6 @@
                 <svg><use href="#icon-music"></use></svg>
                 <span>一起听</span>
               </button>
-              <button class="volo-header-button" id="voloVoiceCallButton" type="button" aria-label="与 Volo 语音通话">
-                <svg><use href="#icon-phone"></use></svg>
-              </button>
               <button class="volo-header-button" id="voloSettingsButton" type="button" aria-label="打开聊天设置">
                 <svg><use href="#icon-settings"></use></svg>
               </button>
@@ -314,16 +311,6 @@
             <div class="volo-composer-zone">
               <p class="volo-voice-status" id="voloVoiceStatus" role="status" aria-live="polite" hidden></p>
               <span id="voloCarrierPill" hidden></span>
-              <div class="volo-emoji-panel" id="voloEmojiPanel" hidden>
-                <button type="button">😊</button>
-                <button type="button">🥰</button>
-                <button type="button">😂</button>
-                <button type="button">👍</button>
-                <button type="button">✨</button>
-                <button type="button">🌊</button>
-                <button type="button">☕</button>
-                <button type="button">🌷</button>
-              </div>
               <form class="volo-composer" id="voloComposer">
                 <input id="voloMusicInput" type="file" accept="audio/mpeg,audio/wav,audio/flac,audio/ogg,audio/mp4,audio/webm,.mp3,.wav,.flac,.ogg,.m4a,.mp4,.webm" hidden />
                 <button class="volo-composer-button volo-music-button" id="voloMusicButton" type="button" aria-label="给 Volo 听一首歌" title="给 Volo 听一首歌">
@@ -333,11 +320,9 @@
                   <span class="visually-hidden">发送给 Volo</span>
                   <textarea id="voloInput" rows="1" maxlength="2000" placeholder="输入消息…"></textarea>
                 </label>
-                <button class="volo-composer-button" id="voloEmojiButton" type="button" aria-label="选择表情" aria-expanded="false">
-                  <svg><use href="#icon-smile"></use></svg>
-                </button>
-                <button class="volo-composer-button volo-voice-button" id="voloVoiceButton" type="button" aria-label="按住说话" aria-pressed="false" title="按住说话">
+                <button class="volo-voice-button volo-voice-hold-button" id="voloVoiceButton" type="button" aria-label="按住说话" aria-pressed="false" title="按住说话">
                   <svg><use href="#icon-microphone"></use></svg>
+                  <span class="volo-voice-hold-label">按住说话</span>
                 </button>
                 <button class="volo-send-button" id="voloSendButton" type="submit" aria-label="发送给 Volo" disabled>
                   <svg><use href="#icon-send"></use></svg>
@@ -651,90 +636,6 @@
             </div>
           </section>
 
-          <section class="volo-call-screen" id="voloCallScreen" aria-label="与 Volo 的语音通话" aria-modal="true" role="dialog" hidden>
-            <div class="volo-call-ambient" aria-hidden="true"></div>
-            <header class="volo-call-header">
-              <button id="voloCallMinimize" type="button" aria-label="结束并返回聊天">
-                <svg><use href="#icon-chevron-down"></use></svg>
-              </button>
-              <span>
-                <small>VOICE CALL</small>
-                <strong>加密语音通话</strong>
-              </span>
-              <button id="voloCallMore" type="button" aria-label="通话信息">
-                <svg><use href="#icon-info"></use></svg>
-              </button>
-            </header>
-
-            <main class="volo-call-main">
-              <div class="volo-call-visual" id="voloCallVisual">
-                <span class="volo-call-ring"></span>
-                <span class="volo-call-ring"></span>
-                <span class="volo-call-ring"></span>
-                <div class="volo-call-pair">
-                  <span class="volo-call-person">
-                    <span class="volo-call-avatar is-user" id="voloCallUserAvatar">
-                      <span>你</span>
-                    </span>
-                    <small>你</small>
-                  </span>
-                  <span class="volo-call-bridge" aria-hidden="true">
-                    <i></i><i></i><i></i><i></i>
-                  </span>
-                  <span class="volo-call-person">
-                    <span class="volo-call-avatar is-volo" id="voloCallAvatar">
-                      <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
-                      <i></i>
-                    </span>
-                    <small>Volo</small>
-                  </span>
-                </div>
-              </div>
-              <section class="volo-call-transcript" aria-label="实时文字">
-                <header>
-                  <span><i></i><i></i><i></i></span>
-                  <strong>实时文字</strong>
-                </header>
-                <p id="voloCallTranscript" aria-live="polite">接通后，通话内容会显示在这里</p>
-              </section>
-              <p class="volo-call-status" id="voloCallStatus">正在呼叫…</p>
-              <span class="volo-call-quality" id="voloCallQuality">
-                <i></i>
-                清晰
-              </span>
-            </main>
-
-            <footer class="volo-call-controls">
-              <button class="volo-call-control" id="voloCallMute" type="button" aria-pressed="false">
-                <span>
-                  <svg><use href="#icon-microphone"></use></svg>
-                  <i></i>
-                </span>
-                <small>静音</small>
-              </button>
-              <button class="volo-call-control volo-call-end" id="voloCallEnd" type="button">
-                <span>
-                  <svg><use href="#icon-phone"></use></svg>
-                </span>
-                <small>挂断</small>
-              </button>
-              <button class="volo-call-control" id="voloCallSpeaker" type="button" aria-pressed="true">
-                <span>
-                  <svg class="volo-speaker-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 10v4h4l5 4V6L8 10H4Z" />
-                    <path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" />
-                  </svg>
-                </span>
-                <small>扬声器</small>
-              </button>
-            </footer>
-
-            <div class="volo-call-info" id="voloCallInfo" hidden>
-              <strong>通话说明</strong>
-              <p>当前为界面预览，接入实时语音服务后即可真正建立双向通话。</p>
-              <button type="button" id="voloCallInfoClose">知道了</button>
-            </div>
-          </section>
         </section>
 
         <section class="workspace-view group-view" id="groupView" data-workspace-view="group" aria-label="群聊" hidden>
@@ -967,20 +868,19 @@
     <script src="app.js?v=20260711-theme-palettes-v1"></script>
     <script src="core/ccc-runtime.js?v=20260721-core-v1"></script>
     <script src="ccc-api.js?v=20260724-thinking-v1"></script>
-    <script src="features/volo-media-status.js?v=20260721-media-status-v1"></script>
+    <script src="features/volo-media-status.js?v=20260724-voice-input-v1"></script>
     <script src="features/volo-music.js?v=20260721-music-split-v2"></script>
     <script src="features/volo-chat.js?v=20260724-thinking-v1"></script>
     <script src="features/volo-composer.js?v=20260721-composer-split-v1"></script>
     <script src="features/volo-sessions.js?v=20260724-session-clean-v1"></script>
     <script src="features/volo-drawer.js?v=20260721-drawer-split-v1"></script>
     <script src="features/volo-carrier.js?v=20260724-carrier-clean-v1"></script>
-    <script src="features/volo-voice.js?v=20260721-voice-split-v1"></script>
+    <script src="features/volo-voice.js?v=20260724-voice-input-v1"></script>
     <script src="features/volo-usage.js?v=20260721-usage-split-v1"></script>
     <script src="volo.js?v=20260724-backend-restored-v1"></script>
-    <script src="volo-ui-bridge.js?v=20260724-session-ui-v1"></script>
+    <script src="volo-ui-bridge.js?v=20260724-no-emoji-v1"></script>
     <script src="volo-together.js?v=20260724-together-listen-v2"></script>
     <script src="volo-settings.js?v=20260724-chat-settings-v3"></script>
-    <script src="volo-call.js?v=20260724-voice-call-v1"></script>
   </body>
 </html>
 

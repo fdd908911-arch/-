@@ -3,6 +3,7 @@
 
   var status = document.getElementById("voloVoiceStatus");
   var voiceButton = document.getElementById("voloVoiceButton");
+  var voiceLabel = voiceButton.querySelector(".volo-voice-hold-label");
   var musicButton = document.getElementById("voloMusicButton");
   var timer = 0;
 
@@ -22,6 +23,14 @@
       voiceOwned && state === "recording" ? "松开发送语音" : "按住说话"
     );
     voiceButton.title = voiceOwned && state === "recording" ? "松开发送" : "按住说话";
+    if (voiceLabel) {
+      voiceLabel.textContent =
+        voiceOwned && state === "recording"
+          ? "松开发送"
+          : voiceOwned && state === "processing"
+            ? "正在识别"
+            : "按住说话";
+    }
     musicButton.classList.toggle("is-processing", musicOwned && state === "processing");
 
     if (hideAfter) {

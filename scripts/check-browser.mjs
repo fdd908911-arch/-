@@ -261,7 +261,13 @@ try {
         window.VoloMediaStatus.set("录音中", "recording", 0, "voice");
         const voiceOwnsStatus = document.getElementById("voloVoiceButton").classList.contains("is-recording") &&
           !document.getElementById("voloMusicButton").classList.contains("is-processing");
+        const recordingVoiceLabel = document.querySelector(".volo-voice-hold-label").textContent.trim();
+        window.VoloMediaStatus.set("正在识别", "processing", 0, "voice");
+        const processingVoiceLabel = document.querySelector(".volo-voice-hold-label").textContent.trim();
         window.VoloMediaStatus.set("", "", 0, "");
+        const idleVoiceLabel = document.querySelector(".volo-voice-hold-label").textContent.trim();
+        const voiceButton = document.getElementById("voloVoiceButton");
+        const voiceRect = voiceButton.getBoundingClientRect();
 
         const stored = JSON.parse(localStorage.getItem("island-chat.ccc-connection.v1"));
         return {
@@ -273,6 +279,15 @@ try {
           gatewayCarrier,
           musicOwnsStatus,
           voiceOwnsStatus,
+          voiceInput: {
+            recordingVoiceLabel,
+            processingVoiceLabel,
+            idleVoiceLabel,
+            visible: voiceRect.width > 0 && voiceRect.height > 0,
+            width: voiceRect.width
+          },
+          emojiElements: document.querySelectorAll("#voloEmojiButton, #voloEmojiPanel").length,
+          callElements: document.querySelectorAll("#voloVoiceCallButton, #voloCallScreen").length,
           sessions: document.querySelectorAll(".volo-session-row").length,
           selected: document.querySelector('[data-session][aria-current="page"]')?.dataset.session || "",
           bodyWidth: document.body.scrollWidth,
@@ -299,6 +314,16 @@ try {
         usageGateway: true
       }, test.name + ": carrier presentation failed");
       assert(probes.musicOwnsStatus && probes.voiceOwnsStatus, test.name + ": media ownership failed");
+      assert.deepEqual(probes.voiceInput, {
+        recordingVoiceLabel: "松开发送",
+        processingVoiceLabel: "正在识别",
+        idleVoiceLabel: "按住说话",
+        visible: true,
+        width: probes.voiceInput.width
+      }, test.name + ": voice input states failed");
+      assert(probes.voiceInput.width >= 80, test.name + ": voice input is too narrow");
+      assert.equal(probes.emojiElements, 0, test.name + ": emoji controls are still rendered");
+      assert.equal(probes.callElements, 0, test.name + ": call preview is still rendered");
       assert(probes.sessions > 0 && probes.selected === switchTarget, test.name + ": session switch failed");
       assert(probes.bodyWidth <= probes.viewportWidth + 1, test.name + ": chat horizontal overflow");
       assert.equal(probes.visibleClaudeCode, false, test.name + ": Claude Code label is still visible");
@@ -328,7 +353,7 @@ try {
 
       const workerCache = await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
-        return (await caches.keys()).find((key) => key.includes("v80-volo-thinking")) || "";
+        return (await caches.keys()).find((key) => key.includes("v81-voice-input")) || "";
       });
       assert(workerCache, test.name + ": service-worker cache missing");
       process.stderr.write("Browser check passed: " + JSON.stringify({
