@@ -42,6 +42,17 @@
       if (typeof options.onSendingChange === "function") options.onSendingChange(sending);
     }
 
+    function emitAssistantMessages(records, sessionId) {
+      (records || []).forEach(function (message) {
+        if (!message || message.role !== "assistant") return;
+        document.dispatchEvent(
+          new CustomEvent("volo:assistant-message", {
+            detail: { message: message, sessionId: sessionId }
+          })
+        );
+      });
+    }
+
     function formatTime(value) {
       var date = value ? new Date(value) : new Date();
       if (Number.isNaN(date.getTime())) date = new Date();
@@ -284,6 +295,13 @@
         var payload = await window.CCC.poll(sessionId, cursorBySession[sessionId], 100);
         if (generation !== requestGeneration || selectedSession() !== sessionId) return;
         var incoming = (payload.chat && payload.chat.new_records) || [];
+        var existingKeys = Object.create(null);
+        (messagesBySession[sessionId] || []).forEach(function (message) {
+          existingKeys[messageKey(message)] = true;
+        });
+        var newAssistantMessages = incoming.filter(function (message) {
+          return message && message.role === "assistant" && !existingKeys[messageKey(message)];
+        });
         var previousLength = (messagesBySession[sessionId] || []).length;
         var wasTyping = Boolean(typingBySession[sessionId]);
         messagesBySession[sessionId] = mergeMessages(messagesBySession[sessionId], incoming);
@@ -296,7 +314,8 @@
           render(isNearBottom());
           renderSessions();
         }
-        if (hasNew && incoming.some(function (message) { return message.role === "assistant"; })) {
+        if (newAssistantMessages.length) {
+          emitAssistantMessages(newAssistantMessages, sessionId);
           refreshThinkingForMessages(incoming, sessionId, generation, 0);
           emitClawd("notification", "Volo 回信啦", {
             duration: 1400,
@@ -363,6 +382,7 @@
         typingBySession[sessionId] = carrier !== "gateway";
         if (selectedSession() === sessionId) render(true);
         renderSessions();
+        emitAssistantMessages(incoming, sessionId);
         if (carrier === "gateway" && typeof options.onGatewayReply === "function") {
           options.onGatewayReply(payload);
         }

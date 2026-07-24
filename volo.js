@@ -111,6 +111,14 @@
     return sent;
   }
 
+  window.VoloCallBridge = {
+    getSelectedSession: function () { return selectedSession; },
+    getCarrier: function () { return currentCarrier(); },
+    isSending: function () { return Boolean(chat && chat.isSending()); },
+    selectSession: function (sessionId) { return selectSession(sessionId); },
+    sendMessage: function (text) { return sendMessage(text); }
+  };
+
   composer.bind();
   drawer.bind();
   sessionRoster.bind();

@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260724-v83-terminal-route`;
+const CACHE_NAME = `${CACHE_PREFIX}20260724-v87-volo-decline`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -31,22 +31,24 @@ const APP_SHELL = [
   "./drives-dashboard.css?v=20260721-drives-v3",
   "./world.css",
   "./clawd-pet.css",
+  "./volo-call.css?v=20260724-volo-decline-v1",
   "./home.js",
-  "./app.js?v=20260724-terminal-route-v1",
+  "./app.js",
   "./core/ccc-runtime.js?v=20260721-core-v1",
   "./ccc-api.js?v=20260724-thinking-v1",
   "./router.js",
   "./group.js",
   "./features/volo-media-status.js?v=20260724-voice-input-v1",
   "./features/volo-music.js?v=20260721-music-split-v2",
-  "./features/volo-chat.js?v=20260724-thinking-v1",
+  "./features/volo-chat.js?v=20260724-live-call-v1",
   "./features/volo-composer.js?v=20260721-composer-split-v1",
   "./features/volo-sessions.js?v=20260724-session-clean-v1",
   "./features/volo-drawer.js?v=20260721-drawer-split-v1",
   "./features/volo-carrier.js?v=20260724-carrier-clean-v1",
   "./features/volo-voice.js?v=20260724-voice-input-v1",
   "./features/volo-usage.js?v=20260721-usage-split-v1",
-  "./volo.js?v=20260721-volo-split-v6",
+  "./volo.js?v=20260724-volo-decline-v1",
+  "./volo-call.js?v=20260724-volo-decline-v1",
   "./volo-ui-bridge.js?v=20260724-no-emoji-v1",
   "./memory-dashboard.js",
   "./status.js",
@@ -140,6 +142,51 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+});
+
+self.addEventListener("push", (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch (error) {
+    payload = { type: "incoming_call", opening: event.data ? event.data.text() : "" };
+  }
+  if (payload.type !== "incoming_call") return;
+
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    windows.forEach((client) => {
+      client.postMessage({ type: "VOLO_INCOMING_CALL", call: payload });
+    });
+    const callId = String(payload.call_id || "");
+    const targetUrl = new URL(`./chat.html?incoming_call=${encodeURIComponent(callId)}#volo`, self.registration.scope).href;
+    await self.registration.showNotification("Volo 来电", {
+      body: String(payload.opening || "想听听你的声音。"),
+      tag: `volo-call-${callId || "latest"}`,
+      renotify: true,
+      requireInteraction: true,
+      silent: false,
+      icon: "./assets/icons/icon-192.png",
+      badge: "./assets/icons/icon-192.png",
+      data: { type: "incoming_call", call: payload, url: targetUrl }
+    });
+  })());
+});
+
+self.addEventListener("notificationclick", (event) => {
+  const data = event.notification.data || {};
+  if (data.type !== "incoming_call") return;
+  event.notification.close();
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    const chatClient = windows.find((client) => client.url.includes("/chat.html"));
+    if (chatClient) {
+      chatClient.postMessage({ type: "VOLO_INCOMING_CALL", call: data.call || {} });
+      await chatClient.focus();
+      return;
+    }
+    await self.clients.openWindow(data.url || "./chat.html#volo");
+  })());
 });
 
 self.addEventListener("fetch", (event) => {

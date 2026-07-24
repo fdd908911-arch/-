@@ -69,6 +69,32 @@ try {
       const errors = [];
       const failedResponses = [];
       const apiResponses = [];
+      const outgoingRequests = [];
+      await page.route("**/hui-api/volo/call/request", async (route) => {
+        const request = route.request();
+        const payload = request.postDataJSON();
+        outgoingRequests.push(payload);
+        await new Promise((resolve) => setTimeout(resolve, 350));
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            ok: true,
+            ringing: false,
+            call_id: payload.call_id,
+            session: payload.session,
+            assistant_record: {
+              role: "assistant",
+              text: "我现在想安静一会儿，晚点再打给我。",
+              session: payload.session,
+              metadata: {
+                call_id: payload.call_id,
+                call_decision: "declined"
+              }
+            }
+          })
+        });
+      });
       page.on("console", (message) => {
         if (message.type() === "error") errors.push(message.text());
       });
@@ -288,6 +314,15 @@ try {
           },
           emojiElements: document.querySelectorAll("#voloEmojiButton, #voloEmojiPanel").length,
           callElements: document.querySelectorAll("#voloVoiceCallButton, #voloCallScreen").length,
+          outgoingCallElements: document.querySelectorAll(
+            "#voloOutgoingControls, #voloCallCancel, #voloCallCancelLabel"
+          ).length,
+          incomingCallElements: document.querySelectorAll(
+            "#voloIncomingCallToggle, #voloIncomingControls, #voloCallAnswer, #voloCallDecline"
+          ).length,
+          declineReasonElements: document.querySelectorAll(
+            "#voloDeclineReasons, #voloDeclineNote, #voloDeclineSend, [data-decline-note]"
+          ).length,
           sessions: document.querySelectorAll(".volo-session-row").length,
           selected: document.querySelector('[data-session][aria-current="page"]')?.dataset.session || "",
           bodyWidth: document.body.scrollWidth,
@@ -295,6 +330,16 @@ try {
           visibleClaudeCode: document.body.innerText.includes("Claude Code"),
           flowerElements: document.querySelectorAll(".volo-drawer-flower, .volo-current-chat-flower, .volo-flower-button").length
         };
+      });
+
+      const callHealth = await page.evaluate(async () => {
+        const config = window.CCC.getConfig();
+        const headers = config.token ? { "X-Auth-Token": config.token } : {};
+        const response = await fetch("/api/voice/call/health", {
+          headers,
+          cache: "no-store"
+        });
+        return { status: response.status, payload: await response.json() };
       });
 
       assert.equal(probes.apiBase, origin + "/hui-api", test.name + ": API base migration failed");
@@ -323,7 +368,13 @@ try {
       }, test.name + ": voice input states failed");
       assert(probes.voiceInput.width >= 80, test.name + ": voice input is too narrow");
       assert.equal(probes.emojiElements, 0, test.name + ": emoji controls are still rendered");
-      assert.equal(probes.callElements, 0, test.name + ": call preview is still rendered");
+      assert.equal(probes.callElements, 2, test.name + ": live call controls are missing");
+      assert.equal(probes.outgoingCallElements, 3, test.name + ": outgoing call controls are missing");
+      assert.equal(probes.incomingCallElements, 4, test.name + ": incoming call controls are missing");
+      assert.equal(probes.declineReasonElements, 6, test.name + ": decline reasons are missing");
+      assert.equal(callHealth.status, 200, test.name + ": live call health proxy failed");
+      assert.equal(callHealth.payload.ok, true, test.name + ": private STT is unavailable");
+      assert.equal(callHealth.payload.voice?.ok, true, test.name + ": Volo call voice is unavailable");
       assert(probes.sessions > 0 && probes.selected === switchTarget, test.name + ": session switch failed");
       assert(probes.bodyWidth <= probes.viewportWidth + 1, test.name + ": chat horizontal overflow");
       assert.equal(probes.visibleClaudeCode, false, test.name + ": Claude Code label is still visible");
@@ -331,6 +382,87 @@ try {
       assert(apiResponses.includes("/hui-api/chat/history"), test.name + ": history was not loaded");
       assert(apiResponses.includes("/hui-api/chat/poll"), test.name + ": polling did not start");
       assert(apiResponses.includes("/hui-api/v1/thinking"), test.name + ": thinking history was not loaded");
+
+      await page.evaluate(() => document.getElementById("voloVoiceCallButton").click());
+      await page.waitForFunction(() => !document.getElementById("voloCallScreen").hidden);
+      const outgoingRingingProbe = await page.evaluate(() => ({
+        ringing: document.getElementById("voloCallScreen").classList.contains("is-outgoing-ringing"),
+        status: document.getElementById("voloCallStatus").textContent.trim(),
+        transcript: document.getElementById("voloCallTranscript").textContent.trim(),
+        activeControlsHidden: document.getElementById("voloCallControls").hidden,
+        outgoingControlsHidden: document.getElementById("voloOutgoingControls").hidden
+      }));
+      assert.equal(outgoingRingingProbe.ringing, true, test.name + ": outgoing call did not ring first");
+      assert.match(outgoingRingingProbe.status, /正在呼叫 Volo/, test.name + ": outgoing status missing");
+      assert.match(outgoingRingingProbe.transcript, /电话正在送到他那边/, test.name + ": outgoing explanation missing");
+      assert.equal(outgoingRingingProbe.activeControlsHidden, true, test.name + ": active controls shown before Volo answered");
+      assert.equal(outgoingRingingProbe.outgoingControlsHidden, false, test.name + ": outgoing hangup control missing");
+      await page.waitForFunction(() => document.getElementById("voloCallStatus").textContent.includes("Volo 拒接了"));
+      const voloDeclineProbe = await page.evaluate(() => ({
+        reason: document.getElementById("voloCallTranscript").textContent.trim(),
+        detail: document.getElementById("voloCallQuality").textContent.trim(),
+        closeLabel: document.getElementById("voloCallCancelLabel").textContent.trim(),
+        screenOpen: !document.getElementById("voloCallScreen").hidden
+      }));
+      assert.match(voloDeclineProbe.reason, /想安静一会儿/, test.name + ": Volo decline reason missing");
+      assert.match(voloDeclineProbe.detail, /自己做的决定/, test.name + ": Volo autonomy label missing");
+      assert.equal(voloDeclineProbe.closeLabel, "关闭", test.name + ": declined call close action missing");
+      assert.equal(voloDeclineProbe.screenOpen, true, test.name + ": declined reason closed too early");
+      assert.equal(outgoingRequests.length, 1, test.name + ": outgoing decision request count mismatch");
+      assert.equal(outgoingRequests[0].session, "cc-test3", test.name + ": outgoing call used the wrong chat window");
+      assert.equal(outgoingRequests[0].carrier, "claude_code", test.name + ": outgoing call used the wrong carrier");
+      await page.evaluate(() => document.getElementById("voloCallCancel").click());
+      await page.waitForFunction(() => document.getElementById("voloCallScreen").hidden);
+
+      await page.evaluate(() => document.getElementById("voloSettingsButton").click());
+      await page.waitForFunction(() => !document.getElementById("voloSettingsSheet").hidden);
+      const incomingSettingLabel = await page.evaluate(() =>
+        document.getElementById("voloIncomingCallToggle").textContent.replace(/\s+/g, " ").trim()
+      );
+      assert.match(incomingSettingLabel, /Volo 主动来电.*开启/, test.name + ": incoming call setting missing");
+      await page.evaluate(() => document.getElementById("voloSettingsClose").click());
+      await page.evaluate(() => {
+        document.dispatchEvent(new CustomEvent("volo:assistant-message", {
+          detail: {
+            sessionId: "volo",
+            message: {
+              role: "assistant",
+              text: "年年，我想听听你的声音。",
+              message_type: "voice_call",
+              metadata: {
+                incoming_call: true,
+                call_id: "",
+                expires_at: Date.now() / 1000 + 60
+              }
+            }
+          }
+        }));
+      });
+      await page.waitForFunction(() => !document.getElementById("voloCallScreen").hidden);
+      const incomingProbe = await page.evaluate(() => ({
+        ringing: document.getElementById("voloCallScreen").classList.contains("is-ringing"),
+        status: document.getElementById("voloCallStatus").textContent.trim(),
+        transcript: document.getElementById("voloCallTranscript").textContent.trim(),
+        controlsHidden: document.getElementById("voloCallControls").hidden,
+        incomingHidden: document.getElementById("voloIncomingControls").hidden
+      }));
+      assert.equal(incomingProbe.ringing, true, test.name + ": incoming call did not ring");
+      assert.match(incomingProbe.status, /Volo 来电/, test.name + ": incoming status missing");
+      assert.match(incomingProbe.transcript, /想听听你的声音/, test.name + ": opening missing");
+      assert.equal(incomingProbe.controlsHidden, true, test.name + ": active controls shown before answer");
+      assert.equal(incomingProbe.incomingHidden, false, test.name + ": answer controls hidden");
+      await page.evaluate(() => document.getElementById("voloCallDecline").click());
+      await page.waitForFunction(() => !document.getElementById("voloDeclineReasons").hidden);
+      const declineProbe = await page.evaluate(() => ({
+        incomingHidden: document.getElementById("voloIncomingControls").hidden,
+        reasonsHidden: document.getElementById("voloDeclineReasons").hidden,
+        choices: document.querySelectorAll("[data-decline-note]").length
+      }));
+      assert.equal(declineProbe.incomingHidden, true, test.name + ": incoming controls stayed over decline reasons");
+      assert.equal(declineProbe.reasonsHidden, false, test.name + ": decline reasons did not open");
+      assert.equal(declineProbe.choices, 3, test.name + ": decline reason choices missing");
+      await page.evaluate(() => document.querySelector("[data-decline-note]").click());
+      await page.waitForFunction(() => document.getElementById("voloCallScreen").hidden);
 
       await page.evaluate(() => document.getElementById("voloSettingsButton").click());
       await page.waitForFunction(() => !document.getElementById("voloSettingsSheet").hidden);
@@ -388,7 +520,7 @@ try {
 
       const workerCache = await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
-        return (await caches.keys()).find((key) => key.includes("v83-terminal-route")) || "";
+        return (await caches.keys()).find((key) => key.includes("v87-volo-decline")) || "";
       });
       assert(workerCache, test.name + ": service-worker cache missing");
       process.stderr.write("Browser check passed: " + JSON.stringify({

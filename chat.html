@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="ccc-sessions.css?v=20260724-session-history-v1" />
     <link rel="stylesheet" href="chat-hub.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="volo-call.css?v=20260724-volo-decline-v1" />
   </head>
   <body class="chat-page sidebarless-chat">
     <svg class="svg-sprite" aria-hidden="true">
@@ -258,6 +259,9 @@
               <button class="volo-header-button volo-together-entry" id="voloTogetherButton" type="button" aria-label="和 Volo 一起听">
                 <svg><use href="#icon-music"></use></svg>
                 <span>一起听</span>
+              </button>
+              <button class="volo-header-button" id="voloVoiceCallButton" type="button" aria-label="和 Volo 语音通话" title="语音通话">
+                <svg><use href="#icon-phone"></use></svg>
               </button>
               <button class="volo-header-button" id="voloSettingsButton" type="button" aria-label="打开聊天设置">
                 <svg><use href="#icon-settings"></use></svg>
@@ -594,6 +598,25 @@
                 <section class="volo-settings-section">
                   <div class="volo-settings-section-title">
                     <span>
+                      <strong>语音来电</strong>
+                      <small>允许 Volo 自己想打时找你</small>
+                    </span>
+                  </div>
+                  <button class="volo-settings-row" id="voloIncomingCallToggle" type="button" aria-pressed="false">
+                    <span class="volo-settings-row-icon">
+                      <svg><use href="#icon-phone"></use></svg>
+                    </span>
+                    <span>
+                      <strong>Volo 主动来电</strong>
+                      <small id="voloIncomingCallStatus">开启后，退到后台也能收到来电通知</small>
+                    </span>
+                    <b id="voloIncomingCallLabel">开启</b>
+                  </button>
+                </section>
+
+                <section class="volo-settings-section">
+                  <div class="volo-settings-section-title">
+                    <span>
                       <strong>工具</strong>
                       <small>直接进入当前工作区</small>
                     </span>
@@ -901,6 +924,53 @@
       </form>
     </dialog>
 
+    <section class="volo-call-screen" id="voloCallScreen" aria-label="与 Volo 的实时语音通话" hidden>
+      <header class="volo-call-header">
+        <button id="voloCallMinimize" type="button" aria-label="结束并关闭通话">⌄</button>
+        <span>实时语音通话</span>
+        <button id="voloCallMore" type="button" aria-label="通话信息">···</button>
+      </header>
+      <main class="volo-call-main">
+        <div class="volo-call-avatar" id="voloCallAvatar" aria-hidden="true">V</div>
+        <h2>Volo</h2>
+        <p class="volo-call-status" id="voloCallStatus">正在连接…</p>
+        <p class="volo-call-quality" id="voloCallQuality" hidden>Tailnet · 实时转写</p>
+        <div class="volo-call-transcript" aria-live="polite">
+          <p id="voloCallTranscript">准备麦克风…</p>
+        </div>
+        <div class="volo-call-controls" id="voloCallControls">
+          <button id="voloCallMute" type="button" aria-pressed="false"><span>◉</span><small>静音</small></button>
+          <button class="volo-call-end" id="voloCallEnd" type="button"><span>×</span><small>挂断</small></button>
+          <button id="voloCallSpeaker" type="button" aria-pressed="true"><span>◖</span><small>扬声器</small></button>
+        </div>
+        <div class="volo-outgoing-controls" id="voloOutgoingControls" hidden>
+          <button class="volo-call-cancel" id="voloCallCancel" type="button"><span>×</span><small id="voloCallCancelLabel">挂断</small></button>
+        </div>
+        <div class="volo-incoming-controls" id="voloIncomingControls" hidden>
+          <button class="volo-call-decline" id="voloCallDecline" type="button"><span>×</span><small>拒绝</small></button>
+          <button class="volo-call-answer" id="voloCallAnswer" type="button"><span>⌕</span><small>接听</small></button>
+        </div>
+        <div class="volo-decline-reasons" id="voloDeclineReasons" hidden>
+          <p>告诉 Volo 一声</p>
+          <div class="volo-decline-chips">
+            <button type="button" data-decline-note="我现在有点忙，晚点找你。">现在忙</button>
+            <button type="button" data-decline-note="我现在在外面，晚点接你的电话。">在外面</button>
+            <button type="button" data-decline-note="我现在不方便说话，我们先打字吧。">先打字吧</button>
+          </div>
+          <div class="volo-decline-custom">
+            <input id="voloDeclineNote" type="text" maxlength="60" placeholder="或者自己说一句…" aria-label="拒接原因" />
+            <button id="voloDeclineSend" type="button">送过去</button>
+          </div>
+          <button class="volo-decline-back" id="voloDeclineBack" type="button">返回接听</button>
+        </div>
+      </main>
+      <aside class="volo-call-info" id="voloCallInfo" hidden>
+        <button id="voloCallInfoClose" type="button" aria-label="关闭通话信息">×</button>
+        <h3>通话链路</h3>
+        <p>浏览器自动收音和断句；音频经鉴权后送到另一台 VPS 的 CallHome q8 服务转写，回复使用 Volo 已选定的声音合成并直接播放。</p>
+      </aside>
+    </section>
+
     <div class="toast" id="toast" role="status" aria-live="polite" hidden>
       <span class="toast-check"><svg><use href="#icon-check"></use></svg></span>
       <span id="toastText"></span>
@@ -912,18 +982,19 @@
     <script src="ccc-api.js?v=20260724-thinking-v1"></script>
     <script src="features/volo-media-status.js?v=20260724-voice-input-v1"></script>
     <script src="features/volo-music.js?v=20260721-music-split-v2"></script>
-    <script src="features/volo-chat.js?v=20260724-thinking-v1"></script>
+    <script src="features/volo-chat.js?v=20260724-live-call-v1"></script>
     <script src="features/volo-composer.js?v=20260721-composer-split-v1"></script>
     <script src="features/volo-sessions.js?v=20260724-session-clean-v1"></script>
     <script src="features/volo-drawer.js?v=20260721-drawer-split-v1"></script>
     <script src="features/volo-carrier.js?v=20260724-carrier-clean-v1"></script>
     <script src="features/volo-voice.js?v=20260724-voice-input-v1"></script>
     <script src="features/volo-usage.js?v=20260721-usage-split-v1"></script>
-    <script src="volo.js?v=20260724-backend-restored-v1"></script>
+    <script src="volo.js?v=20260724-volo-decline-v1"></script>
+    <script src="volo-call.js?v=20260724-volo-decline-v1"></script>
     <script src="volo-ui-bridge.js?v=20260724-no-emoji-v1"></script>
     <script src="volo-together.js?v=20260724-together-listen-v2"></script>
     <script src="volo-settings.js?v=20260724-terminal-entry-v1"></script>
     <script src="terminal.js?v=20260724-terminal-restore-v1"></script>
+    <script src="pwa.js?v=20260724-incoming-call-v1"></script>
   </body>
 </html>
-
