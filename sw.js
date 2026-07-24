@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260724-v79-volo-clean-labels`;
+const CACHE_NAME = `${CACHE_PREFIX}20260724-v80-volo-thinking`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -34,12 +34,12 @@ const APP_SHELL = [
   "./home.js",
   "./app.js",
   "./core/ccc-runtime.js?v=20260721-core-v1",
-  "./ccc-api.js?v=20260721-api-split-v1",
+  "./ccc-api.js?v=20260724-thinking-v1",
   "./router.js",
   "./group.js",
   "./features/volo-media-status.js?v=20260721-media-status-v1",
   "./features/volo-music.js?v=20260721-music-split-v2",
-  "./features/volo-chat.js?v=20260724-chat-clean-v1",
+  "./features/volo-chat.js?v=20260724-thinking-v1",
   "./features/volo-composer.js?v=20260721-composer-split-v1",
   "./features/volo-sessions.js?v=20260724-session-clean-v1",
   "./features/volo-drawer.js?v=20260721-drawer-split-v1",
@@ -75,6 +75,7 @@ const API_PATHS = [
   "/api/music/",
   "/sessions",
   "/chat/",
+  "/v1/thinking",
   "/volo/",
   "/tmux/",
   "/group/",

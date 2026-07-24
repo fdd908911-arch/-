@@ -126,7 +126,7 @@ try {
       assert(actionDialog.title, test.name + ": session action title missing");
       assert(["启动窗口", "停止窗口"].includes(actionDialog.action), test.name + ": session action invalid");
 
-      const switchTarget = await page.evaluate(() => {
+      let switchTarget = await page.evaluate(() => {
         const target = [...document.querySelectorAll("[data-session]")]
           .find((item) => item.getAttribute("aria-current") !== "page");
         target.click();
@@ -138,6 +138,37 @@ try {
         switchTarget
       );
       await page.waitForTimeout(400);
+
+      const hasThinkingSession = await page.evaluate(() => Boolean(
+        document.querySelector("[data-session=\"cc-test3\"]")
+      ));
+      assert(hasThinkingSession, test.name + ": cc-test3 session missing");
+      if (switchTarget !== "cc-test3") {
+        await page.evaluate(() => document.querySelector("[data-session=\"cc-test3\"]").click());
+        await page.waitForFunction(() =>
+          document.querySelector("[data-session=\"cc-test3\"]").getAttribute("aria-current") === "page"
+        );
+        switchTarget = "cc-test3";
+      }
+      await page.waitForFunction(() => document.querySelectorAll(".volo-thought-toggle").length > 0);
+      const thoughtProbe = await page.evaluate(() => {
+        const toggles = [...document.querySelectorAll(".volo-thought-toggle")];
+        const toggle = toggles[0];
+        toggle.click();
+        const panel = toggle.nextElementSibling;
+        return {
+          count: toggles.length,
+          label: toggle.textContent.trim(),
+          expanded: toggle.getAttribute("aria-expanded"),
+          panelHidden: panel.hidden,
+          textChars: panel.textContent.trim().length
+        };
+      });
+      assert(thoughtProbe.count > 0, test.name + ": thinking cards missing");
+      assert.match(thoughtProbe.label, /Volo 在想/, test.name + ": thinking card label missing");
+      assert.equal(thoughtProbe.expanded, "true", test.name + ": thinking card did not expand");
+      assert.equal(thoughtProbe.panelHidden, false, test.name + ": thinking panel stayed hidden");
+      assert(thoughtProbe.textChars > 0, test.name + ": thinking text missing");
 
       const probes = await page.evaluate(() => {
         const music = window.VoloMusic.create({
@@ -274,6 +305,7 @@ try {
       assert.equal(probes.flowerElements, 0, test.name + ": flower decoration is still rendered");
       assert(apiResponses.includes("/hui-api/chat/history"), test.name + ": history was not loaded");
       assert(apiResponses.includes("/hui-api/chat/poll"), test.name + ": polling did not start");
+      assert(apiResponses.includes("/hui-api/v1/thinking"), test.name + ": thinking history was not loaded");
 
       await page.goto(origin + "/hui-v40/volo-status.html", { waitUntil: "networkidle" });
       await page.waitForFunction(() => {
@@ -296,12 +328,13 @@ try {
 
       const workerCache = await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
-        return (await caches.keys()).find((key) => key.includes("v79-volo-clean-labels")) || "";
+        return (await caches.keys()).find((key) => key.includes("v80-volo-thinking")) || "";
       });
       assert(workerCache, test.name + ": service-worker cache missing");
       process.stderr.write("Browser check passed: " + JSON.stringify({
         case: test.name,
         sessions: probes.sessions,
+        thoughtCards: thoughtProbe.count,
         drivesDimensions: status.dimensions,
         workerCache,
         errors: errors.length,

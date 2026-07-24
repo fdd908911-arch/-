@@ -33,6 +33,11 @@
     history: function (session, limit) {
       return request("/chat/history", { query: { session: session, limit: limit || 200 } });
     },
+    thinking: function (turnId, limit) {
+      var query = { limit: limit || 500 };
+      if (turnId) query.turn_id = turnId;
+      return request("/v1/thinking", { query: query });
+    },
     poll: function (session, since, limit) {
       return request("/chat/poll", {
         query: { session: session, since: since || "", limit: limit || 100 }
