@@ -245,7 +245,9 @@ try {
           sessions: document.querySelectorAll(".volo-session-row").length,
           selected: document.querySelector('[data-session][aria-current="page"]')?.dataset.session || "",
           bodyWidth: document.body.scrollWidth,
-          viewportWidth: innerWidth
+          viewportWidth: innerWidth,
+          visibleClaudeCode: document.body.innerText.includes("Claude Code"),
+          flowerElements: document.querySelectorAll(".volo-drawer-flower, .volo-current-chat-flower, .volo-flower-button").length
         };
       });
 
@@ -268,6 +270,8 @@ try {
       assert(probes.musicOwnsStatus && probes.voiceOwnsStatus, test.name + ": media ownership failed");
       assert(probes.sessions > 0 && probes.selected === switchTarget, test.name + ": session switch failed");
       assert(probes.bodyWidth <= probes.viewportWidth + 1, test.name + ": chat horizontal overflow");
+      assert.equal(probes.visibleClaudeCode, false, test.name + ": Claude Code label is still visible");
+      assert.equal(probes.flowerElements, 0, test.name + ": flower decoration is still rendered");
       assert(apiResponses.includes("/hui-api/chat/history"), test.name + ": history was not loaded");
       assert(apiResponses.includes("/hui-api/chat/poll"), test.name + ": polling did not start");
 
@@ -292,7 +296,7 @@ try {
 
       const workerCache = await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
-        return (await caches.keys()).find((key) => key.includes("v76-volo-surface-split")) || "";
+        return (await caches.keys()).find((key) => key.includes("v79-volo-clean-labels")) || "";
       });
       assert(workerCache, test.name + ": service-worker cache missing");
       process.stderr.write("Browser check passed: " + JSON.stringify({

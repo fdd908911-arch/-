@@ -8,10 +8,10 @@
 
     function update(carrier) {
       var gateway = carrier === "gateway";
-      pill.textContent = gateway ? "Volo · 陪我聊聊" : "Volo · Claude Code";
+      pill.textContent = gateway ? "Volo · 陪我聊聊" : "当前窗口";
       pill.classList.toggle("is-gateway", gateway);
-      if (badge) badge.textContent = gateway ? "API" : "Claude Code";
-      options.composer.setPlaceholder(gateway ? "和 Volo 聊聊..." : "发送给 Claude Code…");
+      if (badge) badge.textContent = gateway ? "API" : "当前窗口";
+      options.composer.setPlaceholder(gateway ? "和 Volo 聊聊..." : "发送到当前窗口…");
       options.usage.updateCarrier(gateway);
       document.dispatchEvent(
         new CustomEvent("volo:carrier-selected", {

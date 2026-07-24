@@ -68,19 +68,19 @@
   }
 
   function carrierLabel(value) {
-    return value === "api" ? "API" : "Claude Code";
+    return value === "api" ? "API" : "当前窗口";
   }
 
   function applyCarrier(shouldNotify) {
     carrierInputs.forEach(function (radio) {
       radio.checked = radio.value === settings.carrier;
     });
-    carrierBadge.textContent = carrierLabel(settings.carrier);
+    if (carrierBadge) carrierBadge.textContent = carrierLabel(settings.carrier);
     document.body.dataset.voloCarrier = settings.carrier;
     input.placeholder =
       settings.carrier === "api"
         ? "通过 API 发送消息…"
-        : "发送给 Claude Code…";
+        : "发送到当前窗口…";
     if (shouldNotify) {
       document.dispatchEvent(
         new CustomEvent("volo:carrier-change", {

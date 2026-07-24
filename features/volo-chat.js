@@ -97,17 +97,13 @@
       if (content.music) body.appendChild(options.music.createCard(content.music));
       var footer = document.createElement("footer");
       footer.className = "volo-assistant-footer";
-      var mark = document.createElement("button");
-      mark.className = "volo-assistant-mark volo-flower-button";
-      mark.type = "button";
-      mark.setAttribute("aria-label", "让 Volo 的小花动起来");
       var note = document.createElement("span");
       var metadata = message.metadata || {};
-      var carrierLabel = metadata.carrier === "gateway" ? "陪我聊聊" : "Claude Code";
+      var carrierLabel = metadata.carrier === "gateway" ? "陪我聊聊" : "当前窗口";
       var toolCount = Array.isArray(metadata.tools) ? metadata.tools.length : 0;
       note.textContent = carrierLabel + " · " + formatTime(message.ts) +
         (toolCount ? " · " + toolCount + " 个工具" : "");
-      footer.append(mark, note);
+      footer.appendChild(note);
       row.append(body, footer);
       return row;
     }
@@ -284,14 +280,6 @@
     function bind() {
       if (bound) return;
       bound = true;
-      messageList.addEventListener("click", function (event) {
-        var flower = event.target.closest(".volo-flower-button");
-        if (!flower) return;
-        flower.classList.remove("is-blooming");
-        void flower.offsetWidth;
-        flower.classList.add("is-blooming");
-        emitClawd("happy", "Volo 的小花开啦", { duration: 1000, priority: 2 });
-      });
       document.addEventListener("visibilitychange", function () {
         if (!document.hidden) schedulePoll(100);
       });

@@ -86,9 +86,6 @@
         button.className = "volo-current-chat";
         button.dataset.session = sessionId;
         button.setAttribute("aria-current", sessionId === current ? "page" : "false");
-        var flower = document.createElement("span");
-        flower.className = "volo-current-chat-flower";
-        flower.setAttribute("aria-hidden", "true");
         var copy = document.createElement("span");
         var title = document.createElement("strong");
         title.textContent = session.title || sessionId;
@@ -96,7 +93,7 @@
         var unread = options.chat.unreadCount(sessionId);
         status.textContent = sessionStatus(session) + (unread ? " · " + unread + " 条未读" : "");
         copy.append(title, status);
-        button.append(flower, copy);
+        button.appendChild(copy);
         var menu = document.createElement("button");
         menu.type = "button";
         menu.className = "volo-session-menu";

@@ -202,7 +202,6 @@
           <aside class="volo-drawer" id="voloDrawer" aria-label="Volo 对话" aria-hidden="true" inert>
             <header class="volo-drawer-header">
               <div class="volo-drawer-brand">
-                <span class="volo-drawer-flower" aria-hidden="true"></span>
                 <span>
                   <strong>Volo</strong>
                   <small>Conversations</small>
@@ -246,7 +245,6 @@
               <span class="volo-person-copy">
                 <strong>Volo</strong>
                 <small id="voloPresence">在线</small>
-                <span class="volo-carrier-badge" id="voloCarrierBadge">Claude Code</span>
               </span>
             </button>
 
@@ -315,10 +313,7 @@
 
             <div class="volo-composer-zone">
               <p class="volo-voice-status" id="voloVoiceStatus" role="status" aria-live="polite" hidden></p>
-              <div class="volo-live-session-bar">
-                <button class="volo-model-pill" id="voloCarrierPill" type="button" aria-live="polite">Volo · Claude Code</button>
-                <span>在历史里切换窗口</span>
-              </div>
+              <span id="voloCarrierPill" hidden></span>
               <div class="volo-emoji-panel" id="voloEmojiPanel" hidden>
                 <button type="button">😊</button>
                 <button type="button">🥰</button>
@@ -624,8 +619,8 @@
                       <span class="volo-carrier-option">
                         <i>CC</i>
                         <span>
-                          <strong>Claude Code</strong>
-                          <small>使用当前 Claude Code 会话</small>
+                          <strong>当前窗口</strong>
+                          <small>使用当前 tmux 会话</small>
                         </span>
                         <b></b>
                       </span>
@@ -974,17 +969,17 @@
     <script src="ccc-api.js?v=20260721-api-split-v1"></script>
     <script src="features/volo-media-status.js?v=20260721-media-status-v1"></script>
     <script src="features/volo-music.js?v=20260721-music-split-v2"></script>
-    <script src="features/volo-chat.js?v=20260721-chat-split-v1"></script>
+    <script src="features/volo-chat.js?v=20260724-chat-clean-v1"></script>
     <script src="features/volo-composer.js?v=20260721-composer-split-v1"></script>
-    <script src="features/volo-sessions.js?v=20260724-session-history-v1"></script>
+    <script src="features/volo-sessions.js?v=20260724-session-clean-v1"></script>
     <script src="features/volo-drawer.js?v=20260721-drawer-split-v1"></script>
-    <script src="features/volo-carrier.js?v=20260724-carrier-bridge-v1"></script>
+    <script src="features/volo-carrier.js?v=20260724-carrier-clean-v1"></script>
     <script src="features/volo-voice.js?v=20260721-voice-split-v1"></script>
     <script src="features/volo-usage.js?v=20260721-usage-split-v1"></script>
     <script src="volo.js?v=20260724-backend-restored-v1"></script>
     <script src="volo-ui-bridge.js?v=20260724-session-ui-v1"></script>
     <script src="volo-together.js?v=20260724-together-listen-v2"></script>
-    <script src="volo-settings.js?v=20260724-chat-settings-v2"></script>
+    <script src="volo-settings.js?v=20260724-chat-settings-v3"></script>
     <script src="volo-call.js?v=20260724-voice-call-v1"></script>
   </body>
 </html>
