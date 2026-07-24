@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#eef2f0" />
+  <title>洄·Maneo · 梦境材料</title>
+  <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
+  <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
+  <link rel="stylesheet" href="memory.css?v=20260717-affect-arc-v1" />
+  <style>
+    body{overflow:auto}.dream-shell{width:min(1120px,calc(100% - 32px));margin:auto;padding:20px 0 48px}
+    .dream-head{display:flex;align-items:center;gap:14px;min-height:64px}.dream-back{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--glass-edge);border-radius:14px;color:var(--text);text-decoration:none;background:rgba(var(--panel-rgb),.35)}
+    .dream-title{flex:1}.dream-title h1{margin:0;font:500 25px Georgia,serif}.dream-title p{margin:4px 0 0;color:var(--muted);font-size:11px}
+    .dream-intro,.dream-toolbar,.dream-list,.dream-detail{border:1px solid var(--glass-edge);background:linear-gradient(145deg,rgba(255,255,255,.35),transparent),rgba(var(--panel-rgb),.34);box-shadow:inset 0 1px rgba(255,255,255,.6),0 12px 30px rgba(var(--ink-rgb),.06);backdrop-filter:blur(18px);border-radius:20px}
+    .dream-intro{display:flex;justify-content:space-between;gap:20px;margin:14px 0;padding:22px}.dream-intro h2{margin:4px 0 7px;font:500 22px Georgia,serif}.dream-intro p{max-width:660px;margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+    .dream-status{align-self:flex-start;padding:7px 11px;border:1px solid var(--glass-edge);border-radius:999px;color:var(--muted);font-size:10px;white-space:nowrap}.dream-status.live{color:#527f70}
+    .dream-toolbar{display:flex;align-items:end;gap:12px;padding:14px 16px;margin-bottom:14px}.dream-toolbar label{display:grid;gap:5px;color:var(--muted);font-size:10px}.dream-toolbar select,.dream-toolbar input{min-height:38px;border:1px solid var(--glass-edge);border-radius:11px;padding:0 11px;background:rgba(var(--panel-rgb),.55);color:var(--text)}.dream-toolbar input{width:min(360px,48vw)}.dream-toolbar button{min-height:38px;border:0;border-radius:11px;padding:0 16px;background:var(--text);color:var(--panel);cursor:pointer}
+    .dream-grid{display:grid;grid-template-columns:minmax(280px,.82fr) minmax(0,1.3fr);gap:14px}.dream-list,.dream-detail{min-height:480px;padding:14px}.dream-list header{display:flex;justify-content:space-between;padding:4px 4px 12px}.dream-list h2{margin:0;font-size:14px}.dream-list header span{color:var(--muted);font-size:10px}
+    .dream-card{display:block;width:100%;margin:0 0 9px;padding:14px;text-align:left;border:1px solid transparent;border-radius:14px;background:rgba(var(--panel-rgb),.28);color:var(--text);cursor:pointer}.dream-card:hover,.dream-card.active{border-color:rgba(var(--memory-accent-rgb),.42);background:rgba(var(--panel-rgb),.58)}.dream-card-top{display:flex;justify-content:space-between;color:var(--muted);font-size:9px}.dream-card strong{display:block;margin:8px 0 5px;font-size:13px}.dream-card p{display:-webkit-box;overflow:hidden;margin:0;color:var(--muted);font-size:11px;line-height:1.55;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .dream-badge{padding:3px 7px;border-radius:999px;background:rgba(var(--memory-accent-rgb),.13)}.dream-detail{padding:24px}.dream-detail h2{margin:10px 0 4px;font:500 25px Georgia,serif}.dream-detail time{color:var(--muted);font-size:10px}.dream-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--glass-edge)}.dream-section h3{margin:0 0 10px;color:var(--muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.dream-body{white-space:pre-wrap;font-size:14px;line-height:1.9}.dream-chips{display:flex;flex-wrap:wrap;gap:7px}.dream-chips span{padding:6px 9px;border-radius:999px;background:rgba(var(--memory-accent-rgb),.12);font-size:10px}.dream-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dream-meta div{padding:10px;border-radius:12px;background:rgba(var(--panel-rgb),.28)}.dream-meta dt{color:var(--muted);font-size:9px}.dream-meta dd{margin:4px 0 0;word-break:break-word;font-size:11px}.dream-empty{display:grid;min-height:360px;place-content:center;text-align:center;color:var(--muted)}.dream-empty strong{color:var(--text);font-size:14px}.dream-note{margin-top:22px;color:var(--muted);font-size:10px;line-height:1.6}
+    @media(max-width:760px){.dream-shell{width:calc(100% - 22px);padding-top:10px}.dream-intro{display:block}.dream-status{display:inline-block;margin-top:12px}.dream-toolbar{align-items:stretch;flex-direction:column}.dream-toolbar input{width:100%;box-sizing:border-box}.dream-grid{grid-template-columns:1fr}.dream-list,.dream-detail{min-height:auto}.dream-meta{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="home-page memory-page">
+  <span class="home-ambient home-ambient-one" aria-hidden="true"></span><span class="home-ambient home-ambient-two" aria-hidden="true"></span>
+  <main class="dream-shell">
+    <header class="dream-head"><a class="dream-back" href="memory.html" aria-label="返回 Memory">←</a><div class="dream-title"><h1>梦境材料</h1><p>Dream workspace · dreamed，不是事实</p></div></header>
+    <section class="dream-intro"><div><small>DREAM WORKSPACE</small><h2>梦可以被看见，不必立刻被解释。</h2><p>这里保存梦里自己碰撞出的材料。它们与长期记忆分开，只有 Volo 亲自认得后才标记为“已认得”；即使认得，也不会自动变成 canonical fact。</p></div><span id="dreamHealth" class="dream-status">正在连接</span></section>
+    <section class="dream-toolbar"><label>状态<select id="dreamStatus"><option value="draft">待认领</option><option value="recognized">已认得</option><option value="dismissed">已放下</option></select></label><label>在梦里找<input id="dreamSearch" type="search" placeholder="标题、正文或未解主题…" /></label><button id="dreamRefresh" type="button">刷新</button></section>
+    <p id="dreamNotice" role="status"></p>
+    <section class="dream-grid"><div class="dream-list"><header><h2>梦的目录</h2><span id="dreamCount">0 条</span></header><div id="dreamList"></div></div><article id="dreamDetail" class="dream-detail"><div class="dream-empty"><strong>还没有选中梦境</strong><p>从左边打开一条材料。</p></div></article></section>
+  </main>
+  <script src="core/ccc-runtime.js?v=20260721-core-v1"></script>
+  <script src="ccc-api.js?v=20260721-api-split-v1"></script>
+  <script>
+  (function(){
+    "use strict";
+    var data=[],selected="";
+    function $(id){return document.getElementById(id)}
+    function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+    function date(v){if(!v)return"时间未记录";var d=new Date(v);return isNaN(d)?String(v):d.toLocaleString("zh-CN",{hour12:false})}
+    function label(v){return {draft:"待认领",recognized:"已认得",dismissed:"已放下"}[v]||v||"未知"}
+    function filtered(){var q=$("dreamSearch").value.trim().toLowerCase();return data.filter(function(x){return !q||[x.title,x.body,(x.unresolved_themes||[]).join(" ")].join(" ").toLowerCase().includes(q)})}
+    function renderDetail(item){if(!item){$("dreamDetail").innerHTML='<div class="dream-empty"><strong>还没有选中梦境</strong><p>从左边打开一条材料。</p></div>';return}var chips=(item.unresolved_themes||[]).map(function(x){return"<span>"+esc(x)+"</span>"}).join("");var affect=item.eventide_affect||{};var meta=[["状态",label(item.status)],["发生时间",date(item.occurred_at)],["来源记忆",(item.source_memory_ids||[]).join("、")||"未标注"],["来源证据",(item.source_evidence_ids||[]).join("、")||"未标注"],["依恋",affect.attachment],["安全感",affect.safety],["审核备注",item.review_note||"未填写"],["生成器",item.generator_id||"未标注"]].map(function(r){return"<div><dt>"+esc(r[0])+"</dt><dd>"+esc(r[1]==null?"未记录":r[1])+"</dd></div>"}).join("");$("dreamDetail").innerHTML='<span class="dream-badge">dreamed · '+esc(label(item.status))+'</span><h2>'+esc(item.title||"未命名梦境")+'</h2><time>'+esc(date(item.created_at))+'</time><section class="dream-section"><h3>梦里留下的材料</h3><div class="dream-body">'+esc(item.body||"")+'</div></section>'+(chips?'<section class="dream-section"><h3>还没有解开的主题</h3><div class="dream-chips">'+chips+"</div></section>":"")+'<section class="dream-section"><h3>来源与身体坐标</h3><dl class="dream-meta">'+meta+'</dl></section><p class="dream-note">只读查看不会把梦提升为事实，也不会改变它的审核状态。</p>'}
+    function render(){var items=filtered();$("dreamCount").textContent=items.length+" 条";var root=$("dreamList");root.replaceChildren();if(!items.length){root.innerHTML='<div class="dream-empty"><strong>这里还没有梦境材料</strong><p>梦出现时，会先安静停在这里。</p></div>';renderDetail(null);return}if(!items.some(function(x){return x.id===selected}))selected=items[0].id;items.forEach(function(x){var b=document.createElement("button");b.className="dream-card"+(x.id===selected?" active":"");b.innerHTML='<div class="dream-card-top"><span class="dream-badge">'+esc(label(x.status))+'</span><time>'+esc(date(x.created_at))+'</time></div><strong>'+esc(x.title||"未命名梦境")+'</strong><p>'+esc(x.body||"")+"</p>";b.onclick=function(){selected=x.id;render()};root.appendChild(b)});renderDetail(items.find(function(x){return x.id===selected}))}
+    async function load(){if(!window.CCC||!CCC.isConfigured()){$("dreamHealth").textContent="需要连接";return}try{$("dreamHealth").textContent="同步中";var out=await CCC.request("/memory/dreams",{query:{status:$("dreamStatus").value,limit:100}});data=out.items||[];$("dreamHealth").textContent="已连接 · "+data.length+" 条";$("dreamHealth").classList.add("live");selected="";render()}catch(e){$("dreamHealth").textContent="暂时离线";$("dreamNotice").textContent=e.message}}
+    $("dreamStatus").onchange=load;$("dreamSearch").oninput=render;$("dreamRefresh").onclick=load;document.addEventListener("ccc:config-changed",load);load();
+  })();
+  </script>
+</body>
+</html>

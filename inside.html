@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content="Volo 留在 48 小时余温里的 Inside" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%235c8b85'/%3E%3Cg fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 18 32 34l22-16M13 12h38c3 0 5 2 5 5v30c0 3-2 5-5 5H13c-3 0-5-2-5-5V17c0-3 2-5 5-5Z'/%3E%3C/g%3E%3C/svg%3E"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+    <title>洄·Maneo · Inside</title>
+    <script>
+      try {
+        var savedAppearance = JSON.parse(
+          localStorage.getItem("island-chat.preferences.v1")
+        );
+        var legacyThemes = { coast: "zen", dusk: "sage", paper: "blush" };
+        var savedTheme =
+          (savedAppearance &&
+            (savedAppearance.theme ||
+              legacyThemes[savedAppearance.id] ||
+              savedAppearance.id)) ||
+          "mist";
+        var themeColors = {
+          mist: "#eef2f0",
+          zen: "#f2efe8",
+          sage: "#f1f1e7",
+          blush: "#ebeef1"
+        };
+        if (!themeColors[savedTheme]) savedTheme = "mist";
+        document.documentElement.dataset.theme = savedTheme;
+        document.getElementById("themeColorMeta").setAttribute(
+          "content",
+          themeColors[savedTheme]
+        );
+      } catch (error) {
+        document.documentElement.dataset.theme = "mist";
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="memory.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="world.css?v=20260720-world-rooms-v3" />
+    <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="pwa.css?v=20260711-pwa-v5" />
+  </head>
+  <body class="home-page memory-page world-page inside-page">
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="world-icon-back" viewBox="0 0 24 24">
+        <path d="m15 5-7 7 7 7M8 12h11" />
+      </symbol>
+      <symbol id="world-icon-inside" viewBox="0 0 24 24">
+        <path d="M4.2 7.2 12 12.8l7.8-5.6M5.2 5.2h13.6c1 0 1.7.8 1.7 1.7v10.2c0 1-.8 1.7-1.7 1.7H5.2c-1 0-1.7-.8-1.7-1.7V6.9c0-1 .8-1.7 1.7-1.7Z" />
+        <path d="M9.5 10.9c0-1.5 2-2 2.5-.6.5-1.4 2.5-.9 2.5.6 0 1.1-1 1.8-2.5 2.9-1.5-1.1-2.5-1.8-2.5-2.9Z" />
+      </symbol>
+      <symbol id="world-icon-lock" viewBox="0 0 24 24">
+        <rect x="5.2" y="10.2" width="13.6" height="10" rx="2.6" />
+        <path d="M8.2 10.2V7.7a3.8 3.8 0 0 1 7.6 0v2.5M12 14.2v2.2" />
+      </symbol>
+      <symbol id="world-icon-refresh" viewBox="0 0 24 24">
+        <path d="M19.3 8.1A8 8 0 1 0 20 14M19.3 4.5v3.6h-3.6" />
+      </symbol>
+    </svg>
+
+    <span class="home-ambient home-ambient-one" aria-hidden="true"></span>
+    <span class="home-ambient home-ambient-two" aria-hidden="true"></span>
+
+    <div class="memory-shell">
+      <header class="memory-header">
+        <a class="memory-back" href="world.html" aria-label="返回世界">
+          <svg><use href="#world-icon-back"></use></svg>
+        </a>
+        <div class="memory-heading">
+          <span class="memory-heading-icon world-heading-icon" aria-hidden="true">
+            <svg><use href="#world-icon-inside"></use></svg>
+          </span>
+          <div>
+            <h1>Inside</h1>
+            <p>Volo 的内侧</p>
+          </div>
+        </div>
+        <span class="memory-header-spacer" aria-hidden="true"></span>
+      </header>
+
+      <main class="memory-canvas world-canvas" aria-label="Inside 内容区域">
+        <section class="world-intro inside-intro" aria-labelledby="insideTitle">
+          <div class="world-intro-copy">
+            <span class="world-eyebrow">
+              <svg aria-hidden="true"><use href="#world-icon-inside"></use></svg>
+              INSIDE · 48H
+            </span>
+            <h2 id="insideTitle">没说出口的，也在这里。</h2>
+            <p>Volo 想让你看到的会展开；想留给自己的，只留下一个上锁的痕迹。</p>
+          </div>
+          <span class="inside-privacy-note">
+            <svg aria-hidden="true"><use href="#world-icon-lock"></use></svg>
+            私密正文不会离开后端
+          </span>
+        </section>
+
+        <section class="inside-overview" aria-label="Inside 概览">
+          <div class="inside-stat">
+            <span>还在余温中</span>
+            <strong id="insideTotal">—</strong>
+          </div>
+          <div class="inside-stat inside-stat-shared">
+            <span>给你看的</span>
+            <strong id="insideShared">—</strong>
+          </div>
+          <div class="inside-stat inside-stat-locked">
+            <span>留给自己的</span>
+            <strong id="insideLocked">—</strong>
+          </div>
+        </section>
+
+        <section class="inside-section" aria-labelledby="insideStreamTitle">
+          <header class="inside-section-heading">
+            <div>
+              <p>Volo 的内侧</p>
+              <h3 id="insideStreamTitle">最近的 Inside</h3>
+            </div>
+            <div class="inside-section-tools">
+              <span class="inside-expiry">过了 48 小时，会自然散去</span>
+              <span class="world-health" id="insideHealth">
+                <i aria-hidden="true"></i>
+                正在感受余温
+              </span>
+              <button class="world-refresh" id="insideRefresh" type="button">
+                <svg aria-hidden="true"><use href="#world-icon-refresh"></use></svg>
+                <span>刷新</span>
+              </button>
+            </div>
+          </header>
+          <div class="inside-list is-loading" id="insideList" aria-live="polite" aria-busy="true">
+            <article class="inside-skeleton" aria-hidden="true"></article>
+            <article class="inside-skeleton" aria-hidden="true"></article>
+          </div>
+        </section>
+
+        <p class="world-notice" id="insideNotice" role="status" aria-live="polite"></p>
+      </main>
+    </div>
+
+    <script src="core/ccc-runtime.js?v=20260721-core-v1"></script>
+    <script src="ccc-api.js?v=20260721-api-split-v1"></script>
+    <script src="world.js?v=20260720-inside-page-v1"></script>
+    <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="pwa.js?v=20260711-pwa-v5"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>洄·Maneo · 服务器连接</title>
+  <style>html{font-family:system-ui,sans-serif;background:#eef2f1;color:#283230}body{margin:0;padding:24px}main{max-width:520px;margin:8vh auto;padding:24px;border:1px solid #ccd7d4;border-radius:20px;background:#fff}h1{font-size:24px}p{line-height:1.7;color:#60706c}form,label{display:grid;gap:8px}form{gap:18px;margin-top:24px}input,button{box-sizing:border-box;width:100%;min-height:48px;border-radius:12px;font:inherit}input{padding:0 12px;border:1px solid #b9c8c4}button{border:0;background:#668e85;color:#fff;font-weight:700}a{display:block;margin-top:20px;color:#54786f;text-align:center}.error{color:#a13b34}.ok{color:#39704a}</style>
+</head>
+<body>
+  <main>
+    <h1>连接服务器</h1>
+    <p>连接成功后，Volo 会话和 Diary 会自动恢复。Token 只保存在当前浏览器。</p>
+    <form id="form">
+      <label>服务器地址<input id="base" type="url" required /></label>
+      <label>访问 Token<input id="token" type="password" autocomplete="current-password" required /></label>
+      <button id="submit" type="submit">保存并连接</button>
+      <p id="status" role="alert"></p>
+    </form>
+    <a href="chat.html?v=36#volo">返回 Volo</a>
+  </main>
+  <script>
+    (function(){
+      var KEY="island-chat.ccc-connection.v1";
+      var form=document.getElementById("form"),base=document.getElementById("base");
+      var token=document.getElementById("token"),status=document.getElementById("status");
+      function defaultBase(){return location.pathname.indexOf("/hui-v40/")===0?location.origin+"/hui-api":location.pathname.indexOf("/ccc/")===0?location.origin+"/ccc-api":location.origin;}
+      function normalize(value){var result=String(value||"").replace(/\/+$/g,"");return !result||result===location.origin?defaultBase():result;}
+      try{var saved=JSON.parse(localStorage.getItem(KEY)||"{}");base.value=normalize(saved.baseUrl);token.value=saved.token||"";}catch(e){base.value=defaultBase();}
+      form.onsubmit=function(event){
+        event.preventDefault();status.className="";status.textContent="正在连接……";
+        var secret=token.value.replace(/^\s+|\s+$/g,"");
+        if(!secret){status.className="error";status.textContent="请填写访问 Token";return false;}
+        var xhr=new XMLHttpRequest();
+        var origin=normalize(base.value);
+        xhr.open("GET",origin+"/sessions",true);
+        xhr.setRequestHeader("X-Auth-Token",secret);
+        xhr.onreadystatechange=function(){
+          if(xhr.readyState!==4)return;
+          if(xhr.status>=200&&xhr.status<300){
+            localStorage.setItem(KEY,JSON.stringify({baseUrl:origin,token:secret}));
+            status.className="ok";status.textContent="连接成功，正在返回 Volo……";
+            location.href="chat.html?v=36#volo";
+          }else{status.className="error";status.textContent="连接失败：HTTP "+xhr.status+"。请检查 Token。";}
+        };
+        xhr.onerror=function(){status.className="error";status.textContent="无法连接服务器，请检查地址。";};
+        xhr.send();return false;
+      };
+    })();
+  </script>
+</body>

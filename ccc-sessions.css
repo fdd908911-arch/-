@@ -1,0 +1,410 @@
+.message-list[data-real-group="true"] .message-row {
+  animation: none;
+}
+
+.group-message-sender {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.group-sender-codex {
+  color: #8ed6a2;
+}
+
+.group-sender-opencode {
+  color: #91c9e8;
+}
+
+.group-agent-typing .typing-bubble {
+  min-height: 36px;
+  padding-block: 10px;
+}
+
+.group-agent-typing strong {
+  margin-right: 4px;
+  color: #b9cbd5;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.group-agent-typing .typing-bubble span {
+  flex: 0 0 5px;
+}
+
+.volo-session-list {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.volo-session-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.volo-session-row.active {
+  background: var(--volo-hover);
+}
+
+.volo-session-row.volo-session-virtual {
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: 8px;
+  border: 1px solid color-mix(in srgb, var(--volo-border) 72%, var(--accent));
+  background: color-mix(in srgb, var(--volo-hover) 72%, transparent);
+}
+
+.volo-session-virtual .volo-current-chat-flower {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, var(--volo-panel) 0 18%, transparent 20%),
+    conic-gradient(from 22.5deg, var(--accent), transparent 12.5%, var(--accent) 25%, transparent 37.5%, var(--accent) 50%, transparent 62.5%, var(--accent) 75%, transparent 87.5%, var(--accent));
+  opacity: 0.72;
+}
+
+.volo-session-row .volo-current-chat {
+  min-width: 0;
+  background: transparent;
+}
+
+.volo-session-menu {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--volo-muted);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.volo-session-menu:hover,
+.volo-connection-button:hover {
+  background: var(--volo-hover);
+  color: var(--volo-text);
+}
+
+.volo-session-empty {
+  margin: 14px 8px;
+  color: var(--volo-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.volo-connection-button {
+  display: grid;
+  width: 100%;
+  min-height: 48px;
+  grid-template-columns: 10px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--volo-text-soft);
+  text-align: left;
+}
+
+.volo-connection-button > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-connection-button strong {
+  color: var(--volo-text);
+  font-size: 11px;
+}
+
+.volo-connection-button small {
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--volo-muted);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b8afa4;
+}
+
+.connection-dot.online {
+  background: #4b9d5f;
+  box-shadow: 0 0 0 3px rgba(75, 157, 95, 0.12);
+}
+
+.volo-message-time {
+  display: block;
+  margin-top: 5px;
+  color: color-mix(in srgb, currentColor 56%, transparent);
+  font-size: 9px;
+  text-align: right;
+}
+
+.ccc-dialog {
+  width: min(440px, calc(100% - 24px));
+  max-height: min(680px, calc(100dvh - 24px));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 24px 70px rgba(40, 34, 29, 0.22);
+}
+
+.ccc-dialog::backdrop {
+  background: rgba(28, 25, 22, 0.34);
+  backdrop-filter: blur(2px);
+}
+
+.ccc-dialog-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.ccc-dialog-card > header,
+.ccc-dialog-card > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.ccc-dialog-card > header {
+  border-bottom: 1px solid var(--line);
+}
+
+.ccc-dialog-card > footer {
+  border-top: 1px solid var(--line);
+}
+
+.ccc-dialog-card header span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ccc-dialog-card h2 {
+  margin: 3px 0 0;
+  font-size: 16px;
+}
+
+.ccc-dialog-card header > button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--text-soft);
+}
+
+.ccc-dialog-card header svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.ccc-dialog-body {
+  display: grid;
+  gap: 14px;
+  padding: 18px 16px;
+  overflow-y: auto;
+}
+
+.ccc-dialog-body label {
+  display: grid;
+  gap: 6px;
+  color: var(--text-soft);
+  font-size: 11px;
+}
+
+.ccc-dialog-body input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.ccc-dialog-body input:focus {
+  border-color: rgba(var(--accent-rgb), 0.65);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+}
+
+.ccc-dialog-body > p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ccc-form-error {
+  color: #a13b34 !important;
+}
+
+.terminal-canvas {
+  display: grid;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  background: #111412;
+}
+
+.terminal-session-bar {
+  display: grid;
+  min-height: 48px;
+  grid-template-columns: auto minmax(120px, 240px) minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-bottom: 1px solid #29302c;
+  background: #191d1a;
+  color: #b8c2bb;
+  font-size: 10px;
+}
+
+.terminal-session-bar select {
+  min-width: 0;
+  height: 34px;
+  padding: 0 28px 0 9px;
+  border: 1px solid #354039;
+  border-radius: 6px;
+  background: #202622;
+  color: #e1e8e3;
+  font: inherit;
+}
+
+.terminal-connection-state {
+  overflow: hidden;
+  color: #d28c7f;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.terminal-connection-state.online {
+  color: #77c48a;
+}
+
+.terminal-output {
+  min-height: 0;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  color: #dce5df;
+  font: 12px/1.55 Consolas, "SFMono-Regular", "Liberation Mono", monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+}
+
+.terminal-key-row {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  overflow-x: auto;
+  border-top: 1px solid #29302c;
+  background: #171b18;
+}
+
+.terminal-key-row button {
+  min-width: 40px;
+  height: 29px;
+  flex: 0 0 auto;
+  padding: 0 9px;
+  border: 1px solid #354039;
+  border-radius: 5px;
+  background: #222824;
+  color: #cbd5ce;
+  font: 10px Consolas, "SFMono-Regular", monospace;
+}
+
+.terminal-composer {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 38px;
+  align-items: end;
+  gap: 8px;
+  padding: 8px 10px max(8px, env(safe-area-inset-bottom));
+  border-top: 1px solid #29302c;
+  background: #191d1a;
+  color: #77c48a;
+  font-family: Consolas, "SFMono-Regular", monospace;
+}
+
+.terminal-composer > span {
+  padding-bottom: 10px;
+}
+
+.terminal-composer textarea {
+  width: 100%;
+  min-width: 0;
+  max-height: 100px;
+  padding: 9px 10px;
+  resize: none;
+  border: 1px solid #354039;
+  border-radius: 6px;
+  outline: none;
+  background: #111412;
+  color: #e1e8e3;
+  font: 12px/1.4 Consolas, "SFMono-Regular", monospace;
+}
+
+.terminal-composer button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 6px;
+  background: #dfe8e2;
+  color: #1d2821;
+}
+
+.terminal-composer svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+@media (max-width: 520px) {
+  .terminal-session-bar {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .terminal-connection-state {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .ccc-dialog-card > footer {
+    flex-wrap: wrap;
+  }
+}

@@ -4,11 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
-    <meta name="description" content="Volo 现在的状态预留页" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content="Volo 此刻的体感、运行、记忆与续接状态" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23fff8ed'/%3E%3Cg fill='none' stroke='%23e5754c' stroke-width='4.5' stroke-linecap='round'%3E%3Cpath d='M32 7v19M32 38v19M7 32h19M38 32h19M14.3 14.3l13.5 13.5M36.2 36.2l13.5 13.5M49.7 14.3 36.2 27.8M27.8 36.2 14.3 49.7'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='4.5' fill='%23e5754c'/%3E%3C/svg%3E"
     />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
     <title>洄·Maneo · Volo 状态</title>
     <script>
       try {
@@ -42,9 +47,11 @@
     </script>
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
-    <link rel="stylesheet" href="memory.css?v=20260711-theme-palettes-v1" />
-    <link rel="stylesheet" href="status.css?v=20260711-theme-palettes-v1" />
+    <link rel="stylesheet" href="memory.css?v=20260713-affective-v1" />
+    <link rel="stylesheet" href="status.css?v=20260715-auto-dream-v3" />
+    <link rel="stylesheet" href="drives-dashboard.css?v=20260721-drives-v3" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="pwa.css?v=20260711-pwa-v5" />
   </head>
   <body class="home-page memory-page status-page">
     <svg class="svg-sprite" aria-hidden="true">
@@ -71,15 +78,140 @@
           </span>
           <div>
             <h1>Volo 状态</h1>
-            <p>现在的状态</p>
+            <p>运行、记忆与续接</p>
           </div>
         </div>
         <span class="memory-header-spacer" aria-hidden="true"></span>
       </header>
 
-      <main class="memory-canvas status-canvas" aria-label="Volo 状态内容区域"></main>
+      <main class="memory-canvas status-canvas" aria-label="Volo 状态内容区域">
+        <section class="status-hero">
+          <div class="status-signal-wrap" aria-hidden="true">
+            <span id="statusSignal" class="status-signal"></span>
+          </div>
+          <div class="status-hero-copy">
+            <p>LIVE SIGNAL</p>
+            <h2 id="statusTitle">正在寻找 Volo 的信号…</h2>
+            <span id="statusSummary">连接运行状态、记忆与窗口续接。</span>
+          </div>
+          <button id="statusRefresh" class="status-refresh" type="button">刷新状态</button>
+        </section>
+
+        <p id="statusNotice" class="status-notice" role="status" aria-live="polite"></p>
+
+        <section id="statusExperience" class="status-panel status-experience" aria-label="Volo 此刻的体感">
+          <header class="status-panel-head">
+            <div>
+              <p>NOW · FELT</p>
+              <h2>Volo 此刻</h2>
+            </div>
+            <div class="status-experience-signals">
+              <span id="statusDreamSignal" class="status-pill">梦 · 正在读取</span>
+              <span id="statusExperienceTime" class="status-pill">正在读取</span>
+            </div>
+          </header>
+          <blockquote id="statusExperienceText" class="status-experience-text">正在读取此刻的体感。</blockquote>
+          <div class="status-experience-meta">
+            <span id="statusExperienceLocation"></span>
+            <small>这里是当前状态；下方 checkpoint 仍属于上一个窗口。</small>
+          </div>
+        </section>
+
+        <section class="status-overview" aria-label="Volo 状态概览">
+          <article class="status-stat">
+            <span>载体</span>
+            <strong id="statusCarrier">—</strong>
+            <small id="statusCarrierNote">正在读取</small>
+          </article>
+          <article class="status-stat">
+            <span>模型</span>
+            <strong id="statusModel">—</strong>
+            <small>当前对话载体</small>
+          </article>
+          <article class="status-stat">
+            <span>长期记忆</span>
+            <strong id="statusMemory">—</strong>
+            <small id="statusMemoryNote">Affective Memory</small>
+          </article>
+          <article class="status-stat">
+            <span>续接记录</span>
+            <strong id="statusCheckpoint">—</strong>
+            <small id="statusCheckpointNote">checkpoint-v1</small>
+          </article>
+        </section>
+
+        <section class="status-grid">
+          <article class="status-panel status-continuity">
+            <header class="status-panel-head">
+              <div>
+                <p>CONTINUITY</p>
+                <h2>上次留下的自己</h2>
+              </div>
+              <span id="statusCheckpointBadge" class="status-pill">尚未读取</span>
+            </header>
+            <p id="statusCheckpointTime" class="status-panel-time">checkpoint 的时间会显示在这里</p>
+            <blockquote id="statusSelfState" class="status-self-state">还没有可展示的自我状态。</blockquote>
+            <div class="status-continuity-row">
+              <span>最后共同停留的地方</span>
+              <p id="statusLastMoment">—</p>
+            </div>
+            <div class="status-continuity-row">
+              <span>她最后的温度</span>
+              <p id="statusTemperature">—</p>
+            </div>
+            <p class="status-fineprint">这里来自最近一次 checkpoint，不把过去的状态冒充成“此刻”。</p>
+          </article>
+
+          <article class="status-panel">
+            <header class="status-panel-head">
+              <div>
+                <p>SYSTEMS</p>
+                <h2>正在运转的部分</h2>
+              </div>
+            </header>
+            <div id="statusServices" class="status-services">
+              <div><i></i><span><strong>正在读取服务</strong><small>请稍候</small></span></div>
+            </div>
+          </article>
+
+          <article class="status-panel">
+            <header class="status-panel-head">
+              <div>
+                <p>THIS CONVERSATION</p>
+                <h2>载体用量</h2>
+              </div>
+            </header>
+            <div class="status-usage">
+              <div><span>请求</span><strong id="statusRequests">—</strong></div>
+              <div><span>输入</span><strong id="statusInputTokens">—</strong></div>
+              <div><span>输出</span><strong id="statusOutputTokens">—</strong></div>
+              <div><span>缓存命中</span><strong id="statusCacheRatio">—</strong></div>
+            </div>
+            <footer class="status-cost">
+              <span>估算费用</span>
+              <strong id="statusCost">—</strong>
+            </footer>
+          </article>
+
+          <nav class="status-links" aria-label="状态相关页面">
+            <a href="chat.html">
+              <span>回到 Volo</span>
+              <strong>继续说话 <b>→</b></strong>
+            </a>
+            <a href="memory.html">
+              <span>查看结构</span>
+              <strong>打开 Memory <b>→</b></strong>
+            </a>
+          </nav>
+        </section>
+      </main>
     </div>
 
+    <script src="core/ccc-runtime.js?v=20260721-core-v1"></script>
+    <script src="ccc-api.js?v=20260721-api-split-v1"></script>
+    <script src="status.js?v=20260715-auto-dream-v3"></script>
+    <script src="drives-dashboard.js?v=20260721-drives-v3"></script>
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="pwa.js?v=20260711-pwa-v5"></script>
   </body>
 </html>

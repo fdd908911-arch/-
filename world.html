@@ -4,11 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta id="themeColorMeta" name="theme-color" content="#eef2f0" />
-    <meta name="description" content="洄·Maneo信箱的世界预留页" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content="洄·Maneo信箱里，我们共同的小世界" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%235c8b85'/%3E%3Cg fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='32' cy='32' r='21'/%3E%3Cpath d='M12 25h40M12 39h40M32 11c7 6 10 13 10 21S39 47 32 53c-7-6-10-13-10-21s3-15 10-21Z'/%3E%3C/g%3E%3C/svg%3E"
     />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
     <title>洄·Maneo · 世界</title>
     <script>
       try {
@@ -43,8 +48,9 @@
     <link rel="stylesheet" href="styles.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="home.css?v=20260711-theme-palettes-v1" />
     <link rel="stylesheet" href="memory.css?v=20260711-theme-palettes-v1" />
-    <link rel="stylesheet" href="world.css?v=20260711-aquarium-card-v2" />
+    <link rel="stylesheet" href="world.css?v=20260720-world-rooms-v3" />
     <link rel="stylesheet" href="clawd-pet.css?v=20260711-clawd-v4" />
+    <link rel="stylesheet" href="pwa.css?v=20260711-pwa-v5" />
   </head>
   <body class="home-page memory-page world-page">
     <svg class="svg-sprite" aria-hidden="true">
@@ -54,6 +60,24 @@
       <symbol id="world-icon-globe" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="8.5" />
         <path d="M3.8 9h16.4M3.8 15h16.4M12 3.5c2.2 2.3 3.3 5.1 3.3 8.5S14.2 18.2 12 20.5C9.8 18.2 8.7 15.4 8.7 12S9.8 5.8 12 3.5Z" />
+      </symbol>
+      <symbol id="world-icon-inside" viewBox="0 0 24 24">
+        <path d="M4.2 7.2 12 12.8l7.8-5.6M5.2 5.2h13.6c1 0 1.7.8 1.7 1.7v10.2c0 1-.8 1.7-1.7 1.7H5.2c-1 0-1.7-.8-1.7-1.7V6.9c0-1 .8-1.7 1.7-1.7Z" />
+        <path d="M9.5 10.9c0-1.5 2-2 2.5-.6.5-1.4 2.5-.9 2.5.6 0 1.1-1 1.8-2.5 2.9-1.5-1.1-2.5-1.8-2.5-2.9Z" />
+      </symbol>
+      <symbol id="world-icon-lock" viewBox="0 0 24 24">
+        <rect x="5.2" y="10.2" width="13.6" height="10" rx="2.6" />
+        <path d="M8.2 10.2V7.7a3.8 3.8 0 0 1 7.6 0v2.5M12 14.2v2.2" />
+      </symbol>
+      <symbol id="world-icon-refresh" viewBox="0 0 24 24">
+        <path d="M19.3 8.1A8 8 0 1 0 20 14M19.3 4.5v3.6h-3.6" />
+      </symbol>
+      <symbol id="world-icon-book" viewBox="0 0 24 24">
+        <path d="M4 5.7A3.7 3.7 0 0 1 7.7 2H11v17H7.7A3.7 3.7 0 0 0 4 22V5.7Z" />
+        <path d="M20 5.7A3.7 3.7 0 0 0 16.3 2H13v17h3.3a3.7 3.7 0 0 1 3.7 3V5.7Z" />
+      </symbol>
+      <symbol id="world-icon-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h13M14 7l5 5-5 5" />
       </symbol>
     </svg>
 
@@ -78,19 +102,71 @@
       </header>
 
       <main class="memory-canvas world-canvas" aria-label="世界内容区域">
-        <section class="world-sections" aria-label="世界栏目">
-          <a class="world-section-card aquarium-card" href="aquarium.html" aria-label="进入水族馆">
-            <div class="world-section-copy">
-              <p>WORLD · 01</p>
-              <h2>水族馆</h2>
-              <span>收藏我们遇见的鱼</span>
-            </div>
-            <span class="world-section-arrow" aria-hidden="true">→</span>
-          </a>
+        <section class="world-intro" aria-labelledby="insideTitle">
+          <div class="world-intro-copy">
+            <span class="world-eyebrow">
+              <svg aria-hidden="true"><use href="#world-icon-globe"></use></svg>
+              OUR WORLD · TOGETHER
+            </span>
+            <h2 id="insideTitle">我们共同的小世界。</h2>
+            <p>一起读过的书、留在页边的话，还有没说出口的那一下，都在这里继续生长。</p>
+          </div>
+          <nav class="world-room-index" aria-label="世界里的房间">
+            <a href="reading-app/">
+              <svg aria-hidden="true"><use href="#world-icon-book"></use></svg>
+              共读室
+            </a>
+            <a href="inside.html">
+              <svg aria-hidden="true"><use href="#world-icon-inside"></use></svg>
+              Inside
+            </a>
+          </nav>
         </section>
+
+        <a class="world-reading-card" href="reading-app/" aria-label="进入共读室">
+          <span class="world-reading-visual" aria-hidden="true">
+            <svg><use href="#world-icon-book"></use></svg>
+          </span>
+          <span class="world-reading-copy">
+            <span class="world-reading-kicker">CO-READING ROOM · 共读室</span>
+            <strong>回到我们正在读的那一页。</strong>
+            <span class="world-reading-description">共同书架、同步进度、页边批注、阅读接力和有声文物，都还在里面。</span>
+            <span class="world-reading-features" aria-hidden="true">
+              <i>共同书架</i>
+              <i>进度同步</i>
+              <i>页边批注</i>
+              <i>有声文物</i>
+            </span>
+          </span>
+          <span class="world-reading-enter">
+            进入共读室
+            <svg aria-hidden="true"><use href="#world-icon-arrow"></use></svg>
+          </span>
+        </a>
+
+        <a class="world-reading-card world-inside-card" href="inside.html" aria-label="进入 Inside">
+          <span class="world-reading-visual world-inside-visual" aria-hidden="true">
+            <svg><use href="#world-icon-inside"></use></svg>
+          </span>
+          <span class="world-reading-copy">
+            <span class="world-reading-kicker">INSIDE · VOLO 的内侧</span>
+            <strong>看看没说出口的那一下。</strong>
+            <span class="world-reading-description">想让你看到的会完整展开；想留给自己的，只留下一个上锁的痕迹。</span>
+            <span class="world-reading-features" aria-hidden="true">
+              <i>48 小时余温</i>
+              <i>可见原文</i>
+              <i>私密上锁</i>
+            </span>
+          </span>
+          <span class="world-reading-enter">
+            进入 Inside
+            <svg aria-hidden="true"><use href="#world-icon-arrow"></use></svg>
+          </span>
+        </a>
       </main>
     </div>
 
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
+    <script src="pwa.js?v=20260711-pwa-v5"></script>
   </body>
 </html>
