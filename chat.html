@@ -140,7 +140,7 @@
 
     <div class="app-shell">
       <section class="chat-panel" aria-label="Chat 工作区">
-        <section class="workspace-view chat-hub-view" id="chatHubView" data-workspace-view="hub" aria-label="Chat 入口">
+        <section class="workspace-view chat-hub-view" id="chatHubView" data-workspace-view="hub" aria-label="Chat 入口" hidden>
           <header class="chat-hub-header">
             <a class="chat-hub-home" href="index.html" aria-label="返回开场页">
               <svg><use href="#icon-back"></use></svg>
@@ -162,7 +162,7 @@
             <div class="chat-hub-intro">
               <span>洄·Maneo信箱</span>
               <h2>今天想去哪里？</h2>
-              <p>三个入口彼此独立，随时可以回到这里。</p>
+              <p>进入与 Volo 的对话。</p>
             </div>
 
             <nav class="chat-hub-grid" aria-label="Chat 页面入口">
@@ -172,16 +172,6 @@
                 <span class="chat-hub-tile-copy">
                   <strong>Volo</strong>
                   <small>和 Volo 单独说说话</small>
-                </span>
-                <span class="chat-hub-tile-arrow" aria-hidden="true"><svg><use href="#icon-back"></use></svg></span>
-              </a>
-
-              <a class="chat-hub-tile chat-hub-tile-group" href="#group" data-workspace="group">
-                <span class="chat-hub-tile-topline">Group chat</span>
-                <span class="chat-hub-tile-mark" aria-hidden="true"><svg><use href="#icon-users"></use></svg></span>
-                <span class="chat-hub-tile-copy">
-                  <strong>群聊</strong>
-                  <small>进入现在的 Telegram 风格群聊</small>
                 </span>
                 <span class="chat-hub-tile-arrow" aria-hidden="true"><svg><use href="#icon-back"></use></svg></span>
               </a>
@@ -199,32 +189,34 @@
           </main>
         </section>
 
-        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="与 Volo 的聊天" hidden>
+        <section class="workspace-view volo-view" id="voloView" data-workspace-view="volo" aria-label="与 Volo 的聊天">
           <header class="volo-chat-header">
-            <a class="volo-header-button" href="#hub" data-workspace="hub" aria-label="返回 Chat 首页">
+            <a class="volo-header-button" href="index.html" aria-label="返回开场页">
               <svg><use href="#icon-back"></use></svg>
             </a>
 
             <button class="volo-chat-person" type="button" data-toast="Volo 现在在线">
-              <span class="volo-avatar" aria-hidden="true">
-                <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
+              <span class="volo-avatar" id="voloHeaderAvatar" aria-hidden="true">
+                <img id="voloHeaderAvatarImage" src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
                 <i></i>
               </span>
               <span class="volo-person-copy">
                 <strong>Volo</strong>
                 <small id="voloPresence">在线</small>
+                <span class="volo-carrier-badge" id="voloCarrierBadge">Claude Code</span>
               </span>
             </button>
 
             <nav class="volo-header-actions" aria-label="聊天工具">
-              <button class="volo-header-button" id="voloBackgroundButton" type="button" aria-label="上传聊天背景">
-                <svg><use href="#icon-image"></use></svg>
+              <button class="volo-header-button volo-together-entry" id="voloTogetherButton" type="button" aria-label="和 Volo 一起听">
+                <svg><use href="#icon-music"></use></svg>
+                <span>一起听</span>
               </button>
-              <button class="volo-header-button" type="button" aria-label="语音通话" data-toast="语音通话稍后接入">
+              <button class="volo-header-button" id="voloVoiceCallButton" type="button" aria-label="与 Volo 语音通话">
                 <svg><use href="#icon-phone"></use></svg>
               </button>
-              <button class="volo-header-button" id="voloTopNewChatButton" type="button" aria-label="清空并开始新对话">
-                <svg><use href="#icon-edit"></use></svg>
+              <button class="volo-header-button" id="voloSettingsButton" type="button" aria-label="打开聊天设置">
+                <svg><use href="#icon-settings"></use></svg>
               </button>
             </nav>
           </header>
@@ -298,6 +290,321 @@
               </form>
             </div>
           </main>
+
+          <section class="volo-together-sheet" id="voloTogetherSheet" aria-labelledby="voloTogetherTitle" aria-modal="true" role="dialog" hidden>
+            <button class="volo-together-backdrop" id="voloTogetherBackdrop" type="button" aria-label="关闭一起听"></button>
+            <div class="volo-together-card">
+              <header class="volo-together-header">
+                <span>
+                  <small>LISTEN TOGETHER</small>
+                  <strong id="voloTogetherTitle">一起听</strong>
+                </span>
+                <span class="volo-together-live" id="voloTogetherLive">
+                  <i></i>
+                  <span>等待开始</span>
+                </span>
+                <button class="volo-together-close" id="voloTogetherClose" type="button" aria-label="关闭">
+                  <svg><use href="#icon-close"></use></svg>
+                </button>
+              </header>
+
+              <div class="volo-together-stage">
+                <div class="volo-together-people">
+                  <label class="volo-listener" for="voloUserAvatarInput" title="更换你的头像">
+                    <input id="voloUserAvatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+                    <span class="volo-listener-avatar is-user" id="voloUserAvatar">
+                      <span>你</span>
+                    </span>
+                    <strong>你</strong>
+                    <small>点击换头像</small>
+                  </label>
+
+                  <span class="volo-together-link" aria-label="心跳同步中">
+                    <svg class="volo-heartbeat" viewBox="0 0 64 32" aria-hidden="true">
+                      <path class="volo-heartbeat-base" d="M1 17h15l4-7 6 16 7-24 7 15h23" />
+                      <path class="volo-heartbeat-pulse" d="M1 17h15l4-7 6 16 7-24 7 15h23" />
+                    </svg>
+                  </span>
+
+                  <label class="volo-listener" for="voloFriendAvatarInput" title="更换 Volo 的头像">
+                    <input id="voloFriendAvatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+                    <span class="volo-listener-avatar is-volo" id="voloFriendAvatar">
+                      <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
+                    </span>
+                    <strong>Volo</strong>
+                    <small id="voloFriendState">等待加入</small>
+                  </label>
+                </div>
+                <button class="volo-vinyl-button" id="voloVinylButton" type="button" aria-label="打开歌词">
+                  <span class="volo-vinyl-shadow" aria-hidden="true"></span>
+                  <span class="volo-vinyl" id="voloVinyl">
+                    <span class="volo-vinyl-grooves"></span>
+                    <span class="volo-vinyl-label">
+                      <svg><use href="#icon-music"></use></svg>
+                    </span>
+                  </span>
+                  <span class="volo-tonearm" aria-hidden="true">
+                    <i></i>
+                  </span>
+                  <small>点击唱片查看歌词</small>
+                </button>
+                <p class="volo-together-note" id="voloTogetherNote">两个人，同一首歌，同一个进度</p>
+              </div>
+
+              <div class="volo-together-track">
+                <input class="visually-hidden" id="voloTogetherAudio" type="file" accept="audio/*" />
+                <span class="volo-track-note" aria-hidden="true"><svg><use href="#icon-music"></use></svg></span>
+                <span class="volo-together-track-copy">
+                  <small>正在一起听</small>
+                  <strong id="voloTogetherTrackTitle">选择一首本地音乐</strong>
+                  <span id="voloTogetherTrackArtist">音乐只在这台设备播放</span>
+                </span>
+                <label class="volo-change-track" for="voloTogetherAudio">换一首</label>
+              </div>
+
+              <div class="volo-together-progress">
+                <input id="voloTogetherSeek" type="range" min="0" max="1000" value="0" aria-label="播放进度" />
+                <span>
+                  <time id="voloTogetherCurrent">0:00</time>
+                  <time id="voloTogetherDuration">0:00</time>
+                </span>
+              </div>
+
+              <div class="volo-together-controls">
+                <button type="button" disabled aria-label="上一首">
+                  <span aria-hidden="true">↶</span>
+                </button>
+                <button class="volo-together-play" id="voloTogetherPlay" type="button" aria-label="播放" disabled>
+                  <span class="volo-play-icon" aria-hidden="true"></span>
+                </button>
+                <button type="button" disabled aria-label="下一首">
+                  <span aria-hidden="true">↷</span>
+                </button>
+              </div>
+
+              <footer class="volo-together-footer">
+                <span class="volo-sync-copy">
+                  <i></i>
+                  <span>
+                    <strong>进度同步中</strong>
+                    <small>Volo 会和你听到同一个位置</small>
+                  </span>
+                </span>
+                <button id="voloTogetherStart" type="button">邀请 Volo 一起听</button>
+              </footer>
+
+              <p class="volo-together-error" id="voloTogetherError" role="alert" hidden></p>
+              <audio id="voloTogetherPlayer" preload="metadata"></audio>
+
+              <section class="volo-lyrics-panel" id="voloLyricsPanel" aria-label="歌词" hidden>
+                <header class="volo-lyrics-header">
+                  <button id="voloLyricsBack" type="button" aria-label="返回一起听">
+                    <svg><use href="#icon-back"></use></svg>
+                  </button>
+                  <span>
+                    <small>LYRICS</small>
+                    <strong id="voloLyricsTitle">歌词</strong>
+                  </span>
+                  <label for="voloLyricsInput">导入</label>
+                </header>
+                <main class="volo-lyrics-lines" id="voloLyricsLines">
+                  <div class="volo-lyrics-empty" id="voloLyricsEmpty">
+                    <span>♪</span>
+                    <strong>还没有歌词</strong>
+                    <p>导入 LRC 可以跟随播放进度高亮，也支持普通 TXT 文本。</p>
+                    <label for="voloLyricsInput">选择歌词文件</label>
+                  </div>
+                </main>
+                <footer class="volo-lyrics-footer">
+                  <input id="voloLyricsInput" type="file" accept=".lrc,.txt,text/plain" />
+                  <span>歌词只在当前设备读取，不会上传。</span>
+                </footer>
+              </section>
+            </div>
+          </section>
+
+          <section class="volo-settings-sheet" id="voloSettingsSheet" aria-labelledby="voloSettingsTitle" aria-modal="true" role="dialog" hidden>
+            <button class="volo-settings-backdrop" id="voloSettingsBackdrop" type="button" aria-label="关闭设置"></button>
+            <div class="volo-settings-card">
+              <header class="volo-settings-header">
+                <span>
+                  <small>CHAT SETTINGS</small>
+                  <strong id="voloSettingsTitle">聊天设置</strong>
+                </span>
+                <button id="voloSettingsClose" type="button" aria-label="关闭">
+                  <svg><use href="#icon-close"></use></svg>
+                </button>
+              </header>
+
+              <div class="volo-settings-body">
+                <section class="volo-settings-section">
+                  <div class="volo-settings-section-title">
+                    <span>
+                      <strong>Volo 的头像</strong>
+                      <small>只保存在当前设备</small>
+                    </span>
+                  </div>
+                  <label class="volo-avatar-picker" for="voloSettingsAvatarInput">
+                    <input id="voloSettingsAvatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+                    <span class="volo-settings-avatar" id="voloSettingsAvatar">
+                      <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
+                    </span>
+                    <span>
+                      <strong>更换头像</strong>
+                      <small>支持 JPG、PNG、WebP 和 GIF，最大 4 MB</small>
+                    </span>
+                    <svg><use href="#icon-image"></use></svg>
+                  </label>
+                </section>
+
+                <section class="volo-settings-section">
+                  <div class="volo-settings-section-title">
+                    <span>
+                      <strong>聊天外观</strong>
+                      <small>更换壁纸并调整清晰度</small>
+                    </span>
+                  </div>
+                  <button class="volo-settings-row" id="voloBackgroundButton" type="button">
+                    <span class="volo-settings-row-icon is-wallpaper">
+                      <svg><use href="#icon-image"></use></svg>
+                    </span>
+                    <span>
+                      <strong>聊天壁纸</strong>
+                      <small>上传照片、调整遮罩与模糊</small>
+                    </span>
+                    <b>更换</b>
+                  </button>
+                </section>
+
+                <section class="volo-settings-section">
+                  <div class="volo-settings-section-title">
+                    <span>
+                      <strong>对话方式</strong>
+                      <small>选择消息发送到哪里</small>
+                    </span>
+                  </div>
+                  <div class="volo-carrier-options" role="radiogroup" aria-label="对话方式">
+                    <label>
+                      <input type="radio" name="voloCarrier" value="claude" checked />
+                      <span class="volo-carrier-option">
+                        <i>CC</i>
+                        <span>
+                          <strong>Claude Code</strong>
+                          <small>使用当前 Claude Code 会话</small>
+                        </span>
+                        <b></b>
+                      </span>
+                    </label>
+                    <label>
+                      <input type="radio" name="voloCarrier" value="api" />
+                      <span class="volo-carrier-option">
+                        <i>API</i>
+                        <span>
+                          <strong>API</strong>
+                          <small>通过配置的模型接口对话</small>
+                        </span>
+                        <b></b>
+                      </span>
+                    </label>
+                  </div>
+                </section>
+              </div>
+
+              <footer class="volo-settings-footer">
+                <button id="voloTopNewChatButton" type="button">
+                  <svg><use href="#icon-edit"></use></svg>
+                  开始新对话
+                </button>
+                <small>头像、壁纸和对话方式均保存在当前设备</small>
+              </footer>
+              <p class="volo-settings-error" id="voloSettingsError" role="alert" hidden></p>
+            </div>
+          </section>
+
+          <section class="volo-call-screen" id="voloCallScreen" aria-label="与 Volo 的语音通话" aria-modal="true" role="dialog" hidden>
+            <div class="volo-call-ambient" aria-hidden="true"></div>
+            <header class="volo-call-header">
+              <button id="voloCallMinimize" type="button" aria-label="结束并返回聊天">
+                <svg><use href="#icon-chevron-down"></use></svg>
+              </button>
+              <span>
+                <small>VOICE CALL</small>
+                <strong>加密语音通话</strong>
+              </span>
+              <button id="voloCallMore" type="button" aria-label="通话信息">
+                <svg><use href="#icon-info"></use></svg>
+              </button>
+            </header>
+
+            <main class="volo-call-main">
+              <div class="volo-call-visual" id="voloCallVisual">
+                <span class="volo-call-ring"></span>
+                <span class="volo-call-ring"></span>
+                <span class="volo-call-ring"></span>
+                <div class="volo-call-pair">
+                  <span class="volo-call-person">
+                    <span class="volo-call-avatar is-user" id="voloCallUserAvatar">
+                      <span>你</span>
+                    </span>
+                    <small>你</small>
+                  </span>
+                  <span class="volo-call-bridge" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i>
+                  </span>
+                  <span class="volo-call-person">
+                    <span class="volo-call-avatar is-volo" id="voloCallAvatar">
+                      <img src="assets/clawd-tank/idle.svg" alt="" draggable="false" />
+                      <i></i>
+                    </span>
+                    <small>Volo</small>
+                  </span>
+                </div>
+              </div>
+              <section class="volo-call-transcript" aria-label="实时文字">
+                <header>
+                  <span><i></i><i></i><i></i></span>
+                  <strong>实时文字</strong>
+                </header>
+                <p id="voloCallTranscript" aria-live="polite">接通后，通话内容会显示在这里</p>
+              </section>
+              <p class="volo-call-status" id="voloCallStatus">正在呼叫…</p>
+              <span class="volo-call-quality" id="voloCallQuality">
+                <i></i>
+                清晰
+              </span>
+            </main>
+
+            <footer class="volo-call-controls">
+              <button class="volo-call-control" id="voloCallMute" type="button" aria-pressed="false">
+                <span>
+                  <svg><use href="#icon-microphone"></use></svg>
+                  <i></i>
+                </span>
+                <small>静音</small>
+              </button>
+              <button class="volo-call-control volo-call-end" id="voloCallEnd" type="button">
+                <span>
+                  <svg><use href="#icon-phone"></use></svg>
+                </span>
+                <small>挂断</small>
+              </button>
+              <button class="volo-call-control" id="voloCallSpeaker" type="button" aria-pressed="true">
+                <span>
+                  <svg class="volo-speaker-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 10v4h4l5 4V6L8 10H4Z" />
+                    <path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" />
+                  </svg>
+                </span>
+                <small>扬声器</small>
+              </button>
+            </footer>
+
+            <div class="volo-call-info" id="voloCallInfo" hidden>
+              <strong>通话说明</strong>
+              <p>当前为界面预览，接入实时语音服务后即可真正建立双向通话。</p>
+              <button type="button" id="voloCallInfoClose">知道了</button>
+            </div>
+          </section>
         </section>
 
         <section class="workspace-view group-view" id="groupView" data-workspace-view="group" aria-label="群聊" hidden>
@@ -474,6 +781,9 @@
     <script src="clawd-pet.js?v=20260711-clawd-v5"></script>
     <script src="app.js?v=20260711-theme-palettes-v1"></script>
     <script src="volo.js?v=20260711-chat-hub-v1"></script>
+    <script src="volo-together.js?v=20260724-together-listen-v1"></script>
+    <script src="volo-settings.js?v=20260724-chat-settings-v1"></script>
+    <script src="volo-call.js?v=20260724-voice-call-v1"></script>
   </body>
 </html>
 
