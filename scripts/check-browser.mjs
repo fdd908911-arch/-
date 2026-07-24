@@ -388,7 +388,7 @@ try {
 
       const workerCache = await page.evaluate(async () => {
         await navigator.serviceWorker.ready;
-        return (await caches.keys()).find((key) => key.includes("v82-terminal-restore")) || "";
+        return (await caches.keys()).find((key) => key.includes("v83-terminal-route")) || "";
       });
       assert(workerCache, test.name + ": service-worker cache missing");
       process.stderr.write("Browser check passed: " + JSON.stringify({

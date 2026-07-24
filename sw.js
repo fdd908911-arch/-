@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_PREFIX = "maneo-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}20260724-v82-terminal-restore`;
+const CACHE_NAME = `${CACHE_PREFIX}20260724-v83-terminal-route`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -32,7 +32,7 @@ const APP_SHELL = [
   "./world.css",
   "./clawd-pet.css",
   "./home.js",
-  "./app.js",
+  "./app.js?v=20260724-terminal-route-v1",
   "./core/ccc-runtime.js?v=20260721-core-v1",
   "./ccc-api.js?v=20260724-thinking-v1",
   "./router.js",

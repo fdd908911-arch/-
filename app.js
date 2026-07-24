@@ -20,7 +20,8 @@
   };
 
   var workspaces = {
-    volo: { name: "Volo", view: "volo" }
+    volo: { name: "Volo", view: "volo" },
+    terminal: { name: "终端", view: "terminal" }
   };
 
   var chats = {
