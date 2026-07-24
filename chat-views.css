@@ -1907,3 +1907,2281 @@
   color: var(--muted);
 }
 
+/* Together listening */
+.volo-together-entry {
+  width: auto;
+  gap: 6px;
+  padding: 0 10px;
+}
+
+.volo-together-entry > span {
+  font-size: 11px;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.volo-together-sheet[hidden] {
+  display: none;
+}
+
+.volo-together-sheet {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.volo-together-sheet.is-opening .volo-together-card {
+  animation: voloTogetherEnter 320ms cubic-bezier(0.2, 0.82, 0.24, 1);
+}
+
+.volo-together-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(13, 18, 27, 0.56);
+  -webkit-backdrop-filter: blur(13px);
+  backdrop-filter: blur(13px);
+}
+
+.volo-together-card {
+  --together-red: #ec535b;
+  --together-ink: #252833;
+  --together-muted: #8c909b;
+  position: relative;
+  display: flex;
+  width: min(450px, calc(100vw - 36px));
+  max-height: min(800px, calc(100dvh - 36px));
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 29%, rgba(247, 174, 176, 0.34), transparent 32%),
+    linear-gradient(180deg, #fffafa 0%, #fff 52%, #fbfbfd 100%);
+  box-shadow:
+    0 30px 90px rgba(10, 14, 24, 0.3),
+    inset 0 1px 0 #fff;
+  color: var(--together-ink);
+}
+
+.volo-together-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 22px 8px;
+}
+
+.volo-together-header > span:first-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-together-header small {
+  color: var(--together-muted);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
+.volo-together-header strong {
+  margin-top: 2px;
+  font-size: 18px;
+}
+
+.volo-together-live {
+  display: flex;
+  min-height: 27px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(127, 132, 145, 0.1);
+  color: #777c88;
+  font-size: 10px;
+  font-weight: 680;
+}
+
+.volo-together-live > i,
+.volo-sync-copy > i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a8abb3;
+}
+
+.volo-together-live.is-live {
+  background: rgba(236, 83, 91, 0.1);
+  color: var(--together-red);
+}
+
+.volo-together-live.is-live > i,
+.volo-sync-copy > i {
+  background: var(--together-red);
+  box-shadow: 0 0 0 4px rgba(236, 83, 91, 0.1);
+}
+
+.volo-together-close {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  justify-self: end;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(73, 77, 89, 0.07);
+  color: #6f737d;
+}
+
+.volo-together-close:hover {
+  background: rgba(73, 77, 89, 0.12);
+}
+
+.volo-together-close svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.volo-together-stage {
+  position: relative;
+  min-height: 270px;
+  padding: 33px 24px 18px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.volo-together-orbit,
+.volo-together-orbit i {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border: 1px solid rgba(236, 83, 91, 0.11);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.volo-together-orbit {
+  width: 290px;
+  height: 290px;
+  border-color: rgba(236, 83, 91, 0.08);
+}
+
+.volo-together-orbit::before,
+.volo-together-orbit::after {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(236, 83, 91, 0.32);
+  content: "";
+}
+
+.volo-together-orbit::before {
+  top: 30px;
+  left: 34px;
+  width: 5px;
+  height: 5px;
+}
+
+.volo-together-orbit::after {
+  right: 37px;
+  bottom: 42px;
+  width: 7px;
+  height: 7px;
+}
+
+.volo-together-orbit i:nth-child(1) {
+  width: 225px;
+  height: 225px;
+}
+
+.volo-together-orbit i:nth-child(2) {
+  width: 162px;
+  height: 162px;
+}
+
+.volo-together-orbit i:nth-child(3) {
+  width: 102px;
+  height: 102px;
+}
+
+.volo-together-people {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 19px;
+}
+
+.volo-listener {
+  display: flex;
+  width: 108px;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.volo-listener > input,
+.volo-together-cover > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.volo-listener-avatar {
+  position: relative;
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  overflow: hidden;
+  border: 4px solid rgba(255, 255, 255, 0.94);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ef777c, #d9444e);
+  box-shadow:
+    0 10px 25px rgba(164, 56, 64, 0.22),
+    0 0 0 1px rgba(224, 80, 88, 0.12);
+  color: #fff;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 24px;
+}
+
+.volo-listener-avatar::after {
+  position: absolute;
+  right: 1px;
+  bottom: 2px;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--together-red);
+  color: #fff;
+  content: "+";
+  font: 700 15px/1 Arial, sans-serif;
+}
+
+.volo-listener-avatar.has-photo {
+  background-position: center;
+  background-size: cover;
+}
+
+.volo-listener-avatar.has-photo > span,
+.volo-listener-avatar.has-photo > img {
+  display: none;
+}
+
+.volo-listener-avatar.is-volo {
+  background: linear-gradient(145deg, #fff7ec, #f1dcc0);
+}
+
+.volo-listener-avatar img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.volo-listener strong {
+  margin-top: 11px;
+  font-size: 13px;
+}
+
+.volo-listener small {
+  margin-top: 2px;
+  color: var(--together-muted);
+  font-size: 9px;
+}
+
+.volo-together-link {
+  position: relative;
+  display: block;
+  width: 62px;
+  height: 32px;
+  filter: drop-shadow(0 3px 6px rgba(213, 61, 70, 0.16));
+}
+
+.volo-heartbeat {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.volo-heartbeat-base {
+  stroke: rgba(236, 83, 91, 0.18);
+  stroke-width: 2;
+}
+
+.volo-heartbeat-pulse {
+  stroke: var(--together-red);
+  stroke-width: 2.4;
+  stroke-dasharray: 18 82;
+  stroke-dashoffset: 100;
+  animation: voloHeartbeatFlow 2.1s linear infinite;
+}
+
+.volo-together-sheet.is-playing .volo-heartbeat-pulse {
+  stroke-width: 2.8;
+  animation-duration: 1.05s;
+}
+
+.volo-together-note {
+  position: relative;
+  z-index: 1;
+  margin: 25px 0 0;
+  color: #686d78;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+.volo-together-track {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 0 22px;
+  padding: 12px;
+  border: 1px solid rgba(42, 47, 60, 0.06);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 9px 30px rgba(45, 50, 64, 0.07);
+}
+
+.volo-together-cover {
+  position: relative;
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #32343d, #11131a);
+  cursor: pointer;
+}
+
+.volo-together-disc {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 4px solid #24262d;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff 0 6%, var(--together-red) 7% 18%, transparent 19%),
+    repeating-radial-gradient(circle, #252730 0 2px, #16171d 3px 4px);
+  color: #fff;
+}
+
+.volo-together-disc svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.volo-together-sheet.is-playing .volo-together-disc {
+  animation: voloTogetherSpin 4s linear infinite;
+}
+
+.volo-cover-plus {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  width: 19px;
+  height: 19px;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--together-red);
+  color: #fff;
+  font: 700 13px/1 Arial, sans-serif;
+}
+
+.volo-together-track-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.volo-together-track-copy small {
+  color: var(--together-red);
+  font-size: 8px;
+  font-weight: 720;
+  letter-spacing: 0.08em;
+}
+
+.volo-together-track-copy strong,
+.volo-together-track-copy > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-together-track-copy strong {
+  margin-top: 3px;
+  font-size: 13px;
+}
+
+.volo-together-track-copy > span {
+  margin-top: 3px;
+  color: var(--together-muted);
+  font-size: 9px;
+}
+
+.volo-change-track {
+  flex: 0 0 auto;
+  padding: 7px 8px;
+  border-radius: 9px;
+  background: rgba(236, 83, 91, 0.08);
+  color: var(--together-red);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 680;
+}
+
+.volo-together-progress {
+  padding: 18px 27px 0;
+}
+
+.volo-together-progress input {
+  width: 100%;
+  height: 3px;
+  margin: 0;
+  border-radius: 99px;
+  appearance: none;
+  background: linear-gradient(90deg, var(--together-red) var(--together-progress, 0%), #e6e7eb var(--together-progress, 0%));
+  cursor: pointer;
+}
+
+.volo-together-progress input::-webkit-slider-thumb {
+  width: 11px;
+  height: 11px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  appearance: none;
+  background: var(--together-red);
+  box-shadow: 0 1px 5px rgba(160, 45, 52, 0.3);
+}
+
+.volo-together-progress input::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--together-red);
+}
+
+.volo-together-progress > span {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: #a1a4ad;
+  font-size: 8px;
+}
+
+.volo-together-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 10px 0 18px;
+}
+
+.volo-together-controls button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9a9da6;
+  font-size: 19px;
+}
+
+.volo-together-controls .volo-together-play {
+  width: 54px;
+  height: 54px;
+  background: var(--together-red);
+  box-shadow: 0 9px 22px rgba(226, 66, 76, 0.3);
+  color: #fff;
+}
+
+.volo-together-controls .volo-together-play:disabled {
+  background: #c9cbd1;
+  box-shadow: none;
+}
+
+.volo-play-icon {
+  width: 0;
+  height: 0;
+  margin-left: 4px;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 11px solid currentColor;
+}
+
+.volo-together-play.is-playing .volo-play-icon {
+  width: 12px;
+  height: 15px;
+  margin-left: 0;
+  border: 0;
+  border-right: 4px solid currentColor;
+  border-left: 4px solid currentColor;
+}
+
+.volo-together-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 15px 22px 20px;
+  border-top: 1px solid rgba(40, 45, 56, 0.06);
+  background: rgba(249, 249, 251, 0.8);
+}
+
+.volo-sync-copy {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.volo-sync-copy > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-sync-copy strong {
+  font-size: 10px;
+}
+
+.volo-sync-copy small {
+  margin-top: 2px;
+  color: var(--together-muted);
+  font-size: 8px;
+}
+
+.volo-together-footer > button {
+  min-height: 36px;
+  flex: 0 0 auto;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--together-red);
+  box-shadow: 0 7px 17px rgba(226, 66, 76, 0.22);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 680;
+}
+
+.volo-together-footer > button.is-active {
+  background: #2f323a;
+  box-shadow: none;
+}
+
+.volo-together-error {
+  margin: -10px 22px 17px;
+  color: #c9343d;
+  font-size: 10px;
+  text-align: center;
+}
+
+body.volo-together-open {
+  overflow: hidden;
+}
+
+body.volo-together-open .clawd-pet-root {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes voloTogetherEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes voloTogetherSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes voloHeartbeatFlow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .volo-together-entry {
+    width: 38px;
+    padding: 0;
+  }
+
+  .volo-together-entry > span {
+    display: none;
+  }
+
+  .volo-together-sheet {
+    align-items: end;
+    padding: 0;
+  }
+
+  .volo-together-card {
+    width: 100%;
+    max-height: calc(100dvh - 18px);
+    border-radius: 28px 28px 0 0;
+  }
+
+  .volo-together-stage {
+    min-height: 252px;
+    padding-top: 29px;
+  }
+
+  .volo-listener-avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+  .volo-together-footer {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 360px) {
+  .volo-together-people {
+    gap: 8px;
+  }
+
+  .volo-listener {
+    width: 96px;
+  }
+
+  .volo-together-link {
+    width: 42px;
+  }
+
+  .volo-sync-copy small {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volo-together-sheet.is-opening .volo-together-card,
+  .volo-heartbeat-pulse,
+  .volo-together-sheet.is-playing .volo-together-disc {
+    animation: none;
+  }
+}
+
+/* Direct Volo chat settings */
+.volo-carrier-badge {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  margin-top: 3px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--volo-blue);
+  font-size: 8px;
+  font-weight: 720;
+  line-height: 1.35;
+}
+
+.volo-avatar.has-photo {
+  background-position: center;
+  background-size: cover;
+}
+
+.volo-avatar.has-photo > img {
+  display: none;
+}
+
+.volo-settings-sheet[hidden] {
+  display: none;
+}
+
+.volo-settings-sheet {
+  position: fixed;
+  z-index: 118;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.volo-settings-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(17, 22, 30, 0.48);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.volo-settings-card {
+  position: relative;
+  display: flex;
+  width: min(430px, calc(100vw - 36px));
+  max-height: min(760px, calc(100dvh - 36px));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 26px;
+  background: rgba(250, 250, 252, 0.97);
+  box-shadow:
+    0 28px 80px rgba(12, 17, 26, 0.28),
+    inset 0 1px 0 #fff;
+  color: var(--text);
+  animation: voloSettingsEnter 260ms cubic-bezier(0.2, 0.82, 0.24, 1);
+}
+
+.volo-settings-header {
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(var(--ink-rgb), 0.07);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.volo-settings-header > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.volo-settings-header small {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+}
+
+.volo-settings-header strong {
+  margin-top: 2px;
+  font-size: 18px;
+}
+
+.volo-settings-header button {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(var(--ink-rgb), 0.06);
+  color: var(--muted);
+}
+
+.volo-settings-header button:hover {
+  background: rgba(var(--ink-rgb), 0.1);
+  color: var(--text);
+}
+
+.volo-settings-header svg,
+.volo-settings-row svg,
+.volo-settings-footer svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-settings-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 17px 18px;
+}
+
+.volo-settings-section {
+  padding: 14px;
+  border: 1px solid rgba(var(--ink-rgb), 0.065);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 6px 22px rgba(var(--ink-rgb), 0.035);
+}
+
+.volo-settings-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 11px;
+}
+
+.volo-settings-section-title > span,
+.volo-avatar-picker > span:nth-child(3),
+.volo-settings-row > span:nth-child(2) {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.volo-settings-section-title strong {
+  font-size: 12px;
+}
+
+.volo-settings-section-title small,
+.volo-avatar-picker small,
+.volo-settings-row small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.volo-avatar-picker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.volo-avatar-picker > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.volo-settings-avatar {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #fff6e9, #ead5bb);
+  box-shadow: 0 6px 15px rgba(var(--ink-rgb), 0.12);
+}
+
+.volo-settings-avatar img {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+}
+
+.volo-settings-avatar.has-photo {
+  background-position: center;
+  background-size: cover;
+}
+
+.volo-settings-avatar.has-photo img {
+  display: none;
+}
+
+.volo-avatar-picker > span:nth-child(3) {
+  flex: 1;
+}
+
+.volo-avatar-picker > span:nth-child(3) strong {
+  font-size: 11px;
+}
+
+.volo-avatar-picker > svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--volo-blue);
+  stroke-width: 1.6;
+}
+
+.volo-settings-row {
+  display: flex;
+  width: 100%;
+  min-height: 58px;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.volo-settings-row-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+}
+
+.volo-settings-row-icon.is-wallpaper {
+  background:
+    linear-gradient(135deg, rgba(111, 158, 183, 0.32), rgba(205, 164, 177, 0.3)),
+    #eef1f3;
+  color: #4d748a;
+}
+
+.volo-settings-row > span:nth-child(2) {
+  flex: 1;
+}
+
+.volo-settings-row > span:nth-child(2) strong {
+  font-size: 11px;
+}
+
+.volo-settings-row > b {
+  padding: 6px 9px;
+  border-radius: 9px;
+  background: rgba(var(--accent-rgb), 0.09);
+  color: var(--volo-blue);
+  font-size: 9px;
+}
+
+.volo-carrier-options {
+  display: grid;
+  gap: 8px;
+}
+
+.volo-carrier-options label {
+  position: relative;
+  cursor: pointer;
+}
+
+.volo-carrier-options input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.volo-carrier-option {
+  display: flex;
+  min-height: 61px;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border: 1px solid rgba(var(--ink-rgb), 0.075);
+  border-radius: 14px;
+  background: rgba(var(--panel-rgb), 0.58);
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.volo-carrier-option > i {
+  display: grid;
+  width: 37px;
+  height: 37px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: #2f333a;
+  color: #fff;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.volo-carrier-options label:nth-child(2) .volo-carrier-option > i {
+  background: linear-gradient(145deg, #438bb4, #2f6d94);
+}
+
+.volo-carrier-option > span {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.volo-carrier-option strong {
+  font-size: 11px;
+}
+
+.volo-carrier-option small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.volo-carrier-option > b {
+  display: block;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  border: 1.5px solid rgba(var(--ink-rgb), 0.25);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px #fff;
+}
+
+.volo-carrier-options input:checked + .volo-carrier-option {
+  border-color: rgba(var(--accent-rgb), 0.45);
+  background: rgba(var(--accent-rgb), 0.055);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.06);
+}
+
+.volo-carrier-options input:checked + .volo-carrier-option > b {
+  border-color: var(--volo-blue);
+  background: var(--volo-blue);
+}
+
+.volo-carrier-options input:focus-visible + .volo-carrier-option {
+  outline: 2px solid var(--volo-blue);
+  outline-offset: 2px;
+}
+
+.volo-settings-footer {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  justify-content: space-between;
+  padding: 14px 18px max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(var(--ink-rgb), 0.07);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.volo-settings-footer > button {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 12px;
+  background: #2f333a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 670;
+}
+
+.volo-settings-footer > small {
+  max-width: 190px;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.volo-settings-error {
+  margin: -6px 18px 13px;
+  color: #c9343d;
+  font-size: 9px;
+  text-align: center;
+}
+
+body.volo-settings-open {
+  overflow: hidden;
+}
+
+body.volo-settings-open .clawd-pet-root {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes voloSettingsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 680px) {
+  .volo-header-actions .volo-header-button:nth-child(2) {
+    display: grid;
+  }
+
+  .volo-settings-sheet {
+    align-items: end;
+    padding: 0;
+  }
+
+  .volo-settings-card {
+    width: 100%;
+    max-height: calc(100dvh - 28px);
+    border-radius: 27px 27px 0 0;
+  }
+
+  .volo-settings-body {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 370px) {
+  .volo-header-actions .volo-header-button:nth-child(2) {
+    display: grid;
+  }
+
+  .volo-settings-footer > small {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volo-settings-card {
+    animation: none;
+  }
+}
+
+/* Vinyl-focused together listening */
+.volo-together-stage {
+  min-height: 354px;
+  padding: 13px 22px 14px;
+  overflow: visible;
+}
+
+.volo-together-stage .volo-together-people {
+  gap: 0;
+}
+
+.volo-together-stage .volo-listener {
+  width: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  align-items: center;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+}
+
+.volo-together-stage .volo-listener:first-child {
+  z-index: 2;
+}
+
+.volo-together-stage .volo-listener:last-child {
+  z-index: 1;
+  margin-left: -19px;
+}
+
+.volo-together-stage .volo-listener-avatar {
+  width: 62px;
+  height: 62px;
+  border-width: 3px;
+  font-size: 16px;
+  box-shadow:
+    0 8px 20px rgba(43, 48, 60, 0.15),
+    0 0 0 1px rgba(236, 83, 91, 0.08);
+}
+
+.volo-together-stage .volo-listener-avatar::after {
+  right: -1px;
+  bottom: -1px;
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+  content: "+";
+  font-size: 10px;
+}
+
+.volo-together-stage .volo-listener > strong {
+  display: none;
+}
+
+.volo-together-stage .volo-listener > small {
+  display: none;
+}
+
+.volo-together-stage .volo-together-link {
+  display: none;
+}
+
+.volo-vinyl-button {
+  position: relative;
+  display: flex;
+  width: 225px;
+  height: 225px;
+  align-items: center;
+  justify-content: center;
+  margin: 17px auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+}
+
+.volo-vinyl-button::before,
+.volo-vinyl-button::after {
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(236, 83, 91, 0.09);
+  border-radius: 50%;
+  content: "";
+}
+
+.volo-vinyl-button::after {
+  inset: -5px;
+  border-color: rgba(236, 83, 91, 0.06);
+}
+
+.volo-vinyl-shadow {
+  position: absolute;
+  right: 23px;
+  bottom: 17px;
+  left: 23px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(23, 25, 31, 0.36);
+  filter: blur(14px);
+  transform: translateY(9px);
+}
+
+.volo-vinyl {
+  position: relative;
+  display: grid;
+  width: 184px;
+  height: 184px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 3px, rgba(255, 255, 255, 0.035) 4px 5px),
+    conic-gradient(
+      from 12deg,
+      #090a0e,
+      #282b32 9%,
+      #0b0c10 18%,
+      #343740 27%,
+      #08090d 39%,
+      #292c33 54%,
+      #090a0e 67%,
+      #343740 81%,
+      #090a0d
+    );
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.025),
+    inset 0 0 28px rgba(0, 0, 0, 0.62),
+    0 16px 35px rgba(29, 32, 40, 0.28);
+}
+
+.volo-vinyl::before {
+  position: absolute;
+  inset: 19px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 12px rgba(0, 0, 0, 0.06),
+    0 0 0 25px rgba(255, 255, 255, 0.018);
+  content: "";
+}
+
+.volo-vinyl-grooves {
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  background:
+    linear-gradient(122deg, transparent 37%, rgba(255, 255, 255, 0.09) 43%, transparent 49%),
+    linear-gradient(302deg, transparent 41%, rgba(255, 255, 255, 0.055) 47%, transparent 53%);
+}
+
+.volo-vinyl-label {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 66px;
+  height: 66px;
+  place-items: center;
+  border: 5px solid #16171c;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #f8ede4 0 5%, transparent 6%),
+    linear-gradient(145deg, #ef777c, #ca3944);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.volo-vinyl-label svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.94);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-tonearm {
+  position: absolute;
+  z-index: 3;
+  top: 26px;
+  right: 8px;
+  width: 48px;
+  height: 140px;
+  transform: rotate(-15deg);
+  transform-origin: 36px 14px;
+  transition: transform 450ms cubic-bezier(0.22, 0.75, 0.24, 1);
+  pointer-events: none;
+}
+
+.volo-tonearm::before {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  width: 25px;
+  height: 25px;
+  border: 6px solid #c6c7cb;
+  border-radius: 50%;
+  background: #595c63;
+  box-shadow: 0 3px 8px rgba(20, 22, 27, 0.28);
+  content: "";
+}
+
+.volo-tonearm::after {
+  position: absolute;
+  top: 24px;
+  right: 18px;
+  width: 5px;
+  height: 101px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #c7c9ce, #777a82);
+  box-shadow: 1px 2px 5px rgba(18, 20, 25, 0.2);
+  content: "";
+  transform: rotate(7deg);
+  transform-origin: top;
+}
+
+.volo-tonearm i {
+  position: absolute;
+  right: 9px;
+  bottom: 4px;
+  width: 22px;
+  height: 11px;
+  border-radius: 3px 3px 6px 6px;
+  background: #35373d;
+  box-shadow: 0 2px 5px rgba(20, 22, 27, 0.3);
+  transform: rotate(9deg);
+}
+
+.volo-vinyl-button > small {
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  color: #8e929c;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.volo-together-sheet.is-playing .volo-vinyl {
+  animation: voloVinylSpin 4.8s linear infinite;
+}
+
+.volo-together-sheet.is-playing .volo-tonearm {
+  transform: rotate(3deg);
+}
+
+.volo-together-stage .volo-together-note {
+  margin-top: 15px;
+  font-size: 11px;
+}
+
+.volo-track-note {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #24262d, #111218);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(20, 22, 27, 0.15);
+}
+
+.volo-track-note svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-lyrics-panel[hidden] {
+  display: none;
+}
+
+.volo-lyrics-panel {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(236, 83, 91, 0.17), transparent 28%),
+    linear-gradient(180deg, #fffafa, #fafafd 72%);
+  animation: voloLyricsEnter 250ms ease-out;
+}
+
+.volo-lyrics-header {
+  display: grid;
+  min-height: 76px;
+  flex: 0 0 auto;
+  grid-template-columns: 40px 1fr 48px;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(42, 47, 60, 0.06);
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.volo-lyrics-header button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(44, 48, 58, 0.065);
+  color: #666b75;
+}
+
+.volo-lyrics-header button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.volo-lyrics-header > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  text-align: center;
+}
+
+.volo-lyrics-header small {
+  color: var(--together-red);
+  font-size: 8px;
+  font-weight: 740;
+  letter-spacing: 0.13em;
+}
+
+.volo-lyrics-header strong {
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.volo-lyrics-header > label {
+  justify-self: end;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: rgba(236, 83, 91, 0.09);
+  color: var(--together-red);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 680;
+}
+
+.volo-lyrics-lines {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 46% 34px;
+  scroll-behavior: smooth;
+  text-align: center;
+}
+
+.volo-lyrics-lines.has-lyrics {
+  text-align: left;
+}
+
+.volo-lyric-line {
+  margin: 0;
+  padding: 11px 4px;
+  border: 0;
+  background: transparent;
+  color: #aaaeb7;
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 17px;
+  line-height: 1.55;
+  transition:
+    color 220ms ease,
+    font-size 220ms ease,
+    transform 220ms ease;
+}
+
+button.volo-lyric-line {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}
+
+.volo-lyric-line.is-active {
+  color: #242730;
+  font-size: 21px;
+  font-weight: 680;
+  transform: translateX(4px);
+}
+
+.volo-lyrics-empty {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  color: #858a95;
+}
+
+.volo-lyrics-empty > span {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(236, 83, 91, 0.08);
+  color: var(--together-red);
+  font-size: 23px;
+}
+
+.volo-lyrics-empty strong {
+  margin-top: 17px;
+  color: #373a43;
+  font-size: 14px;
+}
+
+.volo-lyrics-empty p {
+  max-width: 245px;
+  margin: 8px 0 17px;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.volo-lyrics-empty label {
+  padding: 9px 13px;
+  border-radius: 11px;
+  background: var(--together-red);
+  box-shadow: 0 6px 15px rgba(226, 66, 76, 0.22);
+  color: #fff;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 680;
+}
+
+.volo-lyrics-footer {
+  display: flex;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(42, 47, 60, 0.06);
+  color: #9b9fa8;
+  font-size: 8px;
+}
+
+.volo-lyrics-footer input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+@keyframes voloVinylSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes voloLyricsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 680px) {
+  .volo-together-stage {
+    min-height: 337px;
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .volo-vinyl-button {
+    width: 211px;
+    height: 211px;
+  }
+
+  .volo-vinyl {
+    width: 172px;
+    height: 172px;
+  }
+
+  .volo-lyrics-panel {
+    border-radius: 27px 27px 0 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .volo-together-stage .volo-listener {
+    min-width: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volo-together-sheet.is-playing .volo-vinyl,
+  .volo-lyrics-panel {
+    animation: none;
+  }
+}
+
+/* Volo voice call */
+.volo-call-screen[hidden] {
+  display: none;
+}
+
+.volo-call-screen {
+  position: fixed;
+  z-index: 135;
+  inset: 0;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(238, 170, 169, 0.42), transparent 28%),
+    radial-gradient(circle at 16% 12%, rgba(149, 186, 205, 0.33), transparent 34%),
+    radial-gradient(circle at 84% 86%, rgba(204, 181, 211, 0.3), transparent 32%),
+    linear-gradient(155deg, #eef1f1 0%, #e7e5e3 52%, #e5e8eb 100%);
+  color: #292c34;
+  isolation: isolate;
+  animation: voloCallEnter 300ms ease-out;
+}
+
+.volo-call-ambient {
+  position: absolute;
+  z-index: -1;
+  inset: -35px;
+  background-image:
+    linear-gradient(rgba(245, 246, 247, 0.7), rgba(237, 239, 241, 0.76)),
+    var(--wallpaper-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(26px) saturate(0.82);
+  opacity: 0.46;
+  transform: scale(1.08);
+}
+
+.volo-call-screen::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 28%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.36), transparent 32%);
+  content: "";
+  pointer-events: none;
+}
+
+.volo-call-header {
+  display: grid;
+  min-height: 82px;
+  flex: 0 0 auto;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 12px;
+  padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 10px max(20px, env(safe-area-inset-left));
+}
+
+.volo-call-header > button {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 6px 18px rgba(47, 52, 62, 0.08);
+  color: #545963;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.volo-call-header > button:last-child {
+  justify-self: end;
+}
+
+.volo-call-header button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.volo-call-header > span {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.volo-call-header small {
+  color: rgba(55, 59, 68, 0.48);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
+.volo-call-header strong {
+  margin-top: 3px;
+  color: rgba(45, 48, 56, 0.76);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.volo-call-main {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 20px 34px;
+  text-align: center;
+}
+
+.volo-call-visual {
+  position: relative;
+  display: grid;
+  width: min(380px, calc(100vw - 28px));
+  height: 310px;
+  place-items: center;
+}
+
+.volo-call-ring {
+  position: absolute;
+  width: 270px;
+  height: 190px;
+  border: 1px solid rgba(236, 83, 91, 0.15);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.volo-call-ring:nth-child(2) {
+  animation-delay: 620ms;
+}
+
+.volo-call-ring:nth-child(3) {
+  animation-delay: 1240ms;
+}
+
+.volo-call-screen.is-connecting .volo-call-ring,
+.volo-call-screen.is-connected .volo-call-ring {
+  animation: voloCallRing 2.2s ease-out infinite;
+}
+
+.volo-call-screen.is-connected .volo-call-ring {
+  animation-duration: 3.2s;
+}
+
+.volo-call-avatar {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 126px;
+  height: 126px;
+  place-items: center;
+  overflow: visible;
+  border: 6px solid rgba(255, 255, 255, 0.76);
+  border-radius: 50%;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.34)),
+    #eadac5;
+  box-shadow:
+    0 24px 58px rgba(67, 55, 58, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+.volo-call-avatar img {
+  width: 84%;
+  height: 84%;
+  object-fit: contain;
+}
+
+.volo-call-pair {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.volo-call-person {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.volo-call-person > small {
+  margin-top: 11px;
+  color: rgba(42, 46, 54, 0.68);
+  font-size: 10px;
+  font-weight: 670;
+}
+
+.volo-call-avatar.is-user {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28), transparent),
+    linear-gradient(145deg, #ec737a, #cf424d);
+  color: #fff;
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 35px;
+}
+
+.volo-call-avatar.has-photo > span,
+.volo-call-avatar.has-photo > img {
+  display: none;
+}
+
+.volo-call-bridge {
+  display: flex;
+  width: 52px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.volo-call-bridge i {
+  width: 3px;
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(235, 82, 91, 0.54);
+}
+
+.volo-call-screen.is-connected .volo-call-bridge i {
+  animation: voloCallBridge 680ms ease-in-out infinite alternate;
+}
+
+.volo-call-screen.is-connected .volo-call-bridge i:nth-child(2) {
+  animation-delay: -240ms;
+}
+
+.volo-call-screen.is-connected .volo-call-bridge i:nth-child(3) {
+  animation-delay: -430ms;
+}
+
+.volo-call-screen.is-connected .volo-call-bridge i:nth-child(4) {
+  animation-delay: -120ms;
+}
+
+.volo-call-avatar.has-photo {
+  background-position: center;
+  background-size: cover;
+}
+
+.volo-call-avatar.has-photo img {
+  display: none;
+}
+
+.volo-call-avatar > i {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 18px;
+  height: 18px;
+  border: 4px solid rgba(244, 244, 244, 0.94);
+  border-radius: 50%;
+  background: #58bc79;
+  box-shadow: 0 3px 8px rgba(37, 104, 60, 0.23);
+}
+
+.volo-call-status {
+  min-height: 24px;
+  margin: 12px 0 0;
+  color: rgba(48, 52, 61, 0.62);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.volo-call-transcript {
+  width: min(330px, calc(100vw - 44px));
+  min-height: 78px;
+  margin-top: 3px;
+  padding: 12px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 19px;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 30px rgba(43, 48, 59, 0.08);
+  text-align: left;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.volo-call-transcript header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volo-call-transcript header > span {
+  display: flex;
+  height: 14px;
+  align-items: center;
+  gap: 2px;
+}
+
+.volo-call-transcript header i {
+  width: 2px;
+  height: 5px;
+  border-radius: 99px;
+  background: #eb525b;
+  animation: voloTranscriptWave 620ms ease-in-out infinite alternate;
+}
+
+.volo-call-transcript header i:nth-child(2) {
+  height: 10px;
+  animation-delay: -210ms;
+}
+
+.volo-call-transcript header i:nth-child(3) {
+  height: 7px;
+  animation-delay: -390ms;
+}
+
+.volo-call-transcript header strong {
+  color: rgba(46, 50, 59, 0.62);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.volo-call-transcript p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 8px 0 0;
+  color: #373b44;
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.volo-call-quality {
+  display: flex;
+  min-height: 27px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 15px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  color: rgba(47, 51, 60, 0.58);
+  font-size: 9px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.volo-call-quality i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #58bc79;
+  box-shadow: 0 0 0 3px rgba(88, 188, 121, 0.12);
+}
+
+.volo-call-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(26px, 8vw, 58px);
+  padding: 22px 20px max(34px, env(safe-area-inset-bottom));
+}
+
+.volo-call-control {
+  display: flex;
+  width: 70px;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #40444d;
+}
+
+.volo-call-control > span {
+  position: relative;
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.44);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 10px 26px rgba(48, 53, 64, 0.11);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.volo-call-control:active > span {
+  transform: scale(0.93);
+}
+
+.volo-call-control svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+}
+
+.volo-call-control small {
+  color: rgba(41, 45, 53, 0.72);
+  font-size: 10px;
+  font-weight: 620;
+}
+
+.volo-call-control[aria-pressed="true"]:not(.volo-call-end) > span {
+  background: rgba(45, 49, 58, 0.87);
+  color: #fff;
+}
+
+.volo-call-control[aria-pressed="true"]:not(.volo-call-end) > span > i {
+  position: absolute;
+  width: 31px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: rotate(-45deg);
+}
+
+.volo-call-control[aria-pressed="true"]:not(.volo-call-end) > span > i:empty {
+  display: block;
+}
+
+.volo-call-end > span {
+  width: 70px;
+  height: 70px;
+  border-color: rgba(255, 255, 255, 0.34);
+  background: #eb525b;
+  box-shadow:
+    0 13px 32px rgba(203, 51, 61, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.volo-call-end svg {
+  transform: rotate(135deg);
+}
+
+.volo-call-info[hidden] {
+  display: none;
+}
+
+.volo-call-info {
+  position: absolute;
+  z-index: 5;
+  right: 18px;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: 18px;
+  max-width: 360px;
+  margin: auto;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 18px 50px rgba(33, 38, 48, 0.2);
+  text-align: center;
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+}
+
+.volo-call-info strong {
+  font-size: 13px;
+}
+
+.volo-call-info p {
+  margin: 8px 0 14px;
+  color: #737883;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.volo-call-info button {
+  min-height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 11px;
+  background: #333740;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+body.volo-call-open {
+  overflow: hidden;
+}
+
+body.volo-call-open .clawd-pet-root {
+  display: none;
+}
+
+@keyframes voloCallRing {
+  0% {
+    opacity: 0.45;
+    transform: scale(0.88);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.75);
+  }
+}
+
+@keyframes voloCallEnter {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes voloCallBridge {
+  from {
+    height: 7px;
+  }
+  to {
+    height: 23px;
+  }
+}
+
+@keyframes voloTranscriptWave {
+  from {
+    transform: scaleY(0.65);
+  }
+  to {
+    transform: scaleY(1.35);
+  }
+}
+
+@media (max-width: 680px) {
+  .volo-call-main {
+    padding-bottom: 18px;
+  }
+
+  .volo-call-visual {
+    width: 310px;
+    height: 270px;
+  }
+
+  .volo-call-avatar {
+    width: 108px;
+    height: 108px;
+  }
+
+  .volo-call-bridge {
+    width: 43px;
+  }
+
+  .volo-call-controls {
+    gap: 27px;
+  }
+}
+
+@media (max-height: 650px) {
+  .volo-call-visual {
+    width: 220px;
+    height: 220px;
+  }
+
+  .volo-call-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .volo-call-controls {
+    padding-top: 8px;
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volo-call-screen,
+  .volo-call-screen .volo-call-ring,
+  .volo-call-screen .volo-call-bridge i,
+  .volo-call-transcript header i {
+    animation: none;
+  }
+}
+
